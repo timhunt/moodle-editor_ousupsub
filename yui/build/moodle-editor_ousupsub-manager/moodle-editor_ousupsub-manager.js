@@ -187,10 +187,7 @@ NS.editor_ousupsub.importMethod(Y.M.editor_ousupsub.Editor.prototype, [
     'disableCssStyling',
     'enableCssStyling',
     'cleanEditorHTML',
-    'destroy',
-    'recoverText',
-    'resetAutosave',
-    'saveDraft'
+    'destroy'
 ]);
 
 }, '@VERSION@', {"requires": ["base", "moodle-editor_ousupsub-editor"]});
