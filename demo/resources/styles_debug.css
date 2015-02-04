@@ -90,27 +90,6 @@ div.editor_ousupsub_toolbar div.ousupsub_group {
     resize: both; overflow: auto;
 }
 
-.ousupsub_hasmenu {
-    /* IE8 places the images on top of each other if that is not set. */
-    white-space: nowrap;
-}
-
-.ousupsub_menuentry img {
-    width: 16px;
-    height: 16px;
-}
-
-.ousupsub_menuentry {
-    clear: left;
-}
-
-.ousupsub_menuentry h1,
-.ousupsub_menuentry h2,
-.ousupsub_menuentry p {
-    margin: 4px;
-}
-
-
 .ousupsub_form label.sameline {
     display: inline-block;
     min-width: 10em;
