@@ -185,7 +185,6 @@ NS.editor_ousupsub.importMethod(Y.M.editor_ousupsub.Editor.prototype, [
     'updateFromTextArea',
     'updateOriginal',
     'disableCssStyling',
-    'enableCssStyling',
     'cleanEditorHTML',
     'destroy'
 ]);

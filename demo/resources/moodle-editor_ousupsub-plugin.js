@@ -93,7 +93,6 @@ Y.extend(EditorPlugin, Y.Base, {
         this.menus = {};
         this._primaryKeyboardShortcut = [];
         this._buttonHandlers = [];
-        this._menuHideHandlers = [];
         this._highlightQueue = {};
         this._eventHandles = [];
     },
@@ -282,15 +281,6 @@ EditorPluginButtons.prototype = {
      * @value 1
      */
     ENABLED: 1,
-
-    /**
-     * Hide handlers which are cancelled when the menu is hidden.
-     *
-     * @property _menuHideHandlers
-     * @protected
-     * @type array
-     */
-    _menuHideHandlers: null,
 
     /**
      * A textual description of the primary keyboard shortcut for this
@@ -484,77 +474,6 @@ EditorPluginButtons.prototype = {
 
         // Return the newly created button.
         return this.addButton(config);
-    },
-
-    /**
-     * Add a menu for this plugin to the editor toolbar.
-     *
-     * @method addToolbarMenu
-     * @param {object} config The configuration for this button
-     * @param {string} [config.iconurl] The URL for the icon. If not specified, then the icon and component will be used instead.
-     * @param {string} [config.icon] The icon identifier.
-     * @param {string} [config.iconComponent='core'] The icon component.
-     * @param {string} [config.title=this.name] The string identifier in the plugin's language file.
-     * @param {string} [config.buttonName=this.name] The name of the button. This is used in the buttons object, and if
-     * specified, in the class for the button.
-     * @param {function} config.callback A callback function to call when the button is clicked.
-     * @param {object} [config.callbackArgs] Any arguments to pass to the callback.
-     * @param {array} config.entries List of menu entries with the string (entry.text) and the handlers (entry.handler).
-     * @param {number} [config.overlayWidth=14] The width of the menu. This will be suffixed with the 'em' unit.
-     * @param {string} [config.menuColor] menu icon background color
-     * @return {Node} The Node representing the newly created button.
-     */
-    addToolbarMenu: function(config) {
-        var group = this.get('group'),
-            pluginname = this.name,
-            buttonClass = 'ousupsub_' + pluginname + '_button',
-            button,
-            currentFocus;
-
-        if (!config.buttonName) {
-            // Set a default button name - this is used as an identifier in the button object.
-            config.buttonName = pluginname;
-        } else {
-            buttonClass = buttonClass + '_' + config.buttonName;
-        }
-        config.buttonClass = buttonClass;
-
-        // Normalize icon configuration.
-        config = this._normalizeIcon(config);
-
-        if (!config.title) {
-            config.title = 'pluginname';
-        }
-        var title = M.util.get_string(config.title, 'ousupsub_' + pluginname);
-
-        if (!config.menuColor) {
-            config.menuColor = 'transparent';
-        }
-
-        // Create the actual button.
-        var template = Y.Handlebars.compile(MENUTEMPLATE);
-        button = Y.Node.create(template({
-            buttonClass: buttonClass,
-            config: config,
-            title: title
-        }));
-
-        // Append it to the group.
-        group.append(button);
-
-        currentFocus = this.toolbar.getAttribute('aria-activedescendant');
-        if (!currentFocus) {
-            // Initially set the first button in the toolbar to be the default on keyboard focus.
-            button.setAttribute('tabindex', '0');
-            this.toolbar.setAttribute('aria-activedescendant', button.generateID());
-        }
-
-        // Add the button reference to the buttons array for later reference.
-        this.buttonNames.push(config.buttonName);
-        this.buttons[config.buttonName] = button;
-        this.buttonStates[config.buttonName] = this.ENABLED;
-
-        return button;
     },
 
     /**
