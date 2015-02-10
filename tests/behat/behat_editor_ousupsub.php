@@ -139,6 +139,15 @@ class behat_editor_ousupsub extends behat_base {
         $this->getSession()->executeScript($js);
     }
 
+    /**
+     * Opens a given path in moodle.
+     *
+     * @Given /^I am on "([^"]*)"$/
+     */
+    public function i_am_on_path($path) {
+        $this->getSession()->visit($this->locate_path('/'.$path));
+    }
+
 
 }
 

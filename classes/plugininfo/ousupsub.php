@@ -18,7 +18,7 @@
  * Subplugin info class.
  *
  * @package   editor_ousupsub
- * @copyright 2013 Petr Skoda {@link http://skodak.org}
+ * @copyright 2013 The Open University
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 namespace editor_ousupsub\plugininfo;

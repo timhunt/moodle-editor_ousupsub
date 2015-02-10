@@ -1765,16 +1765,12 @@ Y.Base.mix(Y.M.editor_ousupsub.Editor, [EditorStyling]);
 }, '@VERSION@', {
     "requires": [
         "node",
-        "transition",
-        "io",
         "overlay",
         "escape",
         "event",
         "event-simulate",
         "event-custom",
         "yui-throttle",
-        "moodle-core-notification-dialogue",
-        "moodle-core-notification-confirm",
         "moodle-editor_ousupsub-manager",
         "moodle-editor_ousupsub-rangy",
         "handlebars",

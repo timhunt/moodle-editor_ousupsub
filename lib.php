@@ -18,7 +18,7 @@
  * YUI text editor integration.
  *
  * @package    editor_ousupsub
- * @copyright  2013 Damyon Wiese  <damyon@moodle.com>
+ * @copyright  2014 The Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 

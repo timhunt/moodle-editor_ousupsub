@@ -60,7 +60,7 @@ M.util.get_string = function(identifier, component, a) {
     if (!M.str.hasOwnProperty(component) || !M.str[component].hasOwnProperty(identifier)) {
         stringvalue = '[[' + identifier + ',' + component + ']]';
         if (M.cfg.developerdebug) {
-            Y.log('undefined string ' + stringvalue, 'warn', 'M.util.get_string');
+            console.log('undefined string ' + stringvalue, 'warn', 'M.util.get_string');
         }
         return stringvalue;
     }
@@ -83,7 +83,7 @@ M.util.get_string = function(identifier, component, a) {
         for (var key in a) {
             if (typeof a[key] != 'number' && typeof a[key] != 'string') {
                 if (M.cfg.developerdebug) {
-                    Y.log('invalid value type for $a->' + key, 'warn', 'M.util.get_string');
+                    console.log('invalid value type for $a->' + key, 'warn', 'M.util.get_string');
                 }
                 continue;
             }
@@ -96,7 +96,7 @@ M.util.get_string = function(identifier, component, a) {
     }
 
     if (M.cfg.developerdebug) {
-        Y.log('incorrect placeholder type', 'warn', 'M.util.get_string');
+        console.log('incorrect placeholder type', 'warn', 'M.util.get_string');
     }
     return stringvalue;
 };

@@ -18,7 +18,7 @@
  * ousupsub text editor integration version file.
  *
  * @package    editor_ousupsub
- * @copyright  2014 Damyon Wiese  <damyon@moodle.com>
+ * @copyright  2014 The Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
