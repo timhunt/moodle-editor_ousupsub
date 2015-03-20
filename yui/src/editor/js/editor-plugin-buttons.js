@@ -199,7 +199,8 @@ EditorPluginButtons.prototype = {
         // Create the actual button.
         button = Y.Node.create('<button type="button" class="' + buttonClass + '"' +
                 'tabindex="-1">' +
-                    '<img class="icon" aria-hidden="true" role="presentation" width="16" height="16" src="' + config.iconurl + '"/>' +
+                    '<img class="icon" aria-hidden="true" role="presentation" width="16" height="16" src="' +
+                            config.iconurl + '"/>' +
                 '</button>');
         button.setAttribute('title', title);
 
@@ -501,7 +502,6 @@ EditorPluginButtons.prototype = {
         // Cancel the hide menu prevention.
         menuDialogue.set('preventHideMenu', false);
 
-        console.log('Menu item chosen');
         // Set the focus after hide so that focus is returned to the editor and changes are made correctly.
         menuDialogue.set('focusAfterHide', this.get('host').editor);
         menuDialogue.hide(e);
@@ -854,5 +854,6 @@ EditorPluginButtons.prototype = {
         return 'down:';
     }
 };
+
 
 Y.Base.mix(Y.M.editor_ousupsub.EditorPlugin, [EditorPluginButtons]);
