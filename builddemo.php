@@ -192,11 +192,23 @@ document.body.className += " jsenabled";
      */
     public static function copy_icons() {
         $names = array('subscript', 'superscript');
+
+        // Default moodle icons
+        /*
         foreach ($names as $name) {
             $source = self::create_path('../../../pix/e/'.$name.'.svg');
             $destination = self::create_path('root/resources/core_editor_'.$name.'.svg');
             if ($result = copy($source, $destination)) {
-                self::echo_result("Copy ".$name." icon.");
+                self::echo_result("Copy moodle ".$name." icon.");
+            }
+        }*/
+
+        // OU sup sub icons
+        foreach ($names as $name) {
+            $source = self::create_path('pix/'.$name.'.svg');
+            $destination = self::create_path('root/resources/core_editor_'.$name.'.svg');
+            if ($result = copy($source, $destination)) {
+                self::echo_result("Copy ousupsub ".$name." icon.");
             }
         }
     }
@@ -249,13 +261,13 @@ body {
         }
 
         // Plugin button icons.
-        $buttonsubscriptyuipath = 'plugins/subscript/yui/build/moodle-ousupsub_subscript-button/';
-        $buttonsubscriptyuipath .= 'moodle-ousupsub_subscript-button.js';
-        $combinedcontents .= file_get_contents($buttonsubscriptyuipath);
-
         $buttonsuperscriptyuipath = 'plugins/superscript/yui/build/moodle-ousupsub_superscript-button/';
         $buttonsuperscriptyuipath .= 'moodle-ousupsub_superscript-button.js';
         $combinedcontents .= file_get_contents($buttonsuperscriptyuipath);
+
+        $buttonsubscriptyuipath = 'plugins/subscript/yui/build/moodle-ousupsub_subscript-button/';
+        $buttonsubscriptyuipath .= 'moodle-ousupsub_subscript-button.js';
+        $combinedcontents .= file_get_contents($buttonsubscriptyuipath);
 
         // Save combined file.
         $combinedpath = self::create_path('root/resources/ousupsubjs');
@@ -294,8 +306,8 @@ function init_ousupsub() {
     Y.use("moodle-editor_ousupsub-editor","moodle-ousupsub_subscript-button","moodle-ousupsub_superscript-button",
             function() {YUI.M.editor_ousupsub.createEditor(
             {"elementid":"id_description_editor","content_css":"","contextid":0,"language":"en",
-                "directionality":"ltr","plugins":[{"group":"style1","plugins":[{"name":"subscript","params":[]},
-                {"name":"superscript","params":[]}]}],"pageHash":""});
+                "directionality":"ltr","plugins":[{"group":"style1","plugins":[{"name":"superscript","params":[]},
+                {"name":"subscript","params":[]}]}],"pageHash":""});
     });
 
     });

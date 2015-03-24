@@ -75,7 +75,7 @@ div.editor_ousupsub_toolbar button img.icon {
     padding: 0px;
     margin: 3px 0;
     /* The following is dedicated to the beloved IE8, clashing with Bootstrap. God bless you IE. */
-    /* vertical-align: text-bottom; */
+    vertical-align: text-bottom;
     width: auto;
     height: 10px;
 }
