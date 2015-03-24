@@ -230,8 +230,39 @@ Y.extend(Editor, Y.Base, {
      * @type {Array}
      */
     BLOCK_TAGS : [
-        'sub',
-        'sup'
+        'address',
+        'article',
+        'aside',
+        'audio',
+        'blockquote',
+        'canvas',
+        'dd',
+        'div',
+        'dl',
+        'fieldset',
+        'figcaption',
+        'figure',
+        'footer',
+        'form',
+        'h1',
+        'h2',
+        'h3',
+        'h4',
+        'h5',
+        'h6',
+        'header',
+        'hgroup',
+        'hr',
+        'noscript',
+        'ol',
+        'output',
+        'p',
+        'pre',
+        'section',
+        'table',
+        'tfoot',
+        'ul',
+        'video'
     ],
 
     PLACEHOLDER_CLASS: 'ousupsub-tmp-class',
@@ -834,9 +865,6 @@ EditorTextArea.prototype = {
         if (oldValue !== newValue) {
             // Insert the cleaned content.
             this.textarea.set('value', newValue);
-
-            // Trigger the onchange callback on the textarea, essentially to notify moodle-core-formchangechecker.
-            this.textarea.simulate('change');
 
             // Trigger handlers for this action.
             this.fire('change');

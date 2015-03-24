@@ -703,9 +703,6 @@ EditorTextArea.prototype = {
             // Insert the cleaned content.
             this.textarea.set('value', newValue);
 
-            // Trigger the onchange callback on the textarea, essentially to notify moodle-core-formchangechecker.
-            this.textarea.simulate('change');
-
             // Trigger handlers for this action.
             this.fire('change');
         }
