@@ -23,9 +23,9 @@ document.body.className += " jsenabled";
 
 <form autocomplete="off" action="" method="post" accept-charset="utf-8" id="mform1" class="mform"
         onsubmit="try { var myValidator = validate_user_editadvanced_form; } catch(e) { return true; } return myValidator(this);">
-        <div id="yui_3_17_2_3_1421681604257_849" class="fcontainer clearfix">
+        <div class="fcontainer clearfix">
             <div id="fitem_id_description_editor" class="fitem fitem_feditor ">
-                <div class="fitemtitle"><label for="id_description_editor">Description </label></div>
+                <div class="fitemtitle"><label for="id_description_editor">Both Superscript and Subscript allowed</label></div>
                 <div class="felement feditor">
                     <div>
                         <div class="editor_ousupsub"></div>
@@ -41,11 +41,51 @@ document.body.className += " jsenabled";
                 </div>
             </div>
         </div>
+
+        <div class="fcontainer clearfix">
+            <div id="fitem_id_sup_editor" class="fitem fitem_feditor ">
+                <div class="fitemtitle"><label for="id_sup_editor">Superscript only allowed</label></div>
+                <div class="felement feditor">
+                    <div>
+                        <div class="editor_ousupsub"></div>
+                        <textarea style="display: none;" id="id_sup_editor" name="sup_editor[text]"
+                            rows="15" cols="10" spellcheck="true" hidden="hidden"
+                            >&lt;p&gt;Superscript only&lt;/p&gt;</textarea>
+                    </div>
+                    <div><input name="sup_editor[format]" value="1" type="hidden"></div>
+                    <input name="sup_editor[itemid]" value="774037095" type="hidden">
+                    <noscript><div>
+                        <object type="text/html" data="" height="60" width="600" style="border:1px solid #000"></object>
+                    </div></noscript>
+                </div>
+            </div>
+        </div>
+
+        <div class="fcontainer clearfix">
+            <div id="fitem_id_sub_editor" class="fitem fitem_feditor ">
+                <div class="fitemtitle"><label for="id_sub_editor">Subscript only allowed</label></div>
+                <div class="felement feditor">
+                    <div>
+                        <div class="editor_ousupsub"></div>
+                        <textarea style="display: none;" id="id_sub_editor" name="sub_editor[text]"
+                            rows="15" cols="10" spellcheck="true" hidden="hidden"
+                            >&lt;p&gt;Subscript only&lt;/p&gt;</textarea>
+                    </div>
+                    <div><input name="sub_editor[format]" value="1" type="hidden"></div>
+                    <input name="sub_editor[itemid]" value="774037095" type="hidden">
+                    <noscript><div>
+                        <object type="text/html" data="" height="60" width="600" style="border:1px solid #000"></object>
+                    </div></noscript>
+                </div>
+            </div>
+        </div>
 </form>
 
 <script type="text/javascript">
 //<![CDATA[
-        init_ousupsub();
+        init_ousupsub("id_description_editor", {"subscript":true, "superscript":true});
+        init_ousupsub("id_sup_editor", {"superscript":true});
+        init_ousupsub("id_sub_editor", {"subscript":true});
 //]]>
 </script>
 			</div>

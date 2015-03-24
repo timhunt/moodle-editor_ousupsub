@@ -63,7 +63,7 @@ class ousupsub_texteditor extends texteditor {
      * @return bool
      */
     public function supports_repositories() {
-        return true;
+        return false;
     }
 
     /**
@@ -76,7 +76,28 @@ class ousupsub_texteditor extends texteditor {
     public function use_editor($elementid, array $options=null, $fpoptions=null) {
         global $PAGE;
 
-        $configstr = 'style1 = subscript, superscript';
+        $configstr = 'style1 = ';
+        if (empty($options['supsub'])) {
+            $options['supsub'] = 'both';
+        }
+
+        switch ($options['supsub']) {
+            case 'both':
+                $configstr .= 'superscript, subscript';
+                break;
+
+            case 'sup':
+                $configstr .= 'superscript';
+                break;
+
+            case 'sub':
+                $configstr .= 'subscript';
+                break;
+
+            default:
+                throw new coding_exception("Invalid value '" .$options['supsub'] .
+                        "' for option 'supsub'. Must be one of 'both', 'sup' or 'sub'.");
+        }
 
         $grouplines = explode("\n", $configstr);
 
@@ -165,6 +186,7 @@ class ousupsub_texteditor extends texteditor {
         if ($fpoptions) {
             $params['filepickeroptions'] = $fpoptions;
         }
+
         return $params;
     }
 }

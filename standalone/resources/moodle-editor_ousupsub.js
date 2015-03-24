@@ -10,17 +10,23 @@ M.host  = window.location.host ;
 M.cfg = {"wwwroot":M.protocol + "//" + M.host + M.fileroot,"sesskey":"","loadingicon":"l",
                 "themerev":-1,"slasharguments":1,"theme":"clean","jsrev":-1,"svgicons":true,"developerdebug":true};
 
-function init_ousupsub() {
+function init_ousupsub(id, params) {
     M.str = {"moodle":{"error":"Error","morehelp":"More help","changesmadereallygoaway":"You have made changes. Are you sure you want to navigate away and lose your changes?"},"ousupsub_subscript":{"pluginname":"Subscript"},"ousupsub_superscript":{"pluginname":"Superscript"},"editor_ousupsub":{"editor_command_keycode":"Cmd + {$a}","editor_control_keycode":"Ctrl + {$a}","plugin_title_shortcut":"{$a->title} [{$a->shortcut}]","plugin_title_shortcut":"{$a->title} [{$a->shortcut}]"},"error":{"serverconnection":"Error connecting to the server"}}
+    plugins = [];
+    if (params.superscript) {
+        plugins[plugins,length] = {"name":"superscript","params":[]};
+    }
+    if (params.subscript) {
+        plugins[plugins.length] = {"name":"subscript","params":[]};
+    }
     var YUI_config = {
                          base: "resources/yui/3.17.2/"
                       }
     YUI().use("node", function(Y) {
     Y.use("moodle-editor_ousupsub-editor","moodle-ousupsub_subscript-button","moodle-ousupsub_superscript-button",
             function() {YUI.M.editor_ousupsub.createEditor(
-            {"elementid":"id_description_editor","content_css":"","contextid":0,"language":"en",
-                "directionality":"ltr","plugins":[{"group":"style1","plugins":[{"name":"superscript","params":[]},
-                {"name":"subscript","params":[]}]}],"pageHash":""});
+            {"elementid":id,"content_css":"","contextid":0,"language":"en",
+                "directionality":"ltr","plugins":[{"group":"style1","plugins":plugins}],"pageHash":""});
     });
 
     });
@@ -224,39 +230,8 @@ Y.extend(Editor, Y.Base, {
      * @type {Array}
      */
     BLOCK_TAGS : [
-        'address',
-        'article',
-        'aside',
-        'audio',
-        'blockquote',
-        'canvas',
-        'dd',
-        'div',
-        'dl',
-        'fieldset',
-        'figcaption',
-        'figure',
-        'footer',
-        'form',
-        'h1',
-        'h2',
-        'h3',
-        'h4',
-        'h5',
-        'h6',
-        'header',
-        'hgroup',
-        'hr',
-        'noscript',
-        'ol',
-        'output',
-        'p',
-        'pre',
-        'section',
-        'table',
-        'tfoot',
-        'ul',
-        'video'
+        'sub',
+        'sup'
     ],
 
     PLACEHOLDER_CLASS: 'ousupsub-tmp-class',

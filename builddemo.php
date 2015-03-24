@@ -52,6 +52,8 @@ class ousupsub_texteditor_standalone_builder {
         'index' => 'index.html',
         'ousupsubjs' => 'moodle-editor_ousupsub.js',
         'stylecss' => 'styles.css',
+        'readme' => 'readme.txt',
+        'readmestandalone' => 'readme_standalone.txt',
         'yuiversion' => '3.17.2',
         'wwwroot' => '../../..'
     );
@@ -59,6 +61,7 @@ class ousupsub_texteditor_standalone_builder {
     public static function create_standalone () {
         self::delete_standalone();
         self::create_standalone_folder();
+        self::create_readme_file();
         self::create_index_page();
         self::copy_icons();
         self::create_css_file();
@@ -118,7 +121,37 @@ class ousupsub_texteditor_standalone_builder {
         return $output;
     }
 
+    /*
+     * Create readme file.
+     */
+    public static function create_readme_file() {
 
+        // Create the readme file. The unconventional indenting is required to produce conventional
+        // indenting in the file produced.
+        $contents = '
+This folder contains the files for the standalone superscript subscript editor.
+index.html contains a demonstration of the of the editor and the required resources are in the resources folder
+
+To view a demonstration of the editor, download the standalone folder to your desktop and open the index.html file
+in a browser.
+
+You will then see a text editor with two buttons. One for superscript and one for subscript
+Features
+The features we aim to deliver are:
+* Display either Sup/sub buttons or both
+* Clean up html output: Only sup/sup html tags and alphanumeric text should be allowed
+*
+
+';
+        $pathfrom = self::create_path('readmestandalone');
+        $contents = file_get_contents($pathfrom);
+
+        // Path to save file to.
+        $pathto = self::create_path('root/readme');
+        if ($result = file_put_contents($pathto, $contents, 0)) {
+            self::echo_result("Created readme.txt.");
+        }
+    }
     /*
      * Create the index page.
      */
@@ -152,9 +185,9 @@ document.body.className += " jsenabled";
 
 <form autocomplete="off" action="" method="post" accept-charset="utf-8" id="mform1" class="mform"
         onsubmit="try { var myValidator = validate_user_editadvanced_form; } catch(e) { return true; } return myValidator(this);">
-        <div id="yui_3_17_2_3_1421681604257_849" class="fcontainer clearfix">
+        <div class="fcontainer clearfix">
             <div id="fitem_id_description_editor" class="fitem fitem_feditor ">
-                <div class="fitemtitle"><label for="id_description_editor">Description </label></div>
+                <div class="fitemtitle"><label for="id_description_editor">Both Superscript and Subscript allowed</label></div>
                 <div class="felement feditor">
                     <div>
                         <div class="editor_ousupsub"></div>
@@ -170,11 +203,51 @@ document.body.className += " jsenabled";
                 </div>
             </div>
         </div>
+
+        <div class="fcontainer clearfix">
+            <div id="fitem_id_sup_editor" class="fitem fitem_feditor ">
+                <div class="fitemtitle"><label for="id_sup_editor">Superscript only allowed</label></div>
+                <div class="felement feditor">
+                    <div>
+                        <div class="editor_ousupsub"></div>
+                        <textarea style="display: none;" id="id_sup_editor" name="sup_editor[text]"
+                            rows="15" cols="10" spellcheck="true" hidden="hidden"
+                            >&lt;p&gt;Superscript only&lt;/p&gt;</textarea>
+                    </div>
+                    <div><input name="sup_editor[format]" value="1" type="hidden"></div>
+                    <input name="sup_editor[itemid]" value="774037095" type="hidden">
+                    <noscript><div>
+                        <object type="text/html" data="" height="60" width="600" style="border:1px solid #000"></object>
+                    </div></noscript>
+                </div>
+            </div>
+        </div>
+
+        <div class="fcontainer clearfix">
+            <div id="fitem_id_sub_editor" class="fitem fitem_feditor ">
+                <div class="fitemtitle"><label for="id_sub_editor">Subscript only allowed</label></div>
+                <div class="felement feditor">
+                    <div>
+                        <div class="editor_ousupsub"></div>
+                        <textarea style="display: none;" id="id_sub_editor" name="sub_editor[text]"
+                            rows="15" cols="10" spellcheck="true" hidden="hidden"
+                            >&lt;p&gt;Subscript only&lt;/p&gt;</textarea>
+                    </div>
+                    <div><input name="sub_editor[format]" value="1" type="hidden"></div>
+                    <input name="sub_editor[itemid]" value="774037095" type="hidden">
+                    <noscript><div>
+                        <object type="text/html" data="" height="60" width="600" style="border:1px solid #000"></object>
+                    </div></noscript>
+                </div>
+            </div>
+        </div>
 </form>
 
 <script type="text/javascript">
 //<![CDATA[
-        init_ousupsub();
+        init_ousupsub("id_description_editor", {"subscript":true, "superscript":true});
+        init_ousupsub("id_sup_editor", {"superscript":true});
+        init_ousupsub("id_sub_editor", {"subscript":true});
 //]]>
 </script>
 			</div>
@@ -297,17 +370,23 @@ M.host  = window.location.host ;
 M.cfg = {"wwwroot":M.protocol + "//" + M.host + M.fileroot,"sesskey":"","loadingicon":"l",
                 "themerev":-1,"slasharguments":1,"theme":"clean","jsrev":-1,"svgicons":true,"developerdebug":true};
 
-function init_ousupsub() {
+function init_ousupsub(id, params) {
     M.str = '.$lang.'
+    plugins = [];
+    if (params.superscript) {
+        plugins[plugins,length] = {"name":"superscript","params":[]};
+    }
+    if (params.subscript) {
+        plugins[plugins.length] = {"name":"subscript","params":[]};
+    }
     var YUI_config = {
                          base: "resources/yui/3.17.2/"
                       }
     YUI().use("node", function(Y) {
     Y.use("moodle-editor_ousupsub-editor","moodle-ousupsub_subscript-button","moodle-ousupsub_superscript-button",
             function() {YUI.M.editor_ousupsub.createEditor(
-            {"elementid":"id_description_editor","content_css":"","contextid":0,"language":"en",
-                "directionality":"ltr","plugins":[{"group":"style1","plugins":[{"name":"superscript","params":[]},
-                {"name":"subscript","params":[]}]}],"pageHash":""});
+            {"elementid":id,"content_css":"","contextid":0,"language":"en",
+                "directionality":"ltr","plugins":[{"group":"style1","plugins":plugins}],"pageHash":""});
     });
 
     });
