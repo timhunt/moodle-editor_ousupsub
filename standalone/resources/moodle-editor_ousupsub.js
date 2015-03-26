@@ -364,11 +364,11 @@ Y.extend(Editor, Y.Base, {
         this._wrapper.appendChild(content);
 
         // Style the editor. According to the styles.css: 20 is the line-height, 8 is padding-top + padding-bottom.
-        this.editor.setStyle('minHeight', ((20 * this.textarea.getAttribute('rows')) + 8) + 'px');
+        this.editor.setStyle('minHeight', ((10 * this.textarea.getAttribute('rows')) + 8) + 'px');
 
         if (Y.UA.ie === 0) {
             // We set a height here to force the overflow because decent browsers allow the CSS property resize.
-            this.editor.setStyle('height', ((20 * this.textarea.getAttribute('rows')) + 8) + 'px');
+            this.editor.setStyle('height', ((10 * this.textarea.getAttribute('rows')) + 8) + 'px');
         }
 
         // Disable odd inline CSS styles.

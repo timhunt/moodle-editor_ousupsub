@@ -192,7 +192,7 @@ document.body.className += " jsenabled";
                     <div>
                         <div class="editor_ousupsub"></div>
                         <textarea style="display: none;" id="id_description_editor" name="description_editor[text]"
-                            rows="1" cols="80" spellcheck="true" hidden="hidden"
+                            rows="2" cols="80" spellcheck="true" hidden="hidden"
                             >&lt;p&gt;Superscript and Subscript&lt;/p&gt;</textarea>
                     </div>
                     <div><input name="description_editor[format]" value="1" type="hidden"></div>
@@ -211,7 +211,7 @@ document.body.className += " jsenabled";
                     <div>
                         <div class="editor_ousupsub"></div>
                         <textarea style="display: none;" id="id_sup_editor" name="sup_editor[text]"
-                            rows="1" cols="10" spellcheck="true" hidden="hidden"
+                            rows="2" cols="10" spellcheck="true" hidden="hidden"
                             >&lt;p&gt;Superscript only&lt;/p&gt;</textarea>
                     </div>
                     <div><input name="sup_editor[format]" value="1" type="hidden"></div>
@@ -230,7 +230,7 @@ document.body.className += " jsenabled";
                     <div>
                         <div class="editor_ousupsub"></div>
                         <textarea style="display: none;" id="id_sub_editor" name="sub_editor[text]"
-                            rows="1" cols="10" spellcheck="true" hidden="hidden"
+                            rows="2" cols="10" spellcheck="true" hidden="hidden"
                             >&lt;p&gt;Subscript only&lt;/p&gt;</textarea>
                     </div>
                     <div><input name="sub_editor[format]" value="1" type="hidden"></div>
