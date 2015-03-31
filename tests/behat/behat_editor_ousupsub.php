@@ -110,7 +110,6 @@ class behat_editor_ousupsub extends behat_base {
 
         // Get query values for the range
         list($startquery, $startoffset, $endquery, $endoffset) = explode(",", $range);
-//         $js = ' (function() {
            $js = ' function RangySelectTextBehat () {
     var id = \''.$editorid.'\', startquery = '.$startquery.', startoffset = '.$startoffset.',
         endquery  = '.$endquery.', endoffset = '.$endoffset.';
