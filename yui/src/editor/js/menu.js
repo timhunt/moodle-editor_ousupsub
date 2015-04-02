@@ -176,7 +176,8 @@ Y.extend(Menu, M.core.dialogue, {
             index = 0,
             direction = 1,
             checkCount = 0,
-            current = e.target.ancestor('a[role="menuitem"]', true);
+            current = e.target.ancestor('a[role="menuitem"]', true),
+            next;
 
         // Determine which button is currently selected.
         while (!found && index < buttons.size()) {

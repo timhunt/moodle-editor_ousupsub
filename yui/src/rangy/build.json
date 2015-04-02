@@ -5,6 +5,7 @@
       "prependfiles": [
         "rangy-core.js",
         "rangy-cssclassapplier.js",
+        "rangy-selectionsaverestore.js",
         "rangy-serializer.js"
       ],
       "jsfiles": [

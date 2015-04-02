@@ -3942,6 +3942,7 @@ rangy.createModule("CssClassApplier", function(api, module) {
     api.createCssClassApplier = createCssClassApplier;
 });
 
+
 /**
  * @license Serializer module for Rangy.
  * Serializes Ranges and Selections. An example use would be to store a user's selection on a particular page in a
@@ -4207,6 +4208,25 @@ rangy.createModule("Serializer", function(api, module) {
         return null;
     }
 
+    function restoreSelectionFromCookie(win) {
+        win = win || window;
+        var serialized = getSerializedSelectionFromCookie(win.document.cookie);
+        if (serialized) {
+            deserializeSelection(serialized, win.doc)
+        }
+    }
+
+    function saveSelectionCookie(win, props) {
+        win = win || window;
+        props = (typeof props == "object") ? props : {};
+        var expires = props.expires ? ";expires=" + props.expires.toUTCString() : "";
+        var path = props.path ? ";path=" + props.path : "";
+        var domain = props.domain ? ";domain=" + props.domain : "";
+        var secure = props.secure ? ";secure" : "";
+        var serialized = serializeSelection(api.getSelection(win));
+        win.document.cookie = encodeURIComponent(cookieName) + "=" + encodeURIComponent(serialized) + expires + path + domain + secure;
+    }
+
     api.serializePosition = serializePosition;
     api.deserializePosition = deserializePosition;
 
@@ -4217,6 +4237,9 @@ rangy.createModule("Serializer", function(api, module) {
     api.serializeSelection = serializeSelection;
     api.deserializeSelection = deserializeSelection;
     api.canDeserializeSelection = canDeserializeSelection;
+
+    api.restoreSelectionFromCookie = restoreSelectionFromCookie;
+    api.saveSelectionCookie = saveSelectionCookie;
 
     api.getElementChecksum = getElementChecksum;
 });

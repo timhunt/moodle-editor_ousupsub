@@ -121,7 +121,8 @@ EditorSelection.prototype = {
         }
 
         // We can't be active if the editor doesn't have focus at the moment.
-        if (!document.activeElement || Y.one(document.activeElement) !== this.editor) {
+        if (!document.activeElement ||
+                !(this.editor.compareTo(document.activeElement) || this.editor.contains(document.activeElement))) {
             return false;
         }
 
@@ -377,6 +378,7 @@ EditorSelection.prototype = {
      *
      * @method insertContentAtFocusPoint
      * @param {String} html
+     * @return {Node} The YUI Node object added to the DOM.
      */
     insertContentAtFocusPoint: function(html) {
         var selection = rangy.getSelection(),
@@ -389,6 +391,7 @@ EditorSelection.prototype = {
             range.deleteContents();
             range.insertNode(node.getDOMNode());
         }
+        return node;
     }
 
 };
