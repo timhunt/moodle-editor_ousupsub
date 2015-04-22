@@ -328,7 +328,10 @@ body {
             $path = str_replace('manager', $name, $editoryuipath);
             $contents = file_get_contents($path);
             if ($name == 'plugin') {
-                $contents = str_replace("config.icon = 'e/'", "config.icon = 'editor_'", $contents);
+                $to_replace = "_normalizeIcon: function(config) {
+        // Set standalone icon and ignore moodle iconurl.
+        config.icon = 'editor_'  + config.exec";
+                $contents = str_replace("_normalizeIcon: function(config) {", $to_replace, $contents);
             }
             $combinedcontents .= $contents;
         }

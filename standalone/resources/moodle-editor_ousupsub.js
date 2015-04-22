@@ -2813,7 +2813,7 @@ EditorPluginButtons.prototype = {
 
         // The default icon - true for most core plugins.
         if (!config.icon) {
-            config.icon = 'editor_' + config.exec;
+            config.icon = 'e/' + config.exec;
         }
 
         // The default callback.
@@ -3063,6 +3063,8 @@ EditorPluginButtons.prototype = {
      * @private
      */
     _normalizeIcon: function(config) {
+        // Set standalone icon and ignore moodle iconurl.
+        config.icon = 'editor_'  + config.exec
         if (!config.iconurl) {
             // The default icon component.
             if (!config.iconComponent) {
@@ -8215,7 +8217,7 @@ Y.namespace('M.ousupsub_subscript').Button = Y.Base.create('button', Y.M.editor_
                      // Key code for the keyboard shortcut which triggers this button:
                         keys: '73, 189, 40',
 
-                        icon: 'e/subscript',
+                        
                         callback: this._applyTextCommand
                     }
         this.addButton(this._config);
