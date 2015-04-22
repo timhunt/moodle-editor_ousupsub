@@ -10,22 +10,23 @@ body {
     color: #333;
 }
 .editor_ousupsub_content {
-    padding: 4px;
-    resize: vertical;
-    overflow: auto;
+    vertical-align:center;
+    padding: 5px;
 }
 
 .editor_ousupsub_content_wrap,
 .editor_ousupsub + textarea {
     width: 100%;
+    white-space: nowrap;
+    text-overflow: ellipsis;
     padding: 0;
     border: 1px solid #BBB;
     border-top: none;
+    overflow-x: auto;
 }
 
 .editor_ousupsub + textarea {
     border-radius: 0;
-    resize: vertical;
     margin-top: -1px;
 }
 
@@ -63,7 +64,7 @@ div.editor_ousupsub_toolbar button[disabled] {
 }
 
 .editor_ousupsub_toolbar button:hover {
-    background-image: radial-gradient(ellipse at center, #ffffff 60%,#dfdfdf 100%);
+    background-image: radial-gradient(ellipse at center, #ffffff 60%,#D2691E 100%);
     background-color: #ebebeb;
 }
 

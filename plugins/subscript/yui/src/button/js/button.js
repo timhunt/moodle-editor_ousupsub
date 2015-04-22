@@ -39,7 +39,7 @@ Y.namespace('M.ousupsub_subscript').Button = Y.Base.create('button', Y.M.editor_
 //            // Watch the following tags and add/remove highlighting as appropriate:
 //            tags: 'sub'
 //        });
-        
+
         this._config = {
                         exec: 'subscript',
 

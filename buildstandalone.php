@@ -336,11 +336,15 @@ body {
         // Plugin button icons.
         $buttonsuperscriptyuipath = 'plugins/superscript/yui/build/moodle-ousupsub_superscript-button/';
         $buttonsuperscriptyuipath .= 'moodle-ousupsub_superscript-button.js';
-        $combinedcontents .= file_get_contents($buttonsuperscriptyuipath);
+        $superscriptbuttoncontents = file_get_contents($buttonsuperscriptyuipath);
+        $superscriptbuttoncontents = str_replace("icon: 'e/superscript',", "", $superscriptbuttoncontents);
+        $combinedcontents .= $superscriptbuttoncontents;
 
         $buttonsubscriptyuipath = 'plugins/subscript/yui/build/moodle-ousupsub_subscript-button/';
         $buttonsubscriptyuipath .= 'moodle-ousupsub_subscript-button.js';
-        $combinedcontents .= file_get_contents($buttonsubscriptyuipath);
+        $subscriptbuttonscriptcontents = file_get_contents($buttonsubscriptyuipath);
+        $subscriptbuttonscriptcontents = str_replace("icon: 'e/subscript',", "", $subscriptbuttonscriptcontents);
+        $combinedcontents .= $subscriptbuttonscriptcontents;
 
         // Save combined file.
         $combinedpath = self::create_path('root/resources/ousupsubjs');

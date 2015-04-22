@@ -363,12 +363,17 @@ Y.extend(Editor, Y.Base, {
         content.appendChild(this.editor);
         this._wrapper.appendChild(content);
 
-        // Style the editor. According to the styles.css: 20 is the line-height, 8 is padding-top + padding-bottom.
-        this.editor.setStyle('minHeight', ((10 * this.textarea.getAttribute('rows')) + 8) + 'px');
+        // Set the visible width and height.
+        var rows = this.textarea.getAttribute('rows');
+        var cols = this.textarea.getAttribute('cols');
+        var visfactor = 70/100;
+        this.editor.setStyle('minHeight', (visfactor * rows) + 'em');
+        this.editor.setStyle('minWidth', (visfactor * cols) + 'em');
+        this.editor.setStyle('maxHeight', rows + 'em');
+        this.editor.setStyle('maxWidth', cols + 'em');
 
-        if (Y.UA.ie === 0) {
-            // We set a height here to force the overflow because decent browsers allow the CSS property resize.
-            this.editor.setStyle('height', ((10 * this.textarea.getAttribute('rows')) + 8) + 'px');
+        if (Y.UA.ie) {
+            this.editor.setStyle('width', cols + 'em');
         }
 
         // Disable odd inline CSS styles.
@@ -3399,7 +3404,284 @@ EditorPluginButtons.prototype = {
      */
     _getKeyEvent: function() {
         return 'down:';
-    }
+    },
+
+    /**
+     * Add sup/sup related methods.
+     */
+
+    /**
+     * Apply the given document.execCommand and tidy up the editor dom afterwards.
+     *
+     * @method _applyTextCommand
+     * @private
+     * @return void
+     */
+    _applyTextCommand: function() {
+
+        document.execCommand(this._config.exec, false, null);
+        
+        // Find the selection in the surrounding text.
+        var selectedNode = this.get('host').getSelectionParentNode(),
+            selection = this._getCurrentSelection();
+
+        // Prevent resolving superscript when we don't have focus.
+        if (!this.get('host').isActive()) {
+            return false;
+        }
+
+        // Note this is a document fragment and YUI doesn't like them.
+        if (!selectedNode) {
+            return false;
+        }
+
+        // We don't yet have a cursor selection somehow so we can't possible be resolving a string that has selection.
+        if (!selection || selection.length === 0) {
+            return false;
+        }
+
+        this._normaliseTextareaAndGetSelectedNodes();
+
+     // And mark the text area as updated.
+        this.markUpdated();
+    },
+
+    /**
+     * Helper method to get the current selection from the editor
+     *
+     * @method _getCurrentSelection
+     * @private
+     * @return mixed.
+     */
+    _getCurrentSelection: function() {
+        var selection = this.get('host').getSelection();
+        return (!selection || selection.length === 0) ? null: selection[0];
+    },
+
+    /**
+     * Find the text relevant in a particular node selection.
+     *
+     * @method _getWholeText
+     * @private
+     * @return string.
+     */
+    _getWholeText: function(selection) {
+        var wholetext = '';
+        // Matching common ancestor
+        if (selection.startContainer == selection.commonAncestorContainer &&
+                        selection.endContainer == selection.commonAncestorContainer) {
+            wholetext = selection.commonAncestorContainer.wholeText;
+        }
+        return wholetext;
+    },
+
+    /**
+     * Get a normalised array of the currently selected nodes. Chrome splits text nodes
+     * at the end of each selection and also creates empty text nodes. Fix these changes
+     * and provide a standard array of nodes to match the existing selection to.
+     *
+     * @method _normaliseTextareaAndGetSelectedNodes
+     * @private
+     * @return string.
+     */
+    _normaliseTextareaAndGetSelectedNodes: function() {
+        this._removeSpansFromTextarea();
+        var host = this.get('host');
+        var selection = host.getSelection()[0];
+        
+     // Get the editor html from the <p>.
+        var editor_node = host.editor._node.childNodes[0];
+
+        // Normalise the editor html.
+        editor_node.normalize();
+        this.set('host', host);
+        
+        return;
+
+        // Get the html directly inside the editor <p> tag.
+        var nodes = this.get('host').editor._node.childNodes[0].childNodes;
+
+//        this.get('host').getSelectedNodes()._nodes[0] == this.get('host').getSelection()[0].startContainer
+//        this.get('host').getSelectedNodes()._nodes[7] == this.get('host').getSelection()[0].endContainer
+        var offset = 0, startContainerIndex = 0, endContainerIndex = 0, currentContainerIndex = 0, 
+            matchesStartContainer = false, matchesEndContainer = false, depth = 0;
+        for (var i = 0; i < nodes.length; i++) {
+            node = nodes[i];
+            matchesStartContainer = false, matchesEndContainer = false;
+            if (this._matchesSelectedNode(node, selection.startContainer)) {
+                console.log('found start container');
+                matchesStartContainer = true;
+            }
+            if (this._matchesSelectedNode(node, selection.endContainer)) {
+                console.log('found end container');
+                matchesEndContainer = true;
+            }
+
+
+            // Keep track of the index of the new child node;
+            if (node.children || (node.previousSibling && node.previousSibling.children)) {
+                currentContainerIndex++;
+                offset = 0;
+            }
+            if (matchesStartContainer) {
+                selection.startOffset = selection.startOffset + offset;
+                startContainerIndex = currentContainerIndex;
+            }
+            if (matchesEndContainer) {
+                selection.endOffset = selection.endOffset + offset;
+                endContainerIndex = currentContainerIndex;
+            }
+
+            if(node.nodeValue) {
+                offset += node.nodeValue.length;
+            }
+        }
+
+        // Get the editor html from the <p>.
+        var editor_node = host.editor._node.childNodes[0];
+        
+        // Normalise the editor html.
+        editor_node.normalize();
+        this.set('host', host);
+
+        // Update the selection objects.
+        var startNode = this._getTranslatedSelectionNode(editor_node, startContainerIndex);
+        var endNode = this._getTranslatedSelectionNode(editor_node, endContainerIndex);
+//        this._updateSelection(startNode, selection.startOffset, endNode, selection.endOffset);
+        
+        return nodes;
+    },
+
+    /**
+     * Check whether a node matches or contains a given node.
+    *
+    * @method _matchesSelectedNode
+    * @private
+    * @return bool.
+    */
+   _updateSelection: function(startNode, startOffset, endNode, endOffset) {
+       var host = this.get('host');
+       var ranges = host.getSelection();
+       var selection = ranges[0];
+       
+       // Update the selection objects.
+       selection.setStart(startNode, startOffset);
+       selection.setEnd(endNode, endOffset);
+       host.setSelection(ranges);
+       this.set('host', host);
+   },
+
+    /**
+     * Check whether a node matches or contains a given node.
+     *
+     * @method _matchesSelectedNode
+     * @private
+     * @return bool.
+     */
+    _matchesSelectedNode: function(container_node, selected_node) {
+        return container_node == selected_node || container_node.contains(selected_node);
+    },
+
+    /**
+     * Get a normalised array of the currently selected nodes. Chrome splits text nodes
+     * at the end of each selection and also creates empty text nodes. Fix these changes
+     * and provide a standard array of nodes to match the existing selection to.
+     *
+     * @method _normaliseTextareaAndGetSelectedNodes
+     * @private
+     * @return string.
+     */
+    _removeSpansFromTextarea: function() {
+        var host = this.get('host');
+
+        // Get the html directly inside the editor <p> tag.
+        var nodes = this.get('host').editor._node.childNodes[0].childNodes;
+        this._removeNodesByName(host.editor._node.childNodes[0], 'SPAN');
+    },
+
+    /**
+     * Move all elements in container node before the reference node.
+     * If recursive mode is equired then where childnodes exist that are not 
+     * text nodes. Move their children and remove the node existing node.
+     * @method _removeNodesByName
+     * @private
+     * @return void.
+     */
+    _removeNodesByName: function(container_node, name) {
+        var node, remove_node = container_node.nodeName == name;
+        var nodes = new Array();
+        var container_nodes = container_node.childNodes;
+        
+        for (i=0;i<container_nodes.length;i++) {
+            nodes.push(container_nodes.item(i));
+        }
+        for (var i = 0; i < nodes.length; i++) {
+            node = nodes[i];
+            if (node.childNodes && node.childNodes.length) {
+                this._removeNodesByName(node, name);
+                
+            }
+            if (remove_node) {
+                var parentNode = container_node.parentNode;
+                parentNode.insertBefore(node, container_node);
+            }
+            
+        }
+        if (remove_node) {
+            container_node.remove();
+        }
+    },
+    
+    /**
+     * Find the selectable node from a given adjusted node.
+    *
+    * @method _getTranslatedSelectionNode
+    * @private
+    * @return node.
+    */
+    _getTranslatedSelectionNode: function(node, index) {
+        var translatedNode = node.childNodes[index];
+        if(node.childNodes[index].nodeName !== '#text') {
+            translatedNode = node.childNodes[index].childNodes[0];
+        }
+        return this._getSelectionNode(translatedNode);
+    },
+
+    /**
+     * Return a selectable node from the given node.
+    *
+    * @method _getSelectionNode
+    * @private
+    * @return node
+    */
+    _getSelectionNode: function(node) {
+        if(node.nodeName == '#text') {
+            return node;
+        }
+        return node.childNodes[0];
+    },
+
+    /**
+     * Return an array containing the position of every sup and sub start and end tag
+    *
+    * @method _getAdjustedOffset
+    * @private
+    * @return array.
+    */
+   _getAdjustedOffset: function(text, offset, tag_positions) {
+       if(!tag_positions || !tag_positions.length){
+           return offset;
+       }
+       var tag_position = null;
+       for(var x=0; x<tag_positions.length; x++){
+           tag_position = tag_positions[x];
+           if (tag_position.position > offset) {
+               break;
+           }
+           offset += tag_position.tag.length;
+       }
+       return offset;
+   }
 };
 
 
@@ -7809,6 +8091,12 @@ YUI.add('moodle-ousupsub_superscript-button', function (Y, NAME) {
 /**
  * @module     moodle-ousupsub_superscript-button
  */
+var COMPONENTNAME = 'ousupsub_superscript',
+    LOGNAME = 'ousupsub_superscript',
+    DELIMITERS = {
+        START: '<sup>',
+        END: '</sup>'
+    };
 
 /**
  * ousupsub text editor superscript plugin.
@@ -7819,14 +8107,58 @@ YUI.add('moodle-ousupsub_superscript-button', function (Y, NAME) {
  */
 
 Y.namespace('M.ousupsub_superscript').Button = Y.Base.create('button', Y.M.editor_ousupsub.EditorPlugin, [], {
-    initializer: function() {
-        this.addBasicButton({
-            exec: 'superscript',
 
-            // Watch the following tags and add/remove highlighting as appropriate:
-            tags: 'sup'
-        });
-    }
+    /**
+     * The configuration object for the button.
+     *
+     * @property _config
+     * @type Object
+     * @default null
+     * @private
+     */
+    _config: null,
+
+    /**
+     * The selection object returned by the browser.
+     *
+     * @property _currentSelection
+     * @type Range
+     * @default null
+     * @private
+     */
+    _currentSelection: null,
+
+    initializer: function() {
+     // Add the button to the toolbar.
+//        this.addButton({
+//            
+//            callback: this._testSelection
+//        });
+//        this.addBasicButton({
+        
+        this._config = {
+                        exec: 'superscript',
+
+                        // Watch the following tags and add/remove highlighting as appropriate:
+                        tags: 'sup',
+                     // Key code for the keyboard shortcut which triggers this button:
+                        keys: '73, 94, 38',
+
+                        
+                        callback: this._applyTextCommand
+                    }
+        this.addButton(this._config);
+     // We need custom highlight logic for this button.
+//        this.get('host').on('atto:selectionchanged', function() {
+//            if (this._applySuperscript()) {
+//                this.highlightButtons();
+//            } else {
+//                this.unHighlightButtons();
+//            }
+//        }, this);
+    },
+
+    
 });
 
 
@@ -7868,12 +8200,25 @@ YUI.add('moodle-ousupsub_subscript-button', function (Y, NAME) {
 
 Y.namespace('M.ousupsub_subscript').Button = Y.Base.create('button', Y.M.editor_ousupsub.EditorPlugin, [], {
     initializer: function() {
-        this.addBasicButton({
-            exec: 'subscript',
+//        this.addBasicButton({
+//            exec: 'subscript',
+//
+//            // Watch the following tags and add/remove highlighting as appropriate:
+//            tags: 'sub'
+//        });
 
-            // Watch the following tags and add/remove highlighting as appropriate:
-            tags: 'sub'
-        });
+        this._config = {
+                        exec: 'subscript',
+
+                        // Watch the following tags and add/remove highlighting as appropriate:
+                        tags: 'sub',
+                     // Key code for the keyboard shortcut which triggers this button:
+                        keys: '73, 189, 40',
+
+                        icon: 'e/subscript',
+                        callback: this._applyTextCommand
+                    }
+        this.addButton(this._config);
     }
 });
 
