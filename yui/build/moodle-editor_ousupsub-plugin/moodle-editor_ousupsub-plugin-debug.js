@@ -1304,7 +1304,12 @@ EditorPluginButtons.prototype = {
         var node, remove_node = container_node.nodeName.toLowerCase() == name;
         var nodes = new Array();
         var container_nodes = container_node.childNodes;
-        
+
+        // Don't remove the span used by rangy to save and restore the user selection.
+        if (container_node.nodeName.toLowerCase() == 'span'  && container_node.id.indexOf('selectionBoundary_') >-1) {
+            remove_node = false;
+        }
+
         for (i=0;i<container_nodes.length;i++) {
             nodes.push(container_nodes.item(i));
         }
