@@ -74,8 +74,9 @@ Y.namespace('M.ousupsub_superscript').Button = Y.Base.create('button', Y.M.edito
 
                         // Watch the following tags and add/remove highlighting as appropriate:
                         tags: 'sup',
-                     // Key code for the keyboard shortcut which triggers this button:
-                        keys: '73, 94, 38',
+                        // Key code for the keyboard shortcut which triggers this button:
+                        // Key code (up arrow) for the keyboard shortcut which triggers this button:
+                        keys: ['73', '94', '38'],
 
                         icon: 'e/superscript',
                         callback: this._applyTextCommand
@@ -91,7 +92,6 @@ Y.namespace('M.ousupsub_superscript').Button = Y.Base.create('button', Y.M.edito
 //        }, this);
     },
 
-    
 });
 
 

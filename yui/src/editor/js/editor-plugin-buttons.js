@@ -179,6 +179,7 @@ EditorPluginButtons.prototype = {
      * @return {Node} The Node representing the newly created button.
      */
     addButton: function(config) {
+        Y.log('addButton', 'debug', 'addButton');
         var group = this.get('group'),
             pluginname = this.name,
             buttonClass = 'ousupsub_' + pluginname + '_button',
@@ -659,7 +660,7 @@ EditorPluginButtons.prototype = {
         if (Y.Lang.isArray(keyConfig)) {
             // If an Array was specified, call the add function for each element.
             Y.Array.each(keyConfig, function(config) {
-                this._addKeyboardListener(callback, config);
+                this._addKeyboardListener(callback, config, buttonName);
             }, this);
 
             return this;
@@ -678,15 +679,25 @@ EditorPluginButtons.prototype = {
             handler = callback;
 
         } else {
-            modifier = this._getDefaultMetaKey();
-            keys = this._getKeyEvent() + keyConfig + '+' + modifier;
+            modifier = '';//this._getDefaultMetaKey();
+            //keys = this._getKeyEvent() + keyConfig + '+' + modifier;
+            keys = keyConfig;
+            Y.log(keys, 'debug', 'keys 333');
             if (typeof this._primaryKeyboardShortcut[buttonName] === 'undefined') {
                 this._primaryKeyboardShortcut[buttonName] = this._getDefaultMetaKeyDescription(keyConfig);
             }
-
             // Wrap the callback into a handler to check if it uses the specified modifiers, not more.
             handler = Y.bind(function(modifiers, e) {
-                if (this._eventUsesExactKeyModifiers(modifiers, e)) {
+               	if (buttonName === 'ousupsub_superscript_button_superscript') {
+                    if ((keys === '40') || (keys === '95')) {
+                        return;
+                    }
+                    callback.apply(this, [e]);
+                } else if (buttonName === 'ousupsub_subscript_button_subscript') {
+                    Y.log(buttonName, 'debug', 'sub');
+                    if ((keys === '38') || (keys === '94')) {
+                        return;
+                    }
                     callback.apply(this, [e]);
                 }
             }, this, [modifier]);
@@ -887,6 +898,7 @@ EditorPluginButtons.prototype = {
      * @private
      */
     _getDefaultMetaKeyDescription: function(keyCode) {
+        Y.log('_getDefaultMetaKeyDescription', 'debug', '_getDefaultMetaKeyDescription');
         if (Y.UA.os === 'macintosh') {
             return M.util.get_string('editor_command_keycode', 'editor_ousupsub', String.fromCharCode(keyCode).toLowerCase());
         } else {

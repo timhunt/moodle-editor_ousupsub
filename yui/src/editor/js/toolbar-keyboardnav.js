@@ -61,7 +61,30 @@ EditorToolbarNav.prototype = {
                     this._setTabFocus(e.currentTarget);
                 }, '.' + CSS.TOOLBAR + ' button', this));
 
+        this._registerEventHandle(this._wrapper.delegate('key',
+                this._add_to_console,
+                'up:38,40',
+                '.' + CSS.TOOLBAR,
+                this));
+        console.log('setuptool navigation');
+
         return this;
+    },
+
+    _add_to_console : function (e) {
+    	console.log('called _add_to_console');
+    },
+    
+    _supsub_key_press : function (e) {
+        switch (e.type) {
+            case 'sup' :
+                this.writeSupString(e.target);
+                break;
+            case 'sub' :
+                this.writeSubString(e.target);
+                break;
+        }
+        e.preventDefault();
     },
 
     /**
@@ -204,5 +227,4 @@ EditorToolbarNav.prototype = {
         return this;
     }
 };
-
 Y.Base.mix(Y.M.editor_ousupsub.Editor, [EditorToolbarNav]);
