@@ -1153,7 +1153,11 @@ EditorPluginButtons.prototype = {
      * @return string.
      */
     _normaliseTextareaAndGetSelectedNodes: function() {
-        this._removeSpansFromTextarea();
+        // Remove all the span tags added to the editor textarea by the browser.
+        // Get the html directly inside the editor <p> tag and remove span tags from the html inside it.
+        this._removeNodesByName(this.get('host').editor._node.childNodes[0], 'span');
+        this._normaliseTagInTextarea('sup');
+        this._normaliseTagInTextarea('sub');
         var host = this.get('host');
         var selection = host.getSelection()[0];
         
@@ -1162,7 +1166,7 @@ EditorPluginButtons.prototype = {
 
         // Normalise the editor html.
         editor_node.normalize();
-        this.set('host', host);
+//        this.set('host', host);
         
         return;
 
@@ -1251,32 +1255,43 @@ EditorPluginButtons.prototype = {
     },
 
     /**
-     * Get a normalised array of the currently selected nodes. Chrome splits text nodes
-     * at the end of each selection and also creates empty text nodes. Fix these changes
-     * and provide a standard array of nodes to match the existing selection to.
+     * Remove all tags nested inside other tags of the same name. No nesting of 
+     * similar tags e.g. <sup><sup></sup></sup> is not allowed.
      *
-     * @method _normaliseTextareaAndGetSelectedNodes
+     * @method _normaliseTagInTextarea
      * @private
+     * @param string name Name of tag to normalise.
      * @return string.
      */
-    _removeSpansFromTextarea: function() {
-        var host = this.get('host');
+    _normaliseTagInTextarea: function(name) {
+        var nodes = new Array();
+        var container_nodes = this.get('host').editor._node.childNodes[0].querySelectorAll(name);
 
-        // Get the html directly inside the editor <p> tag.
-        var nodes = this.get('host').editor._node.childNodes[0].childNodes;
-        this._removeNodesByName(host.editor._node.childNodes[0], 'SPAN');
+        for (i=0;i<container_nodes.length;i++) {
+            nodes.push(container_nodes.item(i));
+        }
+
+        for (var i = 0; i < nodes.length; i++) {
+            node = nodes[i];
+            if (node.parentNode.nodeName.toLowerCase() == 'p') {
+                continue;
+            }
+            this._removeNodesByName(node, name);
+        }
     },
 
     /**
      * Move all elements in container node before the reference node.
      * If recursive mode is equired then where childnodes exist that are not 
      * text nodes. Move their children and remove the node existing node.
+     * 
+     * Can't use other dom methods like querySelectorAll because they don't return text elements.
      * @method _removeNodesByName
      * @private
      * @return void.
      */
     _removeNodesByName: function(container_node, name) {
-        var node, remove_node = container_node.nodeName == name;
+        var node, remove_node = container_node.nodeName.toLowerCase() == name;
         var nodes = new Array();
         var container_nodes = container_node.childNodes;
         
