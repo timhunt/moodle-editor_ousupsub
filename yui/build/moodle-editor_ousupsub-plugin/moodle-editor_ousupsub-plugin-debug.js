@@ -1157,11 +1157,17 @@ EditorPluginButtons.prototype = {
      * @return string.
      */
     _normaliseTextareaAndGetSelectedNodes: function() {
+        
+     // Save the current selection (cursor position).
+        var selection = window.rangy.saveSelection();
         // Remove all the span tags added to the editor textarea by the browser.
         // Get the html directly inside the editor <p> tag and remove span tags from the html inside it.
         this._removeNodesByName(this.get('host').editor._node.childNodes[0], 'span');
         this._normaliseTagInTextarea('sup');
         this._normaliseTagInTextarea('sub');
+        
+     // Restore the selection (cursor position).
+        window.rangy.restoreSelection(selection);
         var host = this.get('host');
         var selection = host.getSelection()[0];
         
