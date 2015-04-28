@@ -41,7 +41,7 @@ class behat_editor_ousupsub extends behat_base {
      */
     public function i_am_on_integrated_test_page($type) {
         $this->getSession()->visit($this->locate_path(
-                '/lib/editor/ousupsub/tests/fixtures/editortestpage.php&type=' . $type));
+                '/lib/editor/ousupsub/tests/fixtures/editortestpage.php?type=' . $type));
     }
 
     /**

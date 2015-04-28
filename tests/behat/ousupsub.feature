@@ -14,6 +14,7 @@ Feature: ousupsub subscript button
   @javascript
   Scenario: Applying Subscript and Superscript on text
     Given I am on the integrated "both" editor test page
+    And I set the field "Input" to "<p>Superscript and Subscript</p>"
 
     # Apply subscript
     When I select the range "'',16,'',25" in the "Input" ousupsub editor
@@ -28,35 +29,9 @@ Feature: ousupsub subscript button
     # Return superscript to normal
     When I select the range "'sup',0,'sup',11" in the "Input" ousupsub editor
     And I click on "Superscript" "button"
-    Then I should see "<span>Superscript</span> and <sub>Subscript</sub>" in the "Input" ousupsub editor
+    Then I should see "Superscript and <sub>Subscript</sub>" in the "Input" ousupsub editor
 
     # Return subscript to normal
     When I select the range "'sub',0,'sub',9" in the "Input" ousupsub editor
     And I click on "Subscript" "button"
-    Then I should see "<span>Superscript</span> and <span>Subscript</span>" in the "Input" ousupsub editor
-
-    # Re-apply subscript
-    When I select the range "'span:nth-child(2)', 0, 'span:nth-child(2)', 9" in the "Input" ousupsub editor
-    And I click on "Subscript" "button"
-    Then I should see "<span>Superscript</span> and <span><sub>Subscript</sub></span>" in the "Input" ousupsub editor
-
-    # Re-apply superscript
-    When I select the range "'span', 0, 'span', 11" in the "Input" ousupsub editor
-    And I click on "Superscript" "button"
-    Then I should see "<span><sup>Superscript</sup></span> and <span><sub>Subscript</sub></span>" in the "Input" ousupsub editor
-
-    # Return subscript to normal again
-    When I select the range "'span:nth-child(2) > sub', 0, 'span:nth-child(2) > sub', 9" in the "Input" ousupsub editor
-    And I click on "Subscript" "button"
-
-    # Apply subscript again
-    And I click on "Subscript" "button"
-    Then I should see "<span><sup>Superscript</sup></span> and <span><span><sub>Subscript</sub></span></span>" in the "Input" ousupsub editor
-
-    # Return superscript to normal again
-    When I select the range "'span > sup', 0, 'span > sup', 11" in the "Input" ousupsub editor
-    And I click on "Superscript" "button"
-
-    # Apply superscript again
-    And I click on "Superscript" "button"
-    Then I should see "<span><span><sup>Superscript</sup></span></span> and <span><span><sub>Subscript</sub></span></span>" in the "Input" ousupsub editor
+    Then I should see "Superscript and Subscript" in the "Input" ousupsub editor
