@@ -122,7 +122,7 @@ class ousupsub_texteditor_standalone_builder {
 
         // Path to save file to.
         $pathto = self::create_path('root/readme');
-        if ($result = file_put_contents($pathto, $contents, 0)) {
+        if (file_put_contents($pathto, $contents, 0)) {
             self::echo_result("Created readme.txt.");
         }
     }
@@ -230,7 +230,7 @@ document.body.className += " jsenabled";
 	</body>
 </html>';
         $path = self::create_path('root/index');
-        if ($result = file_put_contents($path, $data, 0)) {
+        if (file_put_contents($path, $data, 0)) {
                 self::echo_result("Create index file.");
         }
     }
@@ -239,13 +239,19 @@ document.body.className += " jsenabled";
      * Copy button icons.
      */
     public static function copy_icons() {
+        global $CFG;
         $names = array('subscript', 'superscript');
+        $preferredlocation = $CFG->dirroot . '/theme/ou/pix/editor/';
+        $fallbacklocation = $CFG->dirroot . '/pix/e/';
 
         // OU sup sub icons
         foreach ($names as $name) {
-            $source = self::create_path('pix/'.$name.'.svg');
+            $source = $preferredlocation . $name . '.svg';
+            if (!is_readable($source)) {
+                $source = $fallbacklocation . $name . '.svg';
+            }
             $destination = self::create_path('root/resources/core_editor_'.$name.'.svg');
-            if ($result = copy($source, $destination)) {
+            if (copy($source, $destination)) {
                 self::echo_result("Copy ousupsub ".$name." icon.");
             }
         }
@@ -271,7 +277,7 @@ body {
 
         // Path to save file to.
         $pathto = self::create_path('root/resources/stylecss');
-        if ($result = file_put_contents($pathto, $contents, 0)) {
+        if (file_put_contents($pathto, $contents, 0)) {
             self::echo_result("Created styles.css.");
         }
     }
@@ -316,7 +322,7 @@ body {
 
         // Save combined file.
         $combinedpath = self::create_path('root/resources/ousupsubjs');
-        if ($result = file_put_contents ( $combinedpath, $combinedcontents, 0)) {
+        if (file_put_contents ( $combinedpath, $combinedcontents, 0)) {
             self::echo_result("Copied editor javascript files.");
         }
 
@@ -522,7 +528,7 @@ function RangySelectText (id, startquery, startoffset, endquery, endoffset) {
             $folderpath = '/'.$name;
             self::create_folder($destination.$folderpath);
             $modulepath = $folderpath.'/'.$name.self::$yuisuffix.'.js';
-            if ($result = copy($source.$modulepath, $destination.$modulepath)) {
+            if (copy($source.$modulepath, $destination.$modulepath)) {
                 self::echo_result("Copy YUI module ".$name."icon.");
             }
         }
@@ -532,7 +538,7 @@ function RangySelectText (id, startquery, startoffset, endquery, endoffset) {
             $folderpath = '/'.$name.'/assets/skins/sam';
             self::create_folder($destination.$folderpath);
             $cssmodulepath = $folderpath.'/'.$name.'.css';
-            if ($result = copy($source.$cssmodulepath, $destination.$cssmodulepath)) {
+            if (copy($source.$cssmodulepath, $destination.$cssmodulepath)) {
                 self::echo_result("Copy YUI skin ".$name.".");
             }
         }
@@ -544,7 +550,7 @@ function RangySelectText (id, startquery, startoffset, endquery, endoffset) {
     public static function create_folder($path) {
         global $CFG;
         if (!file_exists($path)) {
-            $result = mkdir($path, $CFG->directorypermissions, true);
+            mkdir($path, $CFG->directorypermissions, true);
         }
 
         return true;
