@@ -17,10 +17,10 @@
 /**
  * ousupsub custom steps definitions.
  *
- * @package    editor_ousupsub
- * @category   test
- * @copyright  2014 Damyon Wiese
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   editor_ousupsub
+ * @category  test
+ * @copyright 2015 The Open University
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 // NOTE: no MOODLE_INTERNAL test here, this file may be required by behat before including /config.php.
@@ -29,12 +29,29 @@ use Behat\Mink\Exception\ExpectationException as ExpectationException;
 /**
  * Steps definitions to deal with the ousupsub text editor
  *
- * @package    editor_ousupsub
- * @category   test
- * @copyright  2014 Damyon Wiese
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @copyright 2015 The Open University
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class behat_editor_ousupsub extends behat_base {
+
+    /**
+     * Opens the stand-alone test page.
+     *
+     * @Given /^I am on the integrated "(sup|sub|both)" editor test page$/
+     */
+    public function i_am_on_integrated_test_page($type) {
+        $this->getSession()->visit($this->locate_path(
+                '/lib/editor/ousupsub/tests/fixtures/editortestpage.php&type=' . $type));
+    }
+
+    /**
+     * Opens the stand-alone test page.
+     *
+     * @Given /^I am on the stand-alone supsub editor test page$/
+     */
+    public function i_am_on_standalone_test_page() {
+        $this->getSession()->visit($this->locate_path('/lib/editor/ousupsub/standalone/index.html'));
+    }
 
     /**
      * Select the text in an ousupsub field.
@@ -137,16 +154,4 @@ class behat_editor_ousupsub extends behat_base {
 }; RangySelectTextBehat ();';
         $this->getSession()->executeScript($js);
     }
-
-    /**
-     * Opens a given path in moodle.
-     *
-     * @Given /^I am on "([^"]*)"$/
-     */
-    public function i_am_on_path($path) {
-        $this->getSession()->visit($this->locate_path('/'.$path));
-    }
-
-
 }
-
