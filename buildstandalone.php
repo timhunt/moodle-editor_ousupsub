@@ -58,6 +58,7 @@ class ousupsub_texteditor_standalone_builder {
         'wwwroot' => '../../..'
     );
     private static $yuisuffix = '-min';
+
     public static function create_standalone () {
         self::delete_standalone();
         self::create_standalone_folder();
@@ -70,23 +71,12 @@ class ousupsub_texteditor_standalone_builder {
 
     public static function delete_standalone () {
         $path = self::create_path('root');
-        if ($result = self::delete_folder($path)) {
+        if (fulldelete($path)) {
             self::echo_result("Emptied standalone folder.");
         }
     }
 
-    public static function delete_folder($dir) {
-        if (!$dir) {
-            return false;
-        }
-        $files = array_diff(scandir($dir), array('.', '..'));
-        foreach ($files as $file) {
-            (is_dir("$dir/$file") && !is_link($dir)) ? self::delete_folder("$dir/$file") : unlink("$dir/$file");
-        }
-        return rmdir($dir);
-    }
-
-    /*
+    /**
      * Create the root folder.
      */
     public static function create_standalone_folder() {
@@ -94,7 +84,7 @@ class ousupsub_texteditor_standalone_builder {
         self::create_folder($path);
     }
 
-    /*
+    /**
      * Create the language string.
      */
     public static function create_language_string() {
@@ -121,28 +111,12 @@ class ousupsub_texteditor_standalone_builder {
         return $output;
     }
 
-    /*
+    /**
      * Create readme file.
      */
     public static function create_readme_file() {
 
-        // Create the readme file. The unconventional indenting is required to produce conventional
-        // indenting in the file produced.
-        $contents = '
-This folder contains the files for the standalone superscript subscript editor.
-index.html contains a demonstration of the of the editor and the required resources are in the resources folder
-
-To view a demonstration of the editor, download the standalone folder to your desktop and open the index.html file
-in a browser.
-
-You will then see a text editor with two buttons. One for superscript and one for subscript
-Features
-The features we aim to deliver are:
-* Display either Sup/sub buttons or both
-* Clean up html output: Only sup/sup html tags and alphanumeric text should be allowed
-*
-
-';
+        // Create the readme file.
         $pathfrom = self::create_path('readmestandalone');
         $contents = file_get_contents($pathfrom);
 
@@ -152,7 +126,8 @@ The features we aim to deliver are:
             self::echo_result("Created readme.txt.");
         }
     }
-    /*
+
+    /**
      * Create the index page.
      */
     public static function create_index_page() {
@@ -260,21 +235,11 @@ document.body.className += " jsenabled";
         }
     }
 
-    /*
+    /**
      * Copy button icons.
      */
     public static function copy_icons() {
         $names = array('subscript', 'superscript');
-
-        // Default moodle icons
-        /*
-        foreach ($names as $name) {
-            $source = self::create_path('../../../pix/e/'.$name.'.svg');
-            $destination = self::create_path('root/resources/core_editor_'.$name.'.svg');
-            if ($result = copy($source, $destination)) {
-                self::echo_result("Copy moodle ".$name." icon.");
-            }
-        }*/
 
         // OU sup sub icons
         foreach ($names as $name) {
@@ -286,7 +251,7 @@ document.body.className += " jsenabled";
         }
     }
 
-    /*
+    /**
      * Create CSS file.
      */
     public static function create_css_file() {
@@ -311,7 +276,7 @@ body {
         }
     }
 
-    /*
+    /**
      * Copy the javascript files required by the editor.
      */
     public static function create_javascript_files() {
@@ -358,7 +323,7 @@ body {
         self::copy_yui_javascript_files();
     }
 
-    /*
+    /**
      * Create the general javascript functions.
      */
     public static function create_javascript_static() {
@@ -532,7 +497,7 @@ function RangySelectText (id, startquery, startoffset, endquery, endoffset) {
         return $data;
     }
 
-    /*
+    /**
      * Copy YUI js files.
      */
     public static function copy_yui_javascript_files() {
@@ -573,7 +538,7 @@ function RangySelectText (id, startquery, startoffset, endquery, endoffset) {
         }
     }
 
-    /*
+    /**
      * Create a folder on the file system give a path.
      */
     public static function create_folder($path) {
@@ -585,7 +550,7 @@ function RangySelectText (id, startquery, startoffset, endquery, endoffset) {
         return true;
     }
 
-    /*
+    /**
      * Create a php folder path given keys from the $paths array.
      */
     public static function create_path ($ids) {
@@ -598,7 +563,7 @@ function RangySelectText (id, startquery, startoffset, endquery, endoffset) {
         return $path;
     }
 
-    /*
+    /**
      * Create a folder on the file system give a path.
      */
     public static function echo_result($msg) {
