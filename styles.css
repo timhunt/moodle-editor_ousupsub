@@ -31,19 +31,19 @@ div.editor_ousupsub_toolbar {
 }
 
 div.editor_ousupsub_toolbar button {
-    padding: 1px 6px;
+    padding: 0;
     background: none;
     border: 0;
     margin: 0;
     border-radius: 0;
     cursor: pointer;
-    line-height: initial;
+    line-height: 20px;
     width: 30px;
     height: 20px;
  }
 
 div.editor_ousupsub_toolbar button + button {
-   border-left: 1px solid #CCC;
+    border-left: 1px solid #CCC;
 }
 body.dir-rtl div.editor_ousupsub_toolbar button + button {
     border-left: 0;
@@ -73,15 +73,15 @@ div.editor_ousupsub_toolbar button::-moz-focus-inner {
 }
 
 div.editor_ousupsub_toolbar button img.icon {
-    padding: 0px;
-    margin: 3px 0;
-    /* The following is dedicated to the beloved IE8, clashing with Bootstrap. God bless you IE. */
-    vertical-align: text-bottom;
-    width: auto;
-    height: 10px;
-}
-body.dir-rtl div.editor_ousupsub_toolbar img.icon {
     padding: 0;
+    margin: 0;
+    /* The following is dedicated to the beloved IE8, clashing with Bootstrap. God bless you IE. */
+    vertical-align: bottom;
+    width: auto;
+    height: 17px;
+}
+div.editor_ousupsub_toolbar button:first-child img.icon {
+    vertical-align: top;
 }
 
 div.editor_ousupsub_toolbar div.ousupsub_group {
