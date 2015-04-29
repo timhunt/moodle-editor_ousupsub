@@ -136,8 +136,7 @@ class ousupsub_texteditor_standalone_builder {
         $yuijspath = self::create_path('resources/yui/yuiversion/yui/yui'.self::$yuisuffix.'.js');
 
         $data = '<!DOCTYPE html>
-<html id="yui_3_17_2_3_1421681604257_368" class="yui3-js-enabled" dir="ltr" xml:lang="en" lang="en">
-    <div class="" id="yui3-css-stamp" style="position: absolute !important; visibility: hidden !important"></div>
+<html class="yui3-js-enabled" dir="ltr" xml:lang="en" lang="en">
     <head>
     <title>OU SupSub demo</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -166,15 +165,10 @@ document.body.className += " jsenabled";
                 <div class="felement feditor">
                     <div>
                         <div class="editor_ousupsub"></div>
-                        <textarea style="display: none;" id="id_description_editor" name="description_editor[text]"
+                        <textarea id="id_description_editor" name="description_editor[text]"
                             rows="2" cols="80" spellcheck="true" hidden="hidden"
-                            >&lt;p&gt;Superscript and Subscript&lt;/p&gt;</textarea>
+                            >Superscript and Subscript</textarea>
                     </div>
-                    <div><input name="description_editor[format]" value="1" type="hidden"></div>
-                    <input name="description_editor[itemid]" value="774037094" type="hidden">
-                    <noscript><div>
-                        <object type="text/html" data="" height="160" width="600" style="border:1px solid #000"></object>
-                    </div></noscript>
                 </div>
             </div>
         </div>
@@ -185,15 +179,10 @@ document.body.className += " jsenabled";
                 <div class="felement feditor">
                     <div>
                         <div class="editor_ousupsub"></div>
-                        <textarea style="display: none;" id="id_sup_editor" name="sup_editor[text]"
-                            rows="2" cols="10" spellcheck="true" hidden="hidden"
-                            >&lt;p&gt;Superscript only&lt;/p&gt;</textarea>
+                        <textarea id="id_sup_editor" name="sup_editor[text]"
+                            rows="2" cols="20" spellcheck="true" hidden="hidden"
+                            >Superscript only</textarea>
                     </div>
-                    <div><input name="sup_editor[format]" value="1" type="hidden"></div>
-                    <input name="sup_editor[itemid]" value="774037095" type="hidden">
-                    <noscript><div>
-                        <object type="text/html" data="" height="60" width="600" style="border:1px solid #000"></object>
-                    </div></noscript>
                 </div>
             </div>
         </div>
@@ -204,15 +193,10 @@ document.body.className += " jsenabled";
                 <div class="felement feditor">
                     <div>
                         <div class="editor_ousupsub"></div>
-                        <textarea style="display: none;" id="id_sub_editor" name="sub_editor[text]"
-                            rows="2" cols="10" spellcheck="true" hidden="hidden"
-                            >&lt;p&gt;Subscript only&lt;/p&gt;</textarea>
+                        <textarea id="id_sub_editor" name="sub_editor[text]"
+                            rows="2" cols="20" spellcheck="true" hidden="hidden"
+                            >Subscript only</textarea>
                     </div>
-                    <div><input name="sub_editor[format]" value="1" type="hidden"></div>
-                    <input name="sub_editor[itemid]" value="774037095" type="hidden">
-                    <noscript><div>
-                        <object type="text/html" data="" height="60" width="600" style="border:1px solid #000"></object>
-                    </div></noscript>
                 </div>
             </div>
         </div>
@@ -334,6 +318,10 @@ body {
      */
     public static function create_javascript_static() {
         $lang = self::create_language_string();
+        $yuidebug = '';
+        if (self::$yuisuffix == '-debug') {
+            $yuidebug = 'debug: true,';
+        }
         // The unconventional indenting is required to produce conventional
         // indenting in the file produced.
         $data = '// Miscellaneous core Javascript functions for Moodle
@@ -346,7 +334,7 @@ M.fileroot = M.pathname.substring(0, M.pathname.lastIndexOf("/"));
 M.protocol = window.location.protocol;
 M.host  = window.location.host ;
 M.cfg = {"wwwroot":M.protocol + "//" + M.host + M.fileroot,"sesskey":"","loadingicon":"l",
-                "themerev":-1,"slasharguments":1,"theme":"clean","jsrev":-1,"svgicons":true,"developerdebug":true};
+                "themerev":-1,"slasharguments":1,"theme":"clean","jsrev":-1,"svgicons":true};
 
 function init_ousupsub(id, params) {
     M.str = '.$lang.'
@@ -358,6 +346,7 @@ function init_ousupsub(id, params) {
         plugins[plugins.length] = {"name":"subscript","params":[]};
     }
     var YUI_config = {
+                         '.$yuidebug.'
                          base: "resources/yui/3.17.2/"
                       }
     YUI().use("node", function(Y) {
@@ -456,8 +445,6 @@ M.util.get_string = function(identifier, component, a) {
                 continue;
             }
             var search = \'{$a->\' + key + \'}\';
-            search = search.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, \'\\$&\');
-            search = new RegExp(search, \'g\');
             stringvalue = stringvalue.replace(search, a[key]);
         }
         return stringvalue;

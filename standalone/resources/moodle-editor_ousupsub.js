@@ -8,7 +8,7 @@ M.fileroot = M.pathname.substring(0, M.pathname.lastIndexOf("/"));
 M.protocol = window.location.protocol;
 M.host  = window.location.host ;
 M.cfg = {"wwwroot":M.protocol + "//" + M.host + M.fileroot,"sesskey":"","loadingicon":"l",
-                "themerev":-1,"slasharguments":1,"theme":"clean","jsrev":-1,"svgicons":true,"developerdebug":true};
+                "themerev":-1,"slasharguments":1,"theme":"clean","jsrev":-1,"svgicons":true};
 
 function init_ousupsub(id, params) {
     M.str = {"moodle":{"error":"Error","morehelp":"More help","changesmadereallygoaway":"You have made changes. Are you sure you want to navigate away and lose your changes?"},"ousupsub_subscript":{"pluginname":"Subscript"},"ousupsub_superscript":{"pluginname":"Superscript"},"editor_ousupsub":{"editor_command_keycode":"Cmd + {$a}","editor_control_keycode":"Ctrl + {$a}","plugin_title_shortcut":"{$a->title} [{$a->shortcut}]","plugin_title_shortcut":"{$a->title} [{$a->shortcut}]"},"error":{"serverconnection":"Error connecting to the server"}}
@@ -20,6 +20,7 @@ function init_ousupsub(id, params) {
         plugins[plugins.length] = {"name":"subscript","params":[]};
     }
     var YUI_config = {
+                         
                          base: "resources/yui/3.17.2/"
                       }
     YUI().use("node", function(Y) {
@@ -118,8 +119,6 @@ M.util.get_string = function(identifier, component, a) {
                 continue;
             }
             var search = '{$a->' + key + '}';
-            search = search.replace(/[-[\]{}()*+?.,\^$|#\s]/g, '\$&');
-            search = new RegExp(search, 'g');
             stringvalue = stringvalue.replace(search, a[key]);
         }
         return stringvalue;
@@ -936,11 +935,16 @@ EditorClean.prototype = {
     getCleanHTML: function() {
         // Clone the editor so that we don't actually modify the real content.
         var editorClone = this.editor.cloneNode(true),
-            html;
+            html, startParagraph = '<p>', endParagraph = '</p>';
 
         // Remove all YUI IDs.
         Y.each(editorClone.all('[id^="yui"]'), function(node) {
             node.removeAttribute('id');
+        });
+        
+        // Remove all selection nodes.
+        Y.each(editorClone.all('[id^="selectionBoundary_"]'), function(node) {
+            node.remove();
         });
 
         editorClone.all('.ousupsub_control').remove(true);
@@ -949,6 +953,12 @@ EditorClean.prototype = {
         // Revert untouched editor contents to an empty string.
         if (html === '<p></p>' || html === '<p><br></p>') {
             return '';
+        }
+
+        // Revert untouched editor contents to an empty string.
+        if (html.indexOf(startParagraph) === 0) {
+            var length = html.length - (startParagraph.length + endParagraph.length);
+            html = html.substr(startParagraph.length, length);
         }
 
         // Remove any and all nasties from source.
@@ -963,6 +973,12 @@ EditorClean.prototype = {
      */
     cleanEditorHTML: function() {
         var startValue = this.editor.get('innerHTML');
+
+        // Add root p tag  if it doesn't exist.
+        if (startValue.indexOf('<p>') !== 0) {
+            startValue = '<p>' + startValue + '</p>';
+        }
+
         this.editor.set('innerHTML', this._cleanHTML(startValue));
 
         return this;
@@ -980,6 +996,9 @@ EditorClean.prototype = {
         // Removing limited things that can break the page or a disallowed, like unclosed comments, style blocks, etc.
 
         var rules = [
+            //Remove empty paragraphs.
+            {regex: /<p[^>]*>(&nbsp;|\s)*<\/p>/gi, replace: ""},
+            
             // Remove any style blocks. Some browsers do not work well with them in a contenteditable.
             // Plus style blocks are not allowed in body html, except with "scoped", which most browsers don't support as of 2015.
             // Reference: "http://stackoverflow.com/questions/1068280/javascript-regex-multiline-flag-doesnt-work"
@@ -3643,8 +3662,11 @@ EditorPluginButtons.prototype = {
      * @return string.
      */
     _normaliseTagInTextarea: function(name) {
-        var nodes = new Array();
-        var container_nodes = this.get('host').editor._node.childNodes[0].querySelectorAll(name);
+        var nodes = new Array(), container = this.get('host').editor._node;
+        if(container.childNodes[0].nodeName.toLowerCase() == "p") {
+            container = container.childNodes[0];
+        }
+        var container_nodes = container.querySelectorAll(name);
 
         for (i=0;i<container_nodes.length;i++) {
             nodes.push(container_nodes.item(i));
@@ -3652,7 +3674,7 @@ EditorPluginButtons.prototype = {
 
         for (var i = 0; i < nodes.length; i++) {
             node = nodes[i];
-            if (node.parentNode.nodeName.toLowerCase() == 'p') {
+            if (node.parentNode == container) {
                 continue;
             }
             this._removeNodesByName(node, name);
