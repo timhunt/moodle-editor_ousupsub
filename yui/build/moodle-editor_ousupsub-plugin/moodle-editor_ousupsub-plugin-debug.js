@@ -397,7 +397,6 @@ EditorPluginButtons.prototype = {
             this.toolbar.setAttribute('aria-activedescendant', button.generateID());
             this.get('host')._tabFocus = button;
         }
-
         // Normalize the callback parameters.
         config = this._normalizeCallback(config);
 
@@ -446,11 +445,28 @@ EditorPluginButtons.prototype = {
             );
         }
 
+        // Prevent carriage return to produce a new line.
+        this._preventEnter();
+
         // Add the button reference to the buttons array for later reference.
         this.buttonNames.push(config.buttonName);
         this.buttons[config.buttonName] = button;
         this.buttonStates[config.buttonName] = this.ENABLED;
         return button;
+    },
+
+   /**
+    * Prevent carriage return to produce a new line.
+    */
+    _preventEnter: function() {
+    	this.editor.on('keydown', function(e) {
+            //Cross browser event object.
+            var evt = window.event || e;
+            if (evt.keyCode === 13) { // Enter.
+                // do nothing.
+            	evt.preventDefault();
+            }
+        }, this);
     },
 
     /**
@@ -1203,11 +1219,9 @@ EditorPluginButtons.prototype = {
             node = nodes[i];
             matchesStartContainer = false, matchesEndContainer = false;
             if (this._matchesSelectedNode(node, selection.startContainer)) {
-                console.log('found start container');
                 matchesStartContainer = true;
             }
             if (this._matchesSelectedNode(node, selection.endContainer)) {
-                console.log('found end container');
                 matchesEndContainer = true;
             }
 
