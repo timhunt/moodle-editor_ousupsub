@@ -34,7 +34,7 @@ define('CLI_SCRIPT', true);
 define('CACHE_DISABLE_ALL', true);
 
 require_once(__DIR__ . '/../../../config.php');
-require_once($CFG->dirroot . '/course/lib.php');
+require_once($CFG->libdir . '/filelib.php');
 
 error_reporting(E_ALL | E_STRICT);
 error_reporting(-1);
@@ -42,6 +42,7 @@ ini_set('display_errors', true);
 ini_set('display_startup_errors', true);
 
 ousupsub_texteditor_standalone_builder::create_standalone();
+
 
 /**
  * Creates demonstration editor.
