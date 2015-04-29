@@ -26,14 +26,6 @@
             "timers"
         ]
     },
-    "moodle-editor_ousupsub-menu": {
-        "requires": [
-            "moodle-core-notification-dialogue",
-            "node",
-            "event",
-            "event-custom"
-        ]
-    },
     "moodle-editor_ousupsub-manager": {
         "requires": [
             "base",

@@ -20,11 +20,6 @@
                 "editor-plugin-dialogue.js"
             ]
         },
-        "moodle-editor_ousupsub-menu": {
-            "jsfiles": [
-                "menu.js"
-            ]
-        },
         "moodle-editor_ousupsub-manager": {
             "jsfiles": [
                 "manager.js"
