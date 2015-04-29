@@ -1127,8 +1127,11 @@ EditorPluginButtons.prototype = {
      * @return string.
      */
     _normaliseTagInTextarea: function(name) {
-        var nodes = new Array();
-        var container_nodes = this.get('host').editor._node.childNodes[0].querySelectorAll(name);
+        var nodes = new Array(), container = this.get('host').editor._node;
+        if(container.childNodes[0].nodeName.toLowerCase() == "p") {
+            container = container.childNodes[0];
+        }
+        var container_nodes = container.querySelectorAll(name);
 
         for (i=0;i<container_nodes.length;i++) {
             nodes.push(container_nodes.item(i));
@@ -1136,7 +1139,7 @@ EditorPluginButtons.prototype = {
 
         for (var i = 0; i < nodes.length; i++) {
             node = nodes[i];
-            if (node.parentNode.nodeName.toLowerCase() == 'p') {
+            if (node.parentNode == container) {
                 continue;
             }
             this._removeNodesByName(node, name);

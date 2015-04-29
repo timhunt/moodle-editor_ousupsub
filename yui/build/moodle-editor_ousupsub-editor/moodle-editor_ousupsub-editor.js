@@ -773,11 +773,16 @@ EditorClean.prototype = {
     getCleanHTML: function() {
         // Clone the editor so that we don't actually modify the real content.
         var editorClone = this.editor.cloneNode(true),
-            html;
+            html, startParagraph = '<p>', endParagraph = '</p>';
 
         // Remove all YUI IDs.
         Y.each(editorClone.all('[id^="yui"]'), function(node) {
             node.removeAttribute('id');
+        });
+        
+        // Remove all selection nodes.
+        Y.each(editorClone.all('[id^="selectionBoundary_"]'), function(node) {
+            node.remove();
         });
 
         editorClone.all('.ousupsub_control').remove(true);
@@ -786,6 +791,12 @@ EditorClean.prototype = {
         // Revert untouched editor contents to an empty string.
         if (html === '<p></p>' || html === '<p><br></p>') {
             return '';
+        }
+
+        // Revert untouched editor contents to an empty string.
+        if (html.indexOf(startParagraph) === 0) {
+            var length = html.length - (startParagraph.length + endParagraph.length);
+            html = html.substr(startParagraph.length, length);
         }
 
         // Remove any and all nasties from source.
@@ -800,6 +811,12 @@ EditorClean.prototype = {
      */
     cleanEditorHTML: function() {
         var startValue = this.editor.get('innerHTML');
+
+        // Add root p tag  if it doesn't exist.
+        if (startValue.indexOf('<p>') !== 0) {
+            startValue = '<p>' + startValue + '</p>';
+        }
+
         this.editor.set('innerHTML', this._cleanHTML(startValue));
 
         return this;
@@ -817,6 +834,9 @@ EditorClean.prototype = {
         // Removing limited things that can break the page or a disallowed, like unclosed comments, style blocks, etc.
 
         var rules = [
+            //Remove empty paragraphs.
+            {regex: /<p[^>]*>(&nbsp;|\s)*<\/p>/gi, replace: ""},
+            
             // Remove any style blocks. Some browsers do not work well with them in a contenteditable.
             // Plus style blocks are not allowed in body html, except with "scoped", which most browsers don't support as of 2015.
             // Reference: "http://stackoverflow.com/questions/1068280/javascript-regex-multiline-flag-doesnt-work"
