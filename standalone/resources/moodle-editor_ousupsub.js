@@ -338,8 +338,10 @@ Y.extend(Editor, Y.Base, {
         this._wrapper = Y.Node.create('<div class="' + CSS.WRAPPER + '" />');
         template = Y.Handlebars.compile('<div id="{{elementid}}editable" ' +
                 'contenteditable="true" ' +
+                'autocapitalize="none" ' +
+                'autocorrect="off" ' +
                 'role="textbox" ' +
-                'spellcheck="true" ' +
+                'spellcheck="false" ' +
                 'aria-live="off" ' +
                 'class="{{CSS.CONTENT}}" ' +
                 '/>');
@@ -364,17 +366,10 @@ Y.extend(Editor, Y.Base, {
         this._wrapper.appendChild(content);
 
         // Set the visible width and height.
-        var rows = this.textarea.getAttribute('rows');
-        var cols = this.textarea.getAttribute('cols');
-        var visfactor = 70/100;
-        this.editor.setStyle('minHeight', (visfactor * rows) + 'em');
-        this.editor.setStyle('minWidth', (visfactor * cols) + 'em');
-        this.editor.setStyle('maxHeight', rows + 'em');
-        this.editor.setStyle('maxWidth', cols + 'em');
-
-        if (Y.UA.ie) {
-            this.editor.setStyle('width', cols + 'em');
-        }
+        var width = (this.textarea.getAttribute('cols') * 6 + 41) + 'px';
+        this.editor.setStyle('width', width);
+        this.editor.setStyle('minWidth', width);
+        this.editor.setStyle('maxWidth', width);
 
         // Disable odd inline CSS styles.
         this.disableCssStyling();
@@ -1355,7 +1350,30 @@ EditorToolbarNav.prototype = {
                     this._setTabFocus(e.currentTarget);
                 }, '.' + CSS.TOOLBAR + ' button', this));
 
+        this._registerEventHandle(this._wrapper.delegate('key',
+                this._add_to_console,
+                'up:38,40',
+                '.' + CSS.TOOLBAR,
+                this));
+        console.log('setuptool navigation');
+
         return this;
+    },
+
+    _add_to_console : function (e) {
+    	console.log('called _add_to_console');
+    },
+    
+    _supsub_key_press : function (e) {
+        switch (e.type) {
+            case 'sup' :
+                this.writeSupString(e.target);
+                break;
+            case 'sub' :
+                this.writeSubString(e.target);
+                break;
+        }
+        e.preventDefault();
     },
 
     /**
@@ -1496,7 +1514,6 @@ EditorToolbarNav.prototype = {
         return this;
     }
 };
-
 Y.Base.mix(Y.M.editor_ousupsub.Editor, [EditorToolbarNav]);
 // This file is part of Moodle - http://moodle.org/
 //
@@ -2728,7 +2745,6 @@ EditorPluginButtons.prototype = {
             this.toolbar.setAttribute('aria-activedescendant', button.generateID());
             this.get('host')._tabFocus = button;
         }
-
         // Normalize the callback parameters.
         config = this._normalizeCallback(config);
 
@@ -2777,11 +2793,28 @@ EditorPluginButtons.prototype = {
             );
         }
 
+        // Prevent carriage return to produce a new line.
+        this._preventEnter();
+
         // Add the button reference to the buttons array for later reference.
         this.buttonNames.push(config.buttonName);
         this.buttons[config.buttonName] = button;
         this.buttonStates[config.buttonName] = this.ENABLED;
         return button;
+    },
+
+   /**
+    * Prevent carriage return to produce a new line.
+    */
+    _preventEnter: function() {
+    	this.editor.on('keydown', function(e) {
+            //Cross browser event object.
+            var evt = window.event || e;
+            if (evt.keyCode === 13) { // Enter.
+                // do nothing.
+            	evt.preventDefault();
+            }
+        }, this);
     },
 
     /**
@@ -3164,7 +3197,7 @@ EditorPluginButtons.prototype = {
         if (Y.Lang.isArray(keyConfig)) {
             // If an Array was specified, call the add function for each element.
             Y.Array.each(keyConfig, function(config) {
-                this._addKeyboardListener(callback, config);
+                this._addKeyboardListener(callback, config, buttonName);
             }, this);
 
             return this;
@@ -3183,15 +3216,23 @@ EditorPluginButtons.prototype = {
             handler = callback;
 
         } else {
-            modifier = this._getDefaultMetaKey();
-            keys = this._getKeyEvent() + keyConfig + '+' + modifier;
+            modifier = '';//this._getDefaultMetaKey();
+            //keys = this._getKeyEvent() + keyConfig + '+' + modifier;
+            keys = keyConfig;
             if (typeof this._primaryKeyboardShortcut[buttonName] === 'undefined') {
                 this._primaryKeyboardShortcut[buttonName] = this._getDefaultMetaKeyDescription(keyConfig);
             }
-
             // Wrap the callback into a handler to check if it uses the specified modifiers, not more.
             handler = Y.bind(function(modifiers, e) {
-                if (this._eventUsesExactKeyModifiers(modifiers, e)) {
+               	if (buttonName === 'ousupsub_superscript_button_superscript') {
+                    if ((keys === '40') || (keys === '95')) {
+                        return;
+                    }
+                    callback.apply(this, [e]);
+                } else if (buttonName === 'ousupsub_subscript_button_subscript') {
+                    if ((keys === '38') || (keys === '94')) {
+                        return;
+                    }
                     callback.apply(this, [e]);
                 }
             }, this, [modifier]);
@@ -3487,7 +3528,17 @@ EditorPluginButtons.prototype = {
      * @return string.
      */
     _normaliseTextareaAndGetSelectedNodes: function() {
-        this._removeSpansFromTextarea();
+        
+     // Save the current selection (cursor position).
+        var selection = window.rangy.saveSelection();
+        // Remove all the span tags added to the editor textarea by the browser.
+        // Get the html directly inside the editor <p> tag and remove span tags from the html inside it.
+        this._removeNodesByName(this.get('host').editor._node.childNodes[0], 'span');
+        this._normaliseTagInTextarea('sup');
+        this._normaliseTagInTextarea('sub');
+        
+     // Restore the selection (cursor position).
+        window.rangy.restoreSelection(selection);
         var host = this.get('host');
         var selection = host.getSelection()[0];
         
@@ -3496,7 +3547,7 @@ EditorPluginButtons.prototype = {
 
         // Normalise the editor html.
         editor_node.normalize();
-        this.set('host', host);
+//        this.set('host', host);
         
         return;
 
@@ -3511,11 +3562,9 @@ EditorPluginButtons.prototype = {
             node = nodes[i];
             matchesStartContainer = false, matchesEndContainer = false;
             if (this._matchesSelectedNode(node, selection.startContainer)) {
-                console.log('found start container');
                 matchesStartContainer = true;
             }
             if (this._matchesSelectedNode(node, selection.endContainer)) {
-                console.log('found end container');
                 matchesEndContainer = true;
             }
 
@@ -3585,35 +3634,51 @@ EditorPluginButtons.prototype = {
     },
 
     /**
-     * Get a normalised array of the currently selected nodes. Chrome splits text nodes
-     * at the end of each selection and also creates empty text nodes. Fix these changes
-     * and provide a standard array of nodes to match the existing selection to.
+     * Remove all tags nested inside other tags of the same name. No nesting of 
+     * similar tags e.g. <sup><sup></sup></sup> is not allowed.
      *
-     * @method _normaliseTextareaAndGetSelectedNodes
+     * @method _normaliseTagInTextarea
      * @private
+     * @param string name Name of tag to normalise.
      * @return string.
      */
-    _removeSpansFromTextarea: function() {
-        var host = this.get('host');
+    _normaliseTagInTextarea: function(name) {
+        var nodes = new Array();
+        var container_nodes = this.get('host').editor._node.childNodes[0].querySelectorAll(name);
 
-        // Get the html directly inside the editor <p> tag.
-        var nodes = this.get('host').editor._node.childNodes[0].childNodes;
-        this._removeNodesByName(host.editor._node.childNodes[0], 'SPAN');
+        for (i=0;i<container_nodes.length;i++) {
+            nodes.push(container_nodes.item(i));
+        }
+
+        for (var i = 0; i < nodes.length; i++) {
+            node = nodes[i];
+            if (node.parentNode.nodeName.toLowerCase() == 'p') {
+                continue;
+            }
+            this._removeNodesByName(node, name);
+        }
     },
 
     /**
      * Move all elements in container node before the reference node.
      * If recursive mode is equired then where childnodes exist that are not 
      * text nodes. Move their children and remove the node existing node.
+     * 
+     * Can't use other dom methods like querySelectorAll because they don't return text elements.
      * @method _removeNodesByName
      * @private
      * @return void.
      */
     _removeNodesByName: function(container_node, name) {
-        var node, remove_node = container_node.nodeName == name;
+        var node, remove_node = container_node.nodeName.toLowerCase() == name;
         var nodes = new Array();
         var container_nodes = container_node.childNodes;
-        
+
+        // Don't remove the span used by rangy to save and restore the user selection.
+        if (container_node.nodeName.toLowerCase() == 'span'  && container_node.id.indexOf('selectionBoundary_') >-1) {
+            remove_node = false;
+        }
+
         for (i=0;i<container_nodes.length;i++) {
             nodes.push(container_nodes.item(i));
         }
@@ -7743,6 +7808,201 @@ rangy.createModule("CssClassApplier", function(api, module) {
     api.createCssClassApplier = createCssClassApplier;
 });
 
+/**
+ * @license Selection save and restore module for Rangy.
+ * Saves and restores user selections using marker invisible elements in the DOM.
+ *
+ * Part of Rangy, a cross-browser JavaScript range and selection library
+ * http://code.google.com/p/rangy/
+ *
+ * Depends on Rangy core.
+ *
+ * Copyright 2012, Tim Down
+ * Licensed under the MIT license.
+ * Version: 1.2.3
+ * Build date: 26 February 2012
+ */
+rangy.createModule("SaveRestore", function(api, module) {
+    api.requireModules( ["DomUtil", "DomRange", "WrappedRange"] );
+
+    var dom = api.dom;
+
+    var markerTextChar = "\ufeff";
+
+    function gEBI(id, doc) {
+        return (doc || document).getElementById(id);
+    }
+
+    function insertRangeBoundaryMarker(range, atStart) {
+        var markerId = "selectionBoundary_" + (+new Date()) + "_" + ("" + Math.random()).slice(2);
+        var markerEl;
+        var doc = dom.getDocument(range.startContainer);
+
+        // Clone the Range and collapse to the appropriate boundary point
+        var boundaryRange = range.cloneRange();
+        boundaryRange.collapse(atStart);
+
+        // Create the marker element containing a single invisible character using DOM methods and insert it
+        markerEl = doc.createElement("span");
+        markerEl.id = markerId;
+        markerEl.style.lineHeight = "0";
+        markerEl.style.display = "none";
+        markerEl.className = "rangySelectionBoundary";
+        markerEl.appendChild(doc.createTextNode(markerTextChar));
+
+        boundaryRange.insertNode(markerEl);
+        boundaryRange.detach();
+        return markerEl;
+    }
+
+    function setRangeBoundary(doc, range, markerId, atStart) {
+        var markerEl = gEBI(markerId, doc);
+        if (markerEl) {
+            range[atStart ? "setStartBefore" : "setEndBefore"](markerEl);
+            markerEl.parentNode.removeChild(markerEl);
+        } else {
+            module.warn("Marker element has been removed. Cannot restore selection.");
+        }
+    }
+
+    function compareRanges(r1, r2) {
+        return r2.compareBoundaryPoints(r1.START_TO_START, r1);
+    }
+
+    function saveSelection(win) {
+        win = win || window;
+        var doc = win.document;
+        if (!api.isSelectionValid(win)) {
+            module.warn("Cannot save selection. This usually happens when the selection is collapsed and the selection document has lost focus.");
+            return;
+        }
+        var sel = api.getSelection(win);
+        var ranges = sel.getAllRanges();
+        var rangeInfos = [], startEl, endEl, range;
+
+        // Order the ranges by position within the DOM, latest first
+        ranges.sort(compareRanges);
+
+        for (var i = 0, len = ranges.length; i < len; ++i) {
+            range = ranges[i];
+            if (range.collapsed) {
+                endEl = insertRangeBoundaryMarker(range, false);
+                rangeInfos.push({
+                    markerId: endEl.id,
+                    collapsed: true
+                });
+            } else {
+                endEl = insertRangeBoundaryMarker(range, false);
+                startEl = insertRangeBoundaryMarker(range, true);
+
+                rangeInfos[i] = {
+                    startMarkerId: startEl.id,
+                    endMarkerId: endEl.id,
+                    collapsed: false,
+                    backwards: ranges.length == 1 && sel.isBackwards()
+                };
+            }
+        }
+
+        // Now that all the markers are in place and DOM manipulation over, adjust each range's boundaries to lie
+        // between its markers
+        for (i = len - 1; i >= 0; --i) {
+            range = ranges[i];
+            if (range.collapsed) {
+                range.collapseBefore(gEBI(rangeInfos[i].markerId, doc));
+            } else {
+                range.setEndBefore(gEBI(rangeInfos[i].endMarkerId, doc));
+                range.setStartAfter(gEBI(rangeInfos[i].startMarkerId, doc));
+            }
+        }
+
+        // Ensure current selection is unaffected
+        sel.setRanges(ranges);
+        return {
+            win: win,
+            doc: doc,
+            rangeInfos: rangeInfos,
+            restored: false
+        };
+    }
+
+    function restoreSelection(savedSelection, preserveDirection) {
+        if (!savedSelection.restored) {
+            var rangeInfos = savedSelection.rangeInfos;
+            var sel = api.getSelection(savedSelection.win);
+            var ranges = [];
+
+            // Ranges are in reverse order of appearance in the DOM. We want to restore earliest first to avoid
+            // normalization affecting previously restored ranges.
+            for (var len = rangeInfos.length, i = len - 1, rangeInfo, range; i >= 0; --i) {
+                rangeInfo = rangeInfos[i];
+                range = api.createRange(savedSelection.doc);
+                if (rangeInfo.collapsed) {
+                    var markerEl = gEBI(rangeInfo.markerId, savedSelection.doc);
+                    if (markerEl) {
+                        markerEl.style.display = "inline";
+                        var previousNode = markerEl.previousSibling;
+
+                        // Workaround for issue 17
+                        if (previousNode && previousNode.nodeType == 3) {
+                            markerEl.parentNode.removeChild(markerEl);
+                            range.collapseToPoint(previousNode, previousNode.length);
+                        } else {
+                            range.collapseBefore(markerEl);
+                            markerEl.parentNode.removeChild(markerEl);
+                        }
+                    } else {
+                        module.warn("Marker element has been removed. Cannot restore selection.");
+                    }
+                } else {
+                    setRangeBoundary(savedSelection.doc, range, rangeInfo.startMarkerId, true);
+                    setRangeBoundary(savedSelection.doc, range, rangeInfo.endMarkerId, false);
+                }
+
+                // Normalizing range boundaries is only viable if the selection contains only one range. For example,
+                // if the selection contained two ranges that were both contained within the same single text node,
+                // both would alter the same text node when restoring and break the other range.
+                if (len == 1) {
+                    range.normalizeBoundaries();
+                }
+                ranges[i] = range;
+            }
+            if (len == 1 && preserveDirection && api.features.selectionHasExtend && rangeInfos[0].backwards) {
+                sel.removeAllRanges();
+                sel.addRange(ranges[0], true);
+            } else {
+                sel.setRanges(ranges);
+            }
+
+            savedSelection.restored = true;
+        }
+    }
+
+    function removeMarkerElement(doc, markerId) {
+        var markerEl = gEBI(markerId, doc);
+        if (markerEl) {
+            markerEl.parentNode.removeChild(markerEl);
+        }
+    }
+
+    function removeMarkers(savedSelection) {
+        var rangeInfos = savedSelection.rangeInfos;
+        for (var i = 0, len = rangeInfos.length, rangeInfo; i < len; ++i) {
+            rangeInfo = rangeInfos[i];
+            if (rangeInfo.collapsed) {
+                removeMarkerElement(savedSelection.doc, rangeInfo.markerId);
+            } else {
+                removeMarkerElement(savedSelection.doc, rangeInfo.startMarkerId);
+                removeMarkerElement(savedSelection.doc, rangeInfo.endMarkerId);
+            }
+        }
+    }
+
+    api.saveSelection = saveSelection;
+    api.restoreSelection = restoreSelection;
+    api.removeMarkerElement = removeMarkerElement;
+    api.removeMarkers = removeMarkers;
+});
 
 /**
  * @license Serializer module for Rangy.
@@ -8143,8 +8403,9 @@ Y.namespace('M.ousupsub_superscript').Button = Y.Base.create('button', Y.M.edito
 
                         // Watch the following tags and add/remove highlighting as appropriate:
                         tags: 'sup',
-                     // Key code for the keyboard shortcut which triggers this button:
-                        keys: '73, 94, 38',
+                        // Key code for the keyboard shortcut which triggers this button:
+                        // Key code (up arrow) for the keyboard shortcut which triggers this button:
+                        keys: ['73', '94', '38'],
 
                         
                         callback: this._applyTextCommand
@@ -8160,7 +8421,6 @@ Y.namespace('M.ousupsub_superscript').Button = Y.Base.create('button', Y.M.edito
 //        }, this);
     },
 
-    
 });
 
 
@@ -8215,7 +8475,8 @@ Y.namespace('M.ousupsub_subscript').Button = Y.Base.create('button', Y.M.editor_
                         // Watch the following tags and add/remove highlighting as appropriate:
                         tags: 'sub',
                      // Key code for the keyboard shortcut which triggers this button:
-                        keys: '73, 189, 40',
+                     // Key codes (down-arrow, underscore) for the keyboard shortcut which triggers this button:
+                        keys: ['73', '189', '40', '95'],
 
                         
                         callback: this._applyTextCommand
