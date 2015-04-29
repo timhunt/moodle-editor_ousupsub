@@ -180,7 +180,7 @@ Y.extend(Editor, Y.Base, {
                 'autocapitalize="none" ' +
                 'autocorrect="off" ' +
                 'role="textbox" ' +
-                'spellcheck="true" ' +
+                'spellcheck="false" ' +
                 'aria-live="off" ' +
                 'class="{{CSS.CONTENT}}" ' +
                 '/>');
