@@ -203,17 +203,10 @@ Y.extend(Editor, Y.Base, {
         this._wrapper.appendChild(content);
 
         // Set the visible width and height.
-        var rows = this.textarea.getAttribute('rows');
-        var cols = this.textarea.getAttribute('cols');
-        var visfactor = 70/100;
-        this.editor.setStyle('minHeight', (visfactor * rows) + 'em');
-        this.editor.setStyle('minWidth', (visfactor * cols) + 'em');
-        this.editor.setStyle('maxHeight', rows + 'em');
-        this.editor.setStyle('maxWidth', cols + 'em');
-
-        if (Y.UA.ie) {
-            this.editor.setStyle('width', cols + 'em');
-        }
+        var width = (this.textarea.getAttribute('cols') * 6 + 41) + 'px';
+        this.editor.setStyle('width', width);
+        this.editor.setStyle('minWidth', width);
+        this.editor.setStyle('maxWidth', width);
 
         // Disable odd inline CSS styles.
         this.disableCssStyling();
