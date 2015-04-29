@@ -177,6 +177,8 @@ Y.extend(Editor, Y.Base, {
         this._wrapper = Y.Node.create('<div class="' + CSS.WRAPPER + '" />');
         template = Y.Handlebars.compile('<div id="{{elementid}}editable" ' +
                 'contenteditable="true" ' +
+                'autocapitalize="none" ' +
+                'autocorrect="off" ' +
                 'role="textbox" ' +
                 'spellcheck="true" ' +
                 'aria-live="off" ' +
