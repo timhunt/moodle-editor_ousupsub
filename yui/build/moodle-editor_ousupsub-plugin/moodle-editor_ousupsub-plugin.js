@@ -1296,12 +1296,14 @@ EditorPluginButtons.prototype = {
         if(container.childNodes[0].nodeName.toLowerCase() == "p") {
             container = container.childNodes[0];
         }
-        var container_nodes = container.querySelectorAll(name);
 
+        // Remove nested nodes.
+        var container_nodes = container.querySelectorAll(name);
         for (i=0;i<container_nodes.length;i++) {
             nodes.push(container_nodes.item(i));
         }
 
+        // Nodelists change as nodes as added and removed. Use an array of nodes instead.
         for (var i = 0; i < nodes.length; i++) {
             node = nodes[i];
             if (node.parentNode == container) {
@@ -1309,6 +1311,50 @@ EditorPluginButtons.prototype = {
             }
             this._removeNodesByName(node, name);
         }
+
+        // Combine Sibling nodes.
+        // Get fresh nodelist.
+        var container_nodes = container.querySelectorAll(name);
+
+        // Get a new node array and fill with the nodelist.
+        nodes = new Array();
+        for (i=0;i<container_nodes.length;i++) {
+            nodes.push(container_nodes.item(i));
+        }
+
+        for (var i = 0; i < nodes.length; i++) {
+            node = nodes[i];
+            // Combine Sibling tags.
+            if (node.previousSibling && node.previousSibling.nodeName.toLowerCase() != name) {
+                continue;
+            }
+            this._mergeNodes(node, node.previousSibling);
+        }
+    },
+    
+    /**
+     * Merge the from and to nodes by moving all elements in from node to the to node.
+     * Append nodes in order to the to node.
+     * 
+     * Can't use other dom methods like querySelectorAll because they don't return text elements.
+     * @method _mergeNodes
+     * @private
+     * @return void.
+     */
+    _mergeNodes: function(from, to) {
+        var nodes = new Array();
+        var merge_nodes = from.childNodes;
+
+        // Node lists reduce in size as nodes are removed. Use an array of nodes instead.
+        for (i=0;i<merge_nodes.length;i++) {
+            nodes.push(merge_nodes.item(i));
+        }
+        
+        for (var i = 0; i < nodes.length; i++) {
+            node = nodes[i];
+            to.appendChild(node);
+        }
+        from.remove();
     },
 
     /**
