@@ -791,6 +791,11 @@ EditorClean.prototype = {
         Y.each(editorClone.all('[id^="selectionBoundary_"]'), function(node) {
             node.remove();
         });
+        
+     // Remove all br nodes.
+        Y.each(editorClone.all('br'), function(node) {
+            node.remove();
+        });
 
         editorClone.all('.ousupsub_control').remove(true);
         html = editorClone.get('innerHTML');
@@ -843,7 +848,7 @@ EditorClean.prototype = {
         var rules = [
             //Remove empty paragraphs.
             {regex: /<p[^>]*>(&nbsp;|\s)*<\/p>/gi, replace: ""},
-            
+
             // Remove any style blocks. Some browsers do not work well with them in a contenteditable.
             // Plus style blocks are not allowed in body html, except with "scoped", which most browsers don't support as of 2015.
             // Reference: "http://stackoverflow.com/questions/1068280/javascript-regex-multiline-flag-doesnt-work"
