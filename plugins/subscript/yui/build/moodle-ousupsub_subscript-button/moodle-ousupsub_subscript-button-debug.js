@@ -35,25 +35,18 @@ YUI.add('moodle-ousupsub_subscript-button', function (Y, NAME) {
 
 Y.namespace('M.ousupsub_subscript').Button = Y.Base.create('button', Y.M.editor_ousupsub.EditorPlugin, [], {
     initializer: function() {
-//        this.addBasicButton({
-//            exec: 'subscript',
-//
-//            // Watch the following tags and add/remove highlighting as appropriate:
-//            tags: 'sub'
-//        });
-
         this._config = {
-                        exec: 'subscript',
+            exec: 'subscript',
 
-                        // Watch the following tags and add/remove highlighting as appropriate:
-                        tags: 'sub',
-                     // Key code for the keyboard shortcut which triggers this button:
-                     // Key codes (down-arrow, underscore) for the keyboard shortcut which triggers this button:
-                        keys: ['73', '189', '40', '95'],
+            // Watch the following tags and add/remove highlighting as appropriate:
+            tags: 'sub',
 
-                        icon: 'e/subscript',
-                        callback: this._applyTextCommand
-                    }
+            // Key codes (down-arrow, underscore) for the keyboard shortcut which triggers this button:
+            keys: ['40', '95'],
+
+            icon: 'e/subscript',
+            callback: this._applyTextCommand
+        }
         this.addButton(this._config);
     }
 });
