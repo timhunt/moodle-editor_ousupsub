@@ -55,10 +55,10 @@ EditorClean.prototype = {
             node.remove();
         });
         
-     // Remove all br nodes.
-        Y.each(editorClone.all('br'), function(node) {
-            node.remove();
-        });
+//     // Remove all br nodes.
+//        Y.each(editorClone.all('br'), function(node) {
+//            node.remove();
+//        });
 
         editorClone.all('.ousupsub_control').remove(true);
         html = editorClone.get('innerHTML');
@@ -122,7 +122,7 @@ EditorClean.prototype = {
 
             // Source: "http://www.codinghorror.com/blog/2006/01/cleaning-words-nasty-html.html"
             // Remove forbidden tags for content, title, meta, style, st0-9, head, font, html, body, link.
-            {regex: /<\/?(?:title|meta|style|st\d|head|font|html|body|link)[^>]*?>/gi, replace: ""}
+            {regex: /<\/?(?:br|title|meta|style|st\d|head|font|html|body|link)[^>]*?>/gi, replace: ""}
         ];
 
         return this._filterContentWithRules(content, rules);
