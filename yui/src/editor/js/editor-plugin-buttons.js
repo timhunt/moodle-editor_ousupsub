@@ -286,7 +286,11 @@ EditorPluginButtons.prototype = {
     * Prevent carriage return to produce a new line.
     */
     _preventEnter: function() {
-    	this.editor.on('keydown', function(e) {
+        var keyEvent = 'keypress';
+        if (Y.UA.webkit || Y.UA.ie) {
+            keyEvent = 'keydown';
+        }
+        this.editor.on(keyEvent, function(e) {
             //Cross browser event object.
             var evt = window.event || e;
             if (evt.keyCode === 13) { // Enter.
