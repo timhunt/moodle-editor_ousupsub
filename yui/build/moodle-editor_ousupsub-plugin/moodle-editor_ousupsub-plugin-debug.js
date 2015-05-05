@@ -1315,7 +1315,7 @@ EditorPluginButtons.prototype = {
             nodes.push(container_nodes.item(i));
         }
 
-        // Nodelists change as nodes as added and removed. Use an array of nodes instead.
+        // Nodelists change as nodes are added and removed. Use an array of nodes instead.
         for (var i = 0; i < nodes.length; i++) {
             node = nodes[i];
             if (node.parentNode == container) {
