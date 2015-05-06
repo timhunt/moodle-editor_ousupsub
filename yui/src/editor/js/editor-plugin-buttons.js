@@ -295,7 +295,7 @@ EditorPluginButtons.prototype = {
             var evt = window.event || e;
             if (evt.keyCode === 13) { // Enter.
                 // do nothing.
-            	evt.preventDefault();
+                evt.preventDefault();
             }
         }, this);
     },
@@ -708,7 +708,7 @@ EditorPluginButtons.prototype = {
             }
             // Wrap the callback into a handler to check if it uses the specified modifiers, not more.
             handler = Y.bind(function(modifiers, e) {
-               	if (buttonName === 'ousupsub_superscript_button_superscript') {
+                if (buttonName === 'ousupsub_superscript_button_superscript') {
                     if ((keys === '40') || (keys === '95')) {
                         return;
                     }
@@ -999,8 +999,8 @@ EditorPluginButtons.prototype = {
     _getWholeText: function(selection) {
         var wholetext = '';
         // Matching common ancestor
-        if (selection.startContainer == selection.commonAncestorContainer &&
-                        selection.endContainer == selection.commonAncestorContainer) {
+        if (selection.startContainer === selection.commonAncestorContainer &&
+                        selection.endContainer === selection.commonAncestorContainer) {
             wholetext = selection.commonAncestorContainer.wholeText;
         }
         return wholetext;
@@ -1028,7 +1028,7 @@ EditorPluginButtons.prototype = {
      // Restore the selection (cursor position).
         window.rangy.restoreSelection(selection);
         var host = this.get('host');
-        var selection = host.getSelection()[0];
+        selection = host.getSelection()[0];
 
      // Get the editor html from the <p>.
         var editor_node = host.editor._node.childNodes[0];

@@ -34,7 +34,6 @@
  * @main
  * @constructor
  * @uses M.editor_ousupsub.EditorPluginButtons
- * @uses M.editor_ousupsub.EditorPluginDialogue
  */
 
 function EditorPlugin() {

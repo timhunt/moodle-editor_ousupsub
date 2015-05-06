@@ -36,7 +36,6 @@ YUI.add('moodle-editor_ousupsub-plugin', function (Y, NAME) {
  * @main
  * @constructor
  * @uses M.editor_ousupsub.EditorPluginButtons
- * @uses M.editor_ousupsub.EditorPluginDialogue
  */
 
 function EditorPlugin() {
@@ -468,7 +467,7 @@ EditorPluginButtons.prototype = {
             var evt = window.event || e;
             if (evt.keyCode === 13) { // Enter.
                 // do nothing.
-            	evt.preventDefault();
+                evt.preventDefault();
             }
         }, this);
     },
@@ -881,7 +880,7 @@ EditorPluginButtons.prototype = {
             }
             // Wrap the callback into a handler to check if it uses the specified modifiers, not more.
             handler = Y.bind(function(modifiers, e) {
-               	if (buttonName === 'ousupsub_superscript_button_superscript') {
+                if (buttonName === 'ousupsub_superscript_button_superscript') {
                     if ((keys === '40') || (keys === '95')) {
                         return;
                     }
@@ -1172,8 +1171,8 @@ EditorPluginButtons.prototype = {
     _getWholeText: function(selection) {
         var wholetext = '';
         // Matching common ancestor
-        if (selection.startContainer == selection.commonAncestorContainer &&
-                        selection.endContainer == selection.commonAncestorContainer) {
+        if (selection.startContainer === selection.commonAncestorContainer &&
+                        selection.endContainer === selection.commonAncestorContainer) {
             wholetext = selection.commonAncestorContainer.wholeText;
         }
         return wholetext;
@@ -1201,7 +1200,7 @@ EditorPluginButtons.prototype = {
      // Restore the selection (cursor position).
         window.rangy.restoreSelection(selection);
         var host = this.get('host');
-        var selection = host.getSelection()[0];
+        selection = host.getSelection()[0];
 
      // Get the editor html from the <p>.
         var editor_node = host.editor._node.childNodes[0];
@@ -1463,114 +1462,6 @@ EditorPluginButtons.prototype = {
 
 
 Y.Base.mix(Y.M.editor_ousupsub.EditorPlugin, [EditorPluginButtons]);
-// This file is part of Moodle - http://moodle.org/
-//
-// Moodle is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// Moodle is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
-
-/**
- * @module moodle-editor_ousupsub-plugin
- * @submodule dialogue
- */
-
-/**
- * Dialogue functions for an ousupsub Plugin.
- *
- * See {{#crossLink "M.editor_ousupsub.EditorPlugin"}}{{/crossLink}} for details.
- *
- * @namespace M.editor_ousupsub
- * @class EditorPluginDialogue
- */
-
-function EditorPluginDialogue() {}
-
-EditorPluginDialogue.ATTRS = {
-};
-
-EditorPluginDialogue.prototype = {
-    /**
-     * A reference to the instantiated dialogue.
-     *
-     * @property _dialogue
-     * @private
-     * @type M.core.Dialogue
-     */
-    _dialogue: null,
-
-    /**
-     * Fetch the instantiated dialogue. If a dialogue has not yet been created, instantiate one.
-     *
-     * <em><b>Note:</b> Only one dialogue is supported through this interface.</em>
-     *
-     * For a full list of options, see documentation for {{#crossLink "M.core.dialogue"}}{{/crossLink}}.
-     *
-     * A sensible default is provided for the focusAfterHide attribute.
-     *
-     * @method getDialogue
-     * @param {object} config
-     * @param {boolean|string|Node} [config.focusAfterHide=undefined] Set the focusAfterHide setting to the
-     * specified Node according to the following values:
-     * <ul>
-     * <li>If true was passed, the first button for this plugin will be used instead; or</li>
-     * <li>If a String was passed, the named button for this plugin will be used instead; or</li>
-     * <li>If a Node was passed, that Node will be used instead.</li>
-     *
-     * This setting is checked each time that getDialogue is called.
-     *
-     * @return {M.core.dialogue}
-     */
-    getDialogue: function(config) {
-        // Config is an optional param - define a default.
-        config = config || {};
-
-        var focusAfterHide = false;
-        if (config.focusAfterHide) {
-            // Remove the focusAfterHide because we may pass it a non-node value.
-            focusAfterHide = config.focusAfterHide;
-            delete config.focusAfterHide;
-        }
-
-        if (!this._dialogue) {
-            // Merge the default configuration with any provided configuration.
-            var dialogueConfig = Y.merge({
-                    visible: false,
-                    modal: true,
-                    close: true,
-                    draggable: true
-                }, config);
-
-            // Instantiate the dialogue.
-            this._dialogue = new M.core.dialogue(dialogueConfig);
-        }
-
-        if (focusAfterHide !== false) {
-            if (focusAfterHide === true) {
-                this._dialogue.set('focusAfterHide', this.buttons[this.buttonNames[0]]);
-
-            } else if (typeof focusAfterHide === 'string') {
-                this._dialogue.set('focusAfterHide', this.buttons[focusAfterHide]);
-
-            } else {
-                this._dialogue.set('focusAfterHide', focusAfterHide);
-
-            }
-        }
-
-        return this._dialogue;
-    }
-};
-
-Y.Base.mix(Y.M.editor_ousupsub.EditorPlugin, [EditorPluginDialogue]);
 
 
 }, '@VERSION@', {"requires": ["node", "base", "escape", "event", "event-outside", "handlebars", "event-custom", "timers"]});

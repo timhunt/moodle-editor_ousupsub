@@ -1221,17 +1221,12 @@ EditorToolbarNav.prototype = {
                 }, '.' + CSS.TOOLBAR + ' button', this));
 
         this._registerEventHandle(this._wrapper.delegate('key',
-                this._add_to_console,
                 'up:38,40',
                 '.' + CSS.TOOLBAR,
                 this));
         console.log('setuptool navigation');
 
         return this;
-    },
-
-    _add_to_console : function (e) {
-        console.log('called _add_to_console');
     },
 
     _supsub_key_press : function (e) {
