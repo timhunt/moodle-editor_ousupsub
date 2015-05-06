@@ -210,9 +210,7 @@ document.body.className += " jsenabled";
         init_ousupsub("id_description_editor", {"subscript":true, "superscript":true});
 //]]>
 </script>
-			</div>
-		</div>
-	</body>
+    </body>
 </html>';
         $path = self::create_path('root/index');
         if (file_put_contents($path, $data, 0)) {
@@ -351,12 +349,14 @@ function init_ousupsub(id, params) {
                          base: "resources/yui/3.17.2/"
                       }
     YUI().use("node", function(Y) {
-    Y.use("moodle-editor_ousupsub-editor","moodle-ousupsub_subscript-button","moodle-ousupsub_superscript-button",
-            function() {YUI.M.editor_ousupsub.createEditor(
-            {"elementid":id,"content_css":"","contextid":0,"language":"en",
-                "directionality":"ltr","plugins":[{"group":"style1","plugins":plugins}],"pageHash":""});
-    });
-
+        Y.use("moodle-editor_ousupsub-editor", "moodle-ousupsub_subscript-button", "moodle-ousupsub_superscript-button",
+            function(Y) {
+                YUI.M.editor_ousupsub.createEditor(
+                    {"elementid":id,"content_css":"","contextid":0,"language":"en",
+                     "directionality":"ltr","plugins":[{"group":"style1","plugins":plugins}],"pageHash":""});
+                window.Y = Y; // Required for Behat.
+            }
+        );
     });
 };
 /**
@@ -378,12 +378,12 @@ M.util.image_url = function(imagename, component) {
 
     var url = M.cfg.wwwroot + \'/resources/\';
     var suffix = \'.svg\'
-	url += component + \'_\' + imagename;
-	if (!M.cfg.svgicons) {
-		url += \'.png\';
-	}
+    url += component + \'_\' + imagename;
+    if (!M.cfg.svgicons) {
+        url += \'.png\';
+    }
 
-	url += suffix;
+    url += suffix;
     return url;
 };
 
@@ -401,19 +401,6 @@ M.util.image_url = function(imagename, component) {
  */
 M.util.get_string = function(identifier, component, a) {
     var stringvalue;
-
-    if (M.cfg.developerdebug) {
-        // creating new instance if YUI is not optimal but it seems to be better way then
-        // require the instance via the function API - note that it is used in rare cases
-        // for debugging only anyway
-        // To ensure we don\'t kill browser performance if hundreds of get_string requests
-        // are made we cache the instance we generate within the M.util namespace.
-        // We don\'t publicly define the variable so that it doesn\'t get abused.
-        if (typeof M.util.get_string_yui_instance === \'undefined\') {
-            M.util.get_string_yui_instance = new YUI({ debug : true });
-        }
-        var Y = M.util.get_string_yui_instance;
-    }
 
     if (!M.str.hasOwnProperty(component) || !M.str[component].hasOwnProperty(identifier)) {
         stringvalue = \'[[\' + identifier + \',\' + component + \']]\';

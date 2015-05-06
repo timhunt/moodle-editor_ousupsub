@@ -24,12 +24,14 @@ function init_ousupsub(id, params) {
                          base: "resources/yui/3.17.2/"
                       }
     YUI().use("node", function(Y) {
-    Y.use("moodle-editor_ousupsub-editor","moodle-ousupsub_subscript-button","moodle-ousupsub_superscript-button",
-            function() {YUI.M.editor_ousupsub.createEditor(
-            {"elementid":id,"content_css":"","contextid":0,"language":"en",
-                "directionality":"ltr","plugins":[{"group":"style1","plugins":plugins}],"pageHash":""});
-    });
-
+        Y.use("moodle-editor_ousupsub-editor", "moodle-ousupsub_subscript-button", "moodle-ousupsub_superscript-button",
+            function(Y) {
+                YUI.M.editor_ousupsub.createEditor(
+                    {"elementid":id,"content_css":"","contextid":0,"language":"en",
+                     "directionality":"ltr","plugins":[{"group":"style1","plugins":plugins}],"pageHash":""});
+                window.Y = Y; // Required for Behat.
+            }
+        );
     });
 };
 /**
@@ -51,12 +53,12 @@ M.util.image_url = function(imagename, component) {
 
     var url = M.cfg.wwwroot + '/resources/';
     var suffix = '.svg'
-	url += component + '_' + imagename;
-	if (!M.cfg.svgicons) {
-		url += '.png';
-	}
+    url += component + '_' + imagename;
+    if (!M.cfg.svgicons) {
+        url += '.png';
+    }
 
-	url += suffix;
+    url += suffix;
     return url;
 };
 
@@ -74,19 +76,6 @@ M.util.image_url = function(imagename, component) {
  */
 M.util.get_string = function(identifier, component, a) {
     var stringvalue;
-
-    if (M.cfg.developerdebug) {
-        // creating new instance if YUI is not optimal but it seems to be better way then
-        // require the instance via the function API - note that it is used in rare cases
-        // for debugging only anyway
-        // To ensure we don't kill browser performance if hundreds of get_string requests
-        // are made we cache the instance we generate within the M.util namespace.
-        // We don't publicly define the variable so that it doesn't get abused.
-        if (typeof M.util.get_string_yui_instance === 'undefined') {
-            M.util.get_string_yui_instance = new YUI({ debug : true });
-        }
-        var Y = M.util.get_string_yui_instance;
-    }
 
     if (!M.str.hasOwnProperty(component) || !M.str[component].hasOwnProperty(identifier)) {
         stringvalue = '[[' + identifier + ',' + component + ']]';
@@ -420,7 +409,7 @@ Y.extend(Editor, Y.Base, {
         // Finally remove this reference from the manager.
         YUI.M.editor_ousupsub.removeEditorReference(this.get('elementid'), this);
     },
-        
+
     /**
      * Focus on the editable area for this editor.
      *
@@ -677,7 +666,7 @@ var LOGNAME_NOTIFY = 'moodle-editor_ousupsub-editor-notify',
 
 function EditorNotify() {}
 
-EditorNotify.ATTRS= {
+EditorNotify.ATTRS = {
 };
 
 EditorNotify.prototype = {
@@ -813,7 +802,7 @@ Y.Base.mix(Y.M.editor_ousupsub.Editor, [EditorNotify]);
 
 function EditorTextArea() {}
 
-EditorTextArea.ATTRS= {
+EditorTextArea.ATTRS = {
 };
 
 EditorTextArea.prototype = {
@@ -921,7 +910,7 @@ Y.Base.mix(Y.M.editor_ousupsub.Editor, [EditorTextArea]);
 
 function EditorClean() {}
 
-EditorClean.ATTRS= {
+EditorClean.ATTRS = {
 };
 
 EditorClean.prototype = {
@@ -941,11 +930,16 @@ EditorClean.prototype = {
         Y.each(editorClone.all('[id^="yui"]'), function(node) {
             node.removeAttribute('id');
         });
-        
+
         // Remove all selection nodes.
         Y.each(editorClone.all('[id^="selectionBoundary_"]'), function(node) {
             node.remove();
         });
+
+//     // Remove all br nodes.
+//        Y.each(editorClone.all('br'), function(node) {
+//            node.remove();
+//        });
 
         editorClone.all('.ousupsub_control').remove(true);
         html = editorClone.get('innerHTML');
@@ -998,7 +992,7 @@ EditorClean.prototype = {
         var rules = [
             //Remove empty paragraphs.
             {regex: /<p[^>]*>(&nbsp;|\s)*<\/p>/gi, replace: ""},
-            
+
             // Remove any style blocks. Some browsers do not work well with them in a contenteditable.
             // Plus style blocks are not allowed in body html, except with "scoped", which most browsers don't support as of 2015.
             // Reference: "http://stackoverflow.com/questions/1068280/javascript-regex-multiline-flag-doesnt-work"
@@ -1009,7 +1003,7 @@ EditorClean.prototype = {
 
             // Source: "http://www.codinghorror.com/blog/2006/01/cleaning-words-nasty-html.html"
             // Remove forbidden tags for content, title, meta, style, st0-9, head, font, html, body, link.
-            {regex: /<\/?(?:title|meta|style|st\d|head|font|html|body|link)[^>]*?>/gi, replace: ""}
+            {regex: /<\/?(?:br|title|meta|style|st\d|head|font|html|body|link)[^>]*?>/gi, replace: ""}
         ];
 
         return this._filterContentWithRules(content, rules);
@@ -1263,7 +1257,7 @@ Y.Base.mix(Y.M.editor_ousupsub.Editor, [EditorClean]);
 
 function EditorToolbar() {}
 
-EditorToolbar.ATTRS= {
+EditorToolbar.ATTRS = {
 };
 
 EditorToolbar.prototype = {
@@ -1337,7 +1331,7 @@ Y.Base.mix(Y.M.editor_ousupsub.Editor, [EditorToolbar]);
 
 function EditorToolbarNav() {}
 
-EditorToolbarNav.ATTRS= {
+EditorToolbarNav.ATTRS = {
 };
 
 EditorToolbarNav.prototype = {
@@ -1370,7 +1364,6 @@ EditorToolbarNav.prototype = {
                 }, '.' + CSS.TOOLBAR + ' button', this));
 
         this._registerEventHandle(this._wrapper.delegate('key',
-                this._add_to_console,
                 'up:38,40',
                 '.' + CSS.TOOLBAR,
                 this));
@@ -1379,10 +1372,6 @@ EditorToolbarNav.prototype = {
         return this;
     },
 
-    _add_to_console : function (e) {
-    	console.log('called _add_to_console');
-    },
-    
     _supsub_key_press : function (e) {
         switch (e.type) {
             case 'sup' :
@@ -1565,7 +1554,7 @@ Y.Base.mix(Y.M.editor_ousupsub.Editor, [EditorToolbarNav]);
 
 function EditorSelection() {}
 
-EditorSelection.ATTRS= {
+EditorSelection.ATTRS = {
 };
 
 EditorSelection.prototype = {
@@ -1964,7 +1953,7 @@ Y.Base.mix(Y.M.editor_ousupsub.Editor, [EditorSelection]);
 
 function EditorStyling() {}
 
-EditorStyling.ATTRS= {
+EditorStyling.ATTRS = {
 };
 
 EditorStyling.prototype = {
@@ -2404,7 +2393,6 @@ YUI.add('moodle-editor_ousupsub-plugin', function (Y, NAME) {
  * @main
  * @constructor
  * @uses M.editor_ousupsub.EditorPluginButtons
- * @uses M.editor_ousupsub.EditorPluginDialogue
  */
 
 function EditorPlugin() {
@@ -2573,7 +2561,7 @@ var MENUTEMPLATE = '' +
             'tabindex="-1" ' +
             'type="button" ' +
             'title="{{title}}">' +
-            '<img class="icon" aria-hidden="true" role="presentation" width="16" height="16" '+
+            '<img class="icon" aria-hidden="true" role="presentation" width="16" height="16" ' +
                 'style="background-color:{{config.menuColor}};" src="{{config.iconurl}}" />' +
             '<img class="icon" aria-hidden="true" role="presentation" width="16" height="16" src="{{image_url "t/expanded" "moodle"}}"/>' +
         '</button>';
@@ -2587,7 +2575,7 @@ var DISABLED = 'disabled',
 
 function EditorPluginButtons() {}
 
-EditorPluginButtons.ATTRS= {
+EditorPluginButtons.ATTRS = {
 };
 
 EditorPluginButtons.prototype = {
@@ -2826,12 +2814,16 @@ EditorPluginButtons.prototype = {
     * Prevent carriage return to produce a new line.
     */
     _preventEnter: function() {
-    	this.editor.on('keydown', function(e) {
+        var keyEvent = 'keypress';
+        if (Y.UA.webkit || Y.UA.ie) {
+            keyEvent = 'keydown';
+        }
+        this.editor.on(keyEvent, function(e) {
             //Cross browser event object.
             var evt = window.event || e;
             if (evt.keyCode === 13) { // Enter.
                 // do nothing.
-            	evt.preventDefault();
+                evt.preventDefault();
             }
         }, this);
     },
@@ -3243,7 +3235,7 @@ EditorPluginButtons.prototype = {
             }
             // Wrap the callback into a handler to check if it uses the specified modifiers, not more.
             handler = Y.bind(function(modifiers, e) {
-               	if (buttonName === 'ousupsub_superscript_button_superscript') {
+                if (buttonName === 'ousupsub_superscript_button_superscript') {
                     if ((keys === '40') || (keys === '95')) {
                         return;
                     }
@@ -3482,7 +3474,7 @@ EditorPluginButtons.prototype = {
     _applyTextCommand: function() {
 
         document.execCommand(this._config.exec, false, null);
-        
+
         // Find the selection in the surrounding text.
         var selectedNode = this.get('host').getSelectionParentNode(),
             selection = this._getCurrentSelection();
@@ -3517,7 +3509,7 @@ EditorPluginButtons.prototype = {
      */
     _getCurrentSelection: function() {
         var selection = this.get('host').getSelection();
-        return (!selection || selection.length === 0) ? null: selection[0];
+        return (!selection || selection.length === 0) ? null : selection[0];
     },
 
     /**
@@ -3530,8 +3522,8 @@ EditorPluginButtons.prototype = {
     _getWholeText: function(selection) {
         var wholetext = '';
         // Matching common ancestor
-        if (selection.startContainer == selection.commonAncestorContainer &&
-                        selection.endContainer == selection.commonAncestorContainer) {
+        if (selection.startContainer === selection.commonAncestorContainer &&
+                        selection.endContainer === selection.commonAncestorContainer) {
             wholetext = selection.commonAncestorContainer.wholeText;
         }
         return wholetext;
@@ -3547,7 +3539,7 @@ EditorPluginButtons.prototype = {
      * @return string.
      */
     _normaliseTextareaAndGetSelectedNodes: function() {
-        
+
      // Save the current selection (cursor position).
         var selection = window.rangy.saveSelection();
         // Remove all the span tags added to the editor textarea by the browser.
@@ -3555,19 +3547,19 @@ EditorPluginButtons.prototype = {
         this._removeNodesByName(this.get('host').editor._node.childNodes[0], 'span');
         this._normaliseTagInTextarea('sup');
         this._normaliseTagInTextarea('sub');
-        
+
      // Restore the selection (cursor position).
         window.rangy.restoreSelection(selection);
         var host = this.get('host');
-        var selection = host.getSelection()[0];
-        
+        selection = host.getSelection()[0];
+
      // Get the editor html from the <p>.
         var editor_node = host.editor._node.childNodes[0];
 
         // Normalise the editor html.
         editor_node.normalize();
 //        this.set('host', host);
-        
+
         return;
 
         // Get the html directly inside the editor <p> tag.
@@ -3575,7 +3567,7 @@ EditorPluginButtons.prototype = {
 
 //        this.get('host').getSelectedNodes()._nodes[0] == this.get('host').getSelection()[0].startContainer
 //        this.get('host').getSelectedNodes()._nodes[7] == this.get('host').getSelection()[0].endContainer
-        var offset = 0, startContainerIndex = 0, endContainerIndex = 0, currentContainerIndex = 0, 
+        var offset = 0, startContainerIndex = 0, endContainerIndex = 0, currentContainerIndex = 0,
             matchesStartContainer = false, matchesEndContainer = false, depth = 0;
         for (var i = 0; i < nodes.length; i++) {
             node = nodes[i];
@@ -3586,7 +3578,6 @@ EditorPluginButtons.prototype = {
             if (this._matchesSelectedNode(node, selection.endContainer)) {
                 matchesEndContainer = true;
             }
-
 
             // Keep track of the index of the new child node;
             if (node.children || (node.previousSibling && node.previousSibling.children)) {
@@ -3609,7 +3600,7 @@ EditorPluginButtons.prototype = {
 
         // Get the editor html from the <p>.
         var editor_node = host.editor._node.childNodes[0];
-        
+
         // Normalise the editor html.
         editor_node.normalize();
         this.set('host', host);
@@ -3618,7 +3609,7 @@ EditorPluginButtons.prototype = {
         var startNode = this._getTranslatedSelectionNode(editor_node, startContainerIndex);
         var endNode = this._getTranslatedSelectionNode(editor_node, endContainerIndex);
 //        this._updateSelection(startNode, selection.startOffset, endNode, selection.endOffset);
-        
+
         return nodes;
     },
 
@@ -3633,7 +3624,7 @@ EditorPluginButtons.prototype = {
        var host = this.get('host');
        var ranges = host.getSelection();
        var selection = ranges[0];
-       
+
        // Update the selection objects.
        selection.setStart(startNode, startOffset);
        selection.setEnd(endNode, endOffset);
@@ -3653,7 +3644,7 @@ EditorPluginButtons.prototype = {
     },
 
     /**
-     * Remove all tags nested inside other tags of the same name. No nesting of 
+     * Remove all tags nested inside other tags of the same name. No nesting of
      * similar tags e.g. <sup><sup></sup></sup> is not allowed.
      *
      * @method _normaliseTagInTextarea
@@ -3666,12 +3657,14 @@ EditorPluginButtons.prototype = {
         if(container.childNodes[0].nodeName.toLowerCase() == "p") {
             container = container.childNodes[0];
         }
-        var container_nodes = container.querySelectorAll(name);
 
-        for (i=0;i<container_nodes.length;i++) {
+        // Remove nested nodes.
+        var container_nodes = container.querySelectorAll(name);
+        for (i = 0; i < container_nodes.length; i++) {
             nodes.push(container_nodes.item(i));
         }
 
+        // Nodelists change as nodes are added and removed. Use an array of nodes instead.
         for (var i = 0; i < nodes.length; i++) {
             node = nodes[i];
             if (node.parentNode == container) {
@@ -3679,13 +3672,57 @@ EditorPluginButtons.prototype = {
             }
             this._removeNodesByName(node, name);
         }
+
+        // Combine Sibling nodes.
+        // Get fresh nodelist.
+        var container_nodes = container.querySelectorAll(name);
+
+        // Get a new node array and fill with the nodelist.
+        nodes = new Array();
+        for (i = 0; i < container_nodes.length; i++) {
+            nodes.push(container_nodes.item(i));
+        }
+
+        for (var i = 0; i < nodes.length; i++) {
+            node = nodes[i];
+            // Combine Sibling tags.
+            if (!node.previousSibling || node.previousSibling.nodeName.toLowerCase() != name) {
+                continue;
+            }
+            this._mergeNodes(node, node.previousSibling);
+        }
+    },
+
+    /**
+     * Merge the from and to nodes by moving all elements in from node to the to node.
+     * Append nodes in order to the to node.
+     *
+     * Can't use other dom methods like querySelectorAll because they don't return text elements.
+     * @method _mergeNodes
+     * @private
+     * @return void.
+     */
+    _mergeNodes: function(from, to) {
+        var nodes = new Array();
+        var merge_nodes = from.childNodes;
+
+        // Node lists reduce in size as nodes are removed. Use an array of nodes instead.
+        for (i = 0; i < merge_nodes.length; i++) {
+            nodes.push(merge_nodes.item(i));
+        }
+
+        for (var i = 0; i < nodes.length; i++) {
+            node = nodes[i];
+            to.appendChild(node);
+        }
+        from.remove();
     },
 
     /**
      * Move all elements in container node before the reference node.
-     * If recursive mode is equired then where childnodes exist that are not 
+     * If recursive mode is equired then where childnodes exist that are not
      * text nodes. Move their children and remove the node existing node.
-     * 
+     *
      * Can't use other dom methods like querySelectorAll because they don't return text elements.
      * @method _removeNodesByName
      * @private
@@ -3697,30 +3734,31 @@ EditorPluginButtons.prototype = {
         var container_nodes = container_node.childNodes;
 
         // Don't remove the span used by rangy to save and restore the user selection.
-        if (container_node.nodeName.toLowerCase() == 'span'  && container_node.id.indexOf('selectionBoundary_') >-1) {
+        if (container_node.nodeName.toLowerCase() == 'span' &&
+                container_node.id.indexOf('selectionBoundary_') > -1) {
             remove_node = false;
         }
 
-        for (i=0;i<container_nodes.length;i++) {
+        for (i = 0; i < container_nodes.length; i++) {
             nodes.push(container_nodes.item(i));
         }
         for (var i = 0; i < nodes.length; i++) {
             node = nodes[i];
             if (node.childNodes && node.childNodes.length) {
                 this._removeNodesByName(node, name);
-                
+
             }
             if (remove_node) {
                 var parentNode = container_node.parentNode;
                 parentNode.insertBefore(node, container_node);
             }
-            
+
         }
         if (remove_node) {
             container_node.remove();
         }
     },
-    
+
     /**
      * Find the selectable node from a given adjusted node.
     *
@@ -3762,7 +3800,7 @@ EditorPluginButtons.prototype = {
            return offset;
        }
        var tag_position = null;
-       for(var x=0; x<tag_positions.length; x++){
+       for(var x = 0; x < tag_positions.length; x++) {
            tag_position = tag_positions[x];
            if (tag_position.position > offset) {
                break;
@@ -3775,114 +3813,6 @@ EditorPluginButtons.prototype = {
 
 
 Y.Base.mix(Y.M.editor_ousupsub.EditorPlugin, [EditorPluginButtons]);
-// This file is part of Moodle - http://moodle.org/
-//
-// Moodle is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// Moodle is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
-
-/**
- * @module moodle-editor_ousupsub-plugin
- * @submodule dialogue
- */
-
-/**
- * Dialogue functions for an ousupsub Plugin.
- *
- * See {{#crossLink "M.editor_ousupsub.EditorPlugin"}}{{/crossLink}} for details.
- *
- * @namespace M.editor_ousupsub
- * @class EditorPluginDialogue
- */
-
-function EditorPluginDialogue() {}
-
-EditorPluginDialogue.ATTRS= {
-};
-
-EditorPluginDialogue.prototype = {
-    /**
-     * A reference to the instantiated dialogue.
-     *
-     * @property _dialogue
-     * @private
-     * @type M.core.Dialogue
-     */
-    _dialogue: null,
-
-    /**
-     * Fetch the instantiated dialogue. If a dialogue has not yet been created, instantiate one.
-     *
-     * <em><b>Note:</b> Only one dialogue is supported through this interface.</em>
-     *
-     * For a full list of options, see documentation for {{#crossLink "M.core.dialogue"}}{{/crossLink}}.
-     *
-     * A sensible default is provided for the focusAfterHide attribute.
-     *
-     * @method getDialogue
-     * @param {object} config
-     * @param {boolean|string|Node} [config.focusAfterHide=undefined] Set the focusAfterHide setting to the
-     * specified Node according to the following values:
-     * <ul>
-     * <li>If true was passed, the first button for this plugin will be used instead; or</li>
-     * <li>If a String was passed, the named button for this plugin will be used instead; or</li>
-     * <li>If a Node was passed, that Node will be used instead.</li>
-     *
-     * This setting is checked each time that getDialogue is called.
-     *
-     * @return {M.core.dialogue}
-     */
-    getDialogue: function(config) {
-        // Config is an optional param - define a default.
-        config = config || {};
-
-        var focusAfterHide = false;
-        if (config.focusAfterHide) {
-            // Remove the focusAfterHide because we may pass it a non-node value.
-            focusAfterHide = config.focusAfterHide;
-            delete config.focusAfterHide;
-        }
-
-        if (!this._dialogue) {
-            // Merge the default configuration with any provided configuration.
-            var dialogueConfig = Y.merge({
-                    visible: false,
-                    modal: true,
-                    close: true,
-                    draggable: true
-                }, config);
-
-            // Instantiate the dialogue.
-            this._dialogue = new M.core.dialogue(dialogueConfig);
-        }
-
-        if (focusAfterHide !== false) {
-            if (focusAfterHide === true) {
-                this._dialogue.set('focusAfterHide', this.buttons[this.buttonNames[0]]);
-
-            } else if (typeof focusAfterHide === 'string') {
-                this._dialogue.set('focusAfterHide', this.buttons[focusAfterHide]);
-
-            } else {
-                this._dialogue.set('focusAfterHide', focusAfterHide);
-
-            }
-        }
-
-        return this._dialogue;
-    }
-};
-
-Y.Base.mix(Y.M.editor_ousupsub.EditorPlugin, [EditorPluginDialogue]);
 
 
 }, '@VERSION@', {"requires": ["node", "base", "escape", "event", "event-outside", "handlebars", "event-custom", "timers"]});
@@ -8366,81 +8296,26 @@ YUI.add('moodle-ousupsub_superscript-button', function (Y, NAME) {
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/*
+/**
  * @package    ousupsub_superscript
  * @copyright  2014 Rosiana Wijaya <rwijaya@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
-/**
- * @module     moodle-ousupsub_superscript-button
- */
-var COMPONENTNAME = 'ousupsub_superscript',
-    LOGNAME = 'ousupsub_superscript',
-    DELIMITERS = {
-        START: '<sup>',
-        END: '</sup>'
-    };
-
-/**
- * ousupsub text editor superscript plugin.
- *
- * @namespace M.ousupsub_superscript
- * @class button
- * @extends M.editor_ousupsub.EditorPlugin
- */
-
 Y.namespace('M.ousupsub_superscript').Button = Y.Base.create('button', Y.M.editor_ousupsub.EditorPlugin, [], {
-
-    /**
-     * The configuration object for the button.
-     *
-     * @property _config
-     * @type Object
-     * @default null
-     * @private
-     */
-    _config: null,
-
-    /**
-     * The selection object returned by the browser.
-     *
-     * @property _currentSelection
-     * @type Range
-     * @default null
-     * @private
-     */
-    _currentSelection: null,
-
     initializer: function() {
-     // Add the button to the toolbar.
-//        this.addButton({
-//            
-//            callback: this._testSelection
-//        });
-//        this.addBasicButton({
-        
         this._config = {
-                        exec: 'superscript',
+            exec: 'superscript',
 
-                        // Watch the following tags and add/remove highlighting as appropriate:
-                        tags: 'sup',
-                        // Key code for the keyboard shortcut which triggers this button:
-                        // Key code (up arrow) for the keyboard shortcut which triggers this button:
-                        keys: ['73', '94', '38'],
+            // Watch the following tags and add/remove highlighting as appropriate:
+            tags: 'sup',
 
-                        
-                        callback: this._applyTextCommand
-                    }
+            // Key code (up arrow) for the keyboard shortcut which triggers this button:
+            keys: ['38', '94'],
+
+            
+            callback: this._applyTextCommand
+        }
         this.addButton(this._config);
-     // We need custom highlight logic for this button.
-//        this.get('host').on('atto:selectionchanged', function() {
-//            if (this._applySuperscript()) {
-//                this.highlightButtons();
-//            } else {
-//                this.unHighlightButtons();
-//            }
-//        }, this);
     },
 
 });
@@ -8484,25 +8359,18 @@ YUI.add('moodle-ousupsub_subscript-button', function (Y, NAME) {
 
 Y.namespace('M.ousupsub_subscript').Button = Y.Base.create('button', Y.M.editor_ousupsub.EditorPlugin, [], {
     initializer: function() {
-//        this.addBasicButton({
-//            exec: 'subscript',
-//
-//            // Watch the following tags and add/remove highlighting as appropriate:
-//            tags: 'sub'
-//        });
-
         this._config = {
-                        exec: 'subscript',
+            exec: 'subscript',
 
-                        // Watch the following tags and add/remove highlighting as appropriate:
-                        tags: 'sub',
-                     // Key code for the keyboard shortcut which triggers this button:
-                     // Key codes (down-arrow, underscore) for the keyboard shortcut which triggers this button:
-                        keys: ['73', '189', '40', '95'],
+            // Watch the following tags and add/remove highlighting as appropriate:
+            tags: 'sub',
 
-                        
-                        callback: this._applyTextCommand
-                    }
+            // Key codes (down-arrow, underscore) for the keyboard shortcut which triggers this button:
+            keys: ['40', '95'],
+
+            
+            callback: this._applyTextCommand
+        }
         this.addButton(this._config);
     }
 });
