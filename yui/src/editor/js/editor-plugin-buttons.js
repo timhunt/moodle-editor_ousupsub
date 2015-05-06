@@ -1164,7 +1164,7 @@ EditorPluginButtons.prototype = {
         for (var i = 0; i < nodes.length; i++) {
             node = nodes[i];
             // Combine Sibling tags.
-            if (node.previousSibling && node.previousSibling.nodeName.toLowerCase() != name) {
+            if (!node.previousSibling || node.previousSibling.nodeName.toLowerCase() != name) {
                 continue;
             }
             this._mergeNodes(node, node.previousSibling);

@@ -1,16 +1,14 @@
 /**
- * 
+ * Simple javascript unit test script for the OUsupsup editor plugin
  */
 
 
 
 var testcases = [
-                 {input: "<span><sup>12</sup></span>", expectedoutput: "<sup>12</sup>"}
-//                {input: "<sup>1</sup><sup>2</sup>", expectedoutput: "<sup>12</sup>"}
-                // Etc. lots more cases.
-                    
+                 {input: "<span><sup>12</sup></span>", expected: "<sup>12</sup>"},
+                 {input: "<sup>12</sup><sup>34</sup>", expected: "<sup>1234</sup>"},
+                 {input: "<sup>12</sup> <sup>34</sup>", expected: "<sup>12 34</sup>"}
 ];
-
 
 function init_ousupsub(id, params) {
     M.str = {"moodle":{"error":"Error","morehelp":"More help","changesmadereallygoaway":"You have made changes. Are you sure you want to navigate away and lose your changes?"},"ousupsub_subscript":{"pluginname":"Subscript"},"ousupsub_superscript":{"pluginname":"Superscript"},"editor_ousupsub":{"editor_command_keycode":"Cmd + {$a}","editor_control_keycode":"Ctrl + {$a}","plugin_title_shortcut":"{$a->title} [{$a->shortcut}]","plugin_title_shortcut":"{$a->title} [{$a->shortcut}]"},"error":{"serverconnection":"Error connecting to the server"}}
@@ -21,17 +19,12 @@ function init_ousupsub(id, params) {
     if (params.subscript) {
         plugins[plugins.length] = {"name":"subscript","params":[]};
     }
-    var YUI_config = {
-                         
-                         base: "resources/yui/3.17.2/"
-                      }
-    YUI().use("node", function(Y) {
-    Y.use("moodle-editor_ousupsub-editor","moodle-ousupsub_subscript-button","moodle-ousupsub_superscript-button",
-            function() {YUI.M.editor_ousupsub.createEditor(
+    
+    var YUI_config = {base: "resources/yui/3.17.2/"}
+    YUI().use("node", "moodle-editor_ousupsub-editor","moodle-ousupsub_subscript-button","moodle-ousupsub_superscript-button", 
+            function(Y) {YUI.M.editor_ousupsub.createEditor(
             {"elementid":id,"content_css":"","contextid":0,"language":"en",
                 "directionality":"ltr","plugins":[{"group":"style1","plugins":plugins}],"pageHash":""});
-    });
-
     });
 };
 
@@ -42,31 +35,43 @@ function get_editor(id) {
     return YUI.M.editor_ousupsub.getEditor(id);
 }
 
-function run_tests() {
-    YUI().use("node", function(Y) {
-        Y.use("moodle-editor_ousupsub-editor","moodle-ousupsub_subscript-button","moodle-ousupsub_superscript-button",
-                        function() {
-            var editor = get_editor("id_description_editor");
-            for(var i=0; i<testcases.length;i++) {
-                run_test(editor, testcases[i]);
-            }
-        });
-                });
+function escape_html(str) {
+    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') ;
+}
+
+function run_tests(Y) {
+    var editor = get_editor("id_description_editor");
+    for(var i=0; i<testcases.length;i++) {
+        run_test(editor, testcases[i]);
+    }
 }
 
 
 function run_test(editor, test) {
-    var inputText = test.input;
-    editor.editor.set('innerHTML', inputText);
-    editor.plugins.subscript._removeNodesByName(editor.editor._node, 'span');
-    var outputText = editor.editor.get('innerHTML'); 
-    
-    // Display output. TODO update the html table instead of using log calls.
-    console.log("input text = "+inputText);
-    console.log("output text = "+outputText);
-    console.log("expect output text = "+test.expectedoutput);
-    var matched = test.expectedoutput == outputText;
-    console.log("matched = "+matched);
+    editor.editor.set('innerHTML', test.input);
+    editor.plugins.subscript._normaliseTextareaAndGetSelectedNodes();
+    test.actual = editor.editor.get('innerHTML'); 
+    test.matched = test.expected == test.actual;
 }
 
-run_tests();
+function update_display(Y) {
+    // Update table.
+    var table = Y.one('#results');
+    for(var i=0; i<testcases.length;i++) {
+        test = testcases[i];
+        var rowText = '<tr>';
+        rowText += '<td>'+escape_html(test.input)+'</td>';
+        rowText += '<td>'+escape_html(test.expected)+'</td>';
+        rowText += '<td>'+escape_html(test.actual)+'</td>';
+        rowText += '<td class="'+(test.matched?'matched':'notmatched')+'">'+test.matched+'</td>';
+        rowText += '</tr>';
+        var row = Y.Node.create(rowText);
+        table.appendChild(row);
+    }
+}
+
+YUI().use("node", "moodle-editor_ousupsub-editor","moodle-ousupsub_subscript-button","moodle-ousupsub_superscript-button",
+                function(Y) { 
+    run_tests();
+    update_display(Y);
+});
