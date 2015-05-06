@@ -15,18 +15,19 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Superscript-subscript editor integration version file.
+ * OU sup-sub admin settings.
  *
  * @package   editor_ousupsub
- * @copyright 2014 The Open University
+ * @copyright 2015 The Open University
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2015050600;
-$plugin->requires  = 2014050800;
-$plugin->cron      = 0;
-$plugin->component = 'editor_ousupsub';
-$plugin->maturity  = MATURITY_BETA;
-$plugin->release   = '0.5 for Moodle 2.8+';
+$settings = new admin_settingpage('editorsettingsousupsub',
+        new lang_string('settings', 'editor_ousupsub'));
+if ($ADMIN->fulltree) {
+    $settings->add(new admin_setting_configcheckbox('editor_ousupsub/use',
+            get_string('useeditor', 'editor_ousupsub'),
+            get_string('useeditor_desc', 'editor_ousupsub'), 0));
+}

@@ -15,19 +15,28 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Strings for component 'editor_ousupsub', language 'en'.
+ * Superscript-subscript editor helper functions.
  *
  * @package    editor_ousupsub
- * @copyright  2013 Damyon Wiese  <damyon@moodle.com>
+ * @copyright  2015 The Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$string['editor_command_keycode'] = 'Cmd + {$a}';
-$string['editor_control_keycode'] = 'Ctrl + {$a}';
-$string['plugin_title_shortcut'] = '{$a->title} [{$a->shortcut}]';
-$string['pluginname'] = 'Superscript/subscript editor';
-$string['subplugintype_ousupsub'] = 'Superscript/subscript editor plugin';
-$string['subplugintype_ousupsub_plural'] = 'Superscript/subscript editor plugins';
-$string['settings'] = 'Superscript/subscript editor settings';
-$string['useeditor'] = 'Use this editor';
-$string['useeditor_desc'] = 'Use this editor in question types, in preference to the old superscript/subscript editor, if both are installed.';
+defined('MOODLE_INTERNAL') || die();
+
+
+/**
+ * Superscript-subscript editor helper functions.
+ *
+ * @copyright  2015 The Open University
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+class editor_ousupsub_helper {
+    public static function get_editor() {
+        if (get_config('editor_ousupsub', 'use')) {
+            return get_texteditor('ousupsub');
+        } else {
+            return get_texteditor('supsub');
+        }
+    }
+}
