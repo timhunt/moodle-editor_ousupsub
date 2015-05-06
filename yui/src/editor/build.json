@@ -4,7 +4,6 @@
         "moodle-editor_ousupsub-editor": {
             "jsfiles": [
                 "editor.js",
-                "notify.js",
                 "textarea.js",
                 "clean.js",
                 "toolbar.js",

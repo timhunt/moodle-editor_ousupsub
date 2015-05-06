@@ -236,9 +236,6 @@ Y.extend(Editor, Y.Base, {
 
         // Setup plugins.
         this.setupPlugins();
-
-        // Preload the icons for the notifications.
-        this.setupNotifications();
     },
 
     destructor: function() {
