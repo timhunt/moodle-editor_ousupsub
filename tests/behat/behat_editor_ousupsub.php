@@ -96,8 +96,9 @@ class behat_editor_ousupsub extends behat_base {
             throw new coding_exception('Field does not support the get_value function.');
         }
 
-        if(!$field->matches($text)) {
-            throw new ExpectationException("The field '".$fieldlocator."' does not contain the text '".$text."'.", $this->getSession());
+        if (!$field->matches($text)) {
+            throw new ExpectationException("The field '" . $fieldlocator .
+                    "' does not contain the text '" . $text . "'.", $this->getSession());
         }
     }
 
@@ -125,7 +126,7 @@ class behat_editor_ousupsub extends behat_base {
 
         $editorid = $this->find_field($fieldlocator)->getAttribute('id');
 
-        // Get query values for the range
+        // Get query values for the range.
         list($startquery, $startoffset, $endquery, $endoffset) = explode(",", $range);
            $js = ' function RangySelectTextBehat () {
     var id = \''.$editorid.'\', startquery = '.$startquery.', startoffset = '.$startoffset.',

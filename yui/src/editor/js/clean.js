@@ -29,7 +29,7 @@
 
 function EditorClean() {}
 
-EditorClean.ATTRS= {
+EditorClean.ATTRS = {
 };
 
 EditorClean.prototype = {
@@ -49,12 +49,12 @@ EditorClean.prototype = {
         Y.each(editorClone.all('[id^="yui"]'), function(node) {
             node.removeAttribute('id');
         });
-        
+
         // Remove all selection nodes.
         Y.each(editorClone.all('[id^="selectionBoundary_"]'), function(node) {
             node.remove();
         });
-        
+
 //     // Remove all br nodes.
 //        Y.each(editorClone.all('br'), function(node) {
 //            node.remove();

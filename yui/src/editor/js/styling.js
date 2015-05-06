@@ -29,7 +29,7 @@
 
 function EditorStyling() {}
 
-EditorStyling.ATTRS= {
+EditorStyling.ATTRS = {
 };
 
 EditorStyling.prototype = {

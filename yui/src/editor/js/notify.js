@@ -29,7 +29,7 @@ var LOGNAME_NOTIFY = 'moodle-editor_ousupsub-editor-notify',
 
 function EditorNotify() {}
 
-EditorNotify.ATTRS= {
+EditorNotify.ATTRS = {
 };
 
 EditorNotify.prototype = {

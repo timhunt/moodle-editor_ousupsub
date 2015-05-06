@@ -258,7 +258,7 @@ Y.extend(Editor, Y.Base, {
         // Finally remove this reference from the manager.
         YUI.M.editor_ousupsub.removeEditorReference(this.get('elementid'), this);
     },
-        
+
     /**
      * Focus on the editable area for this editor.
      *

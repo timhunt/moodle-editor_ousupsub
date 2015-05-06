@@ -29,7 +29,7 @@
 
 function EditorSelection() {}
 
-EditorSelection.ATTRS= {
+EditorSelection.ATTRS = {
 };
 
 EditorSelection.prototype = {

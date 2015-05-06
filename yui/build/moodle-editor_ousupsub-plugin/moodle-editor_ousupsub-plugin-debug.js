@@ -205,7 +205,7 @@ var MENUTEMPLATE = '' +
             'tabindex="-1" ' +
             'type="button" ' +
             'title="{{title}}">' +
-            '<img class="icon" aria-hidden="true" role="presentation" width="16" height="16" '+
+            '<img class="icon" aria-hidden="true" role="presentation" width="16" height="16" ' +
                 'style="background-color:{{config.menuColor}};" src="{{config.iconurl}}" />' +
             '<img class="icon" aria-hidden="true" role="presentation" width="16" height="16" src="{{image_url "t/expanded" "moodle"}}"/>' +
         '</button>';
@@ -219,7 +219,7 @@ var DISABLED = 'disabled',
 
 function EditorPluginButtons() {}
 
-EditorPluginButtons.ATTRS= {
+EditorPluginButtons.ATTRS = {
 };
 
 EditorPluginButtons.prototype = {
@@ -1124,7 +1124,7 @@ EditorPluginButtons.prototype = {
     _applyTextCommand: function() {
 
         document.execCommand(this._config.exec, false, null);
-        
+
         // Find the selection in the surrounding text.
         var selectedNode = this.get('host').getSelectionParentNode(),
             selection = this._getCurrentSelection();
@@ -1159,7 +1159,7 @@ EditorPluginButtons.prototype = {
      */
     _getCurrentSelection: function() {
         var selection = this.get('host').getSelection();
-        return (!selection || selection.length === 0) ? null: selection[0];
+        return (!selection || selection.length === 0) ? null : selection[0];
     },
 
     /**
@@ -1189,7 +1189,7 @@ EditorPluginButtons.prototype = {
      * @return string.
      */
     _normaliseTextareaAndGetSelectedNodes: function() {
-        
+
      // Save the current selection (cursor position).
         var selection = window.rangy.saveSelection();
         // Remove all the span tags added to the editor textarea by the browser.
@@ -1197,19 +1197,19 @@ EditorPluginButtons.prototype = {
         this._removeNodesByName(this.get('host').editor._node.childNodes[0], 'span');
         this._normaliseTagInTextarea('sup');
         this._normaliseTagInTextarea('sub');
-        
+
      // Restore the selection (cursor position).
         window.rangy.restoreSelection(selection);
         var host = this.get('host');
         var selection = host.getSelection()[0];
-        
+
      // Get the editor html from the <p>.
         var editor_node = host.editor._node.childNodes[0];
 
         // Normalise the editor html.
         editor_node.normalize();
 //        this.set('host', host);
-        
+
         return;
 
         // Get the html directly inside the editor <p> tag.
@@ -1217,7 +1217,7 @@ EditorPluginButtons.prototype = {
 
 //        this.get('host').getSelectedNodes()._nodes[0] == this.get('host').getSelection()[0].startContainer
 //        this.get('host').getSelectedNodes()._nodes[7] == this.get('host').getSelection()[0].endContainer
-        var offset = 0, startContainerIndex = 0, endContainerIndex = 0, currentContainerIndex = 0, 
+        var offset = 0, startContainerIndex = 0, endContainerIndex = 0, currentContainerIndex = 0,
             matchesStartContainer = false, matchesEndContainer = false, depth = 0;
         for (var i = 0; i < nodes.length; i++) {
             node = nodes[i];
@@ -1228,7 +1228,6 @@ EditorPluginButtons.prototype = {
             if (this._matchesSelectedNode(node, selection.endContainer)) {
                 matchesEndContainer = true;
             }
-
 
             // Keep track of the index of the new child node;
             if (node.children || (node.previousSibling && node.previousSibling.children)) {
@@ -1251,7 +1250,7 @@ EditorPluginButtons.prototype = {
 
         // Get the editor html from the <p>.
         var editor_node = host.editor._node.childNodes[0];
-        
+
         // Normalise the editor html.
         editor_node.normalize();
         this.set('host', host);
@@ -1260,7 +1259,7 @@ EditorPluginButtons.prototype = {
         var startNode = this._getTranslatedSelectionNode(editor_node, startContainerIndex);
         var endNode = this._getTranslatedSelectionNode(editor_node, endContainerIndex);
 //        this._updateSelection(startNode, selection.startOffset, endNode, selection.endOffset);
-        
+
         return nodes;
     },
 
@@ -1275,7 +1274,7 @@ EditorPluginButtons.prototype = {
        var host = this.get('host');
        var ranges = host.getSelection();
        var selection = ranges[0];
-       
+
        // Update the selection objects.
        selection.setStart(startNode, startOffset);
        selection.setEnd(endNode, endOffset);
@@ -1295,7 +1294,7 @@ EditorPluginButtons.prototype = {
     },
 
     /**
-     * Remove all tags nested inside other tags of the same name. No nesting of 
+     * Remove all tags nested inside other tags of the same name. No nesting of
      * similar tags e.g. <sup><sup></sup></sup> is not allowed.
      *
      * @method _normaliseTagInTextarea
@@ -1311,7 +1310,7 @@ EditorPluginButtons.prototype = {
 
         // Remove nested nodes.
         var container_nodes = container.querySelectorAll(name);
-        for (i=0;i<container_nodes.length;i++) {
+        for (i = 0; i < container_nodes.length; i++) {
             nodes.push(container_nodes.item(i));
         }
 
@@ -1330,7 +1329,7 @@ EditorPluginButtons.prototype = {
 
         // Get a new node array and fill with the nodelist.
         nodes = new Array();
-        for (i=0;i<container_nodes.length;i++) {
+        for (i = 0; i < container_nodes.length; i++) {
             nodes.push(container_nodes.item(i));
         }
 
@@ -1343,11 +1342,11 @@ EditorPluginButtons.prototype = {
             this._mergeNodes(node, node.previousSibling);
         }
     },
-    
+
     /**
      * Merge the from and to nodes by moving all elements in from node to the to node.
      * Append nodes in order to the to node.
-     * 
+     *
      * Can't use other dom methods like querySelectorAll because they don't return text elements.
      * @method _mergeNodes
      * @private
@@ -1358,10 +1357,10 @@ EditorPluginButtons.prototype = {
         var merge_nodes = from.childNodes;
 
         // Node lists reduce in size as nodes are removed. Use an array of nodes instead.
-        for (i=0;i<merge_nodes.length;i++) {
+        for (i = 0; i < merge_nodes.length; i++) {
             nodes.push(merge_nodes.item(i));
         }
-        
+
         for (var i = 0; i < nodes.length; i++) {
             node = nodes[i];
             to.appendChild(node);
@@ -1371,9 +1370,9 @@ EditorPluginButtons.prototype = {
 
     /**
      * Move all elements in container node before the reference node.
-     * If recursive mode is equired then where childnodes exist that are not 
+     * If recursive mode is equired then where childnodes exist that are not
      * text nodes. Move their children and remove the node existing node.
-     * 
+     *
      * Can't use other dom methods like querySelectorAll because they don't return text elements.
      * @method _removeNodesByName
      * @private
@@ -1385,30 +1384,31 @@ EditorPluginButtons.prototype = {
         var container_nodes = container_node.childNodes;
 
         // Don't remove the span used by rangy to save and restore the user selection.
-        if (container_node.nodeName.toLowerCase() == 'span'  && container_node.id.indexOf('selectionBoundary_') >-1) {
+        if (container_node.nodeName.toLowerCase() == 'span' &&
+                container_node.id.indexOf('selectionBoundary_') > -1) {
             remove_node = false;
         }
 
-        for (i=0;i<container_nodes.length;i++) {
+        for (i = 0; i < container_nodes.length; i++) {
             nodes.push(container_nodes.item(i));
         }
         for (var i = 0; i < nodes.length; i++) {
             node = nodes[i];
             if (node.childNodes && node.childNodes.length) {
                 this._removeNodesByName(node, name);
-                
+
             }
             if (remove_node) {
                 var parentNode = container_node.parentNode;
                 parentNode.insertBefore(node, container_node);
             }
-            
+
         }
         if (remove_node) {
             container_node.remove();
         }
     },
-    
+
     /**
      * Find the selectable node from a given adjusted node.
     *
@@ -1450,7 +1450,7 @@ EditorPluginButtons.prototype = {
            return offset;
        }
        var tag_position = null;
-       for(var x=0; x<tag_positions.length; x++){
+       for(var x = 0; x < tag_positions.length; x++) {
            tag_position = tag_positions[x];
            if (tag_position.position > offset) {
                break;
@@ -1494,7 +1494,7 @@ Y.Base.mix(Y.M.editor_ousupsub.EditorPlugin, [EditorPluginButtons]);
 
 function EditorPluginDialogue() {}
 
-EditorPluginDialogue.ATTRS= {
+EditorPluginDialogue.ATTRS = {
 };
 
 EditorPluginDialogue.prototype = {

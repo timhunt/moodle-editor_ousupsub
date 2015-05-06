@@ -258,7 +258,7 @@ Y.extend(Editor, Y.Base, {
         // Finally remove this reference from the manager.
         YUI.M.editor_ousupsub.removeEditorReference(this.get('elementid'), this);
     },
-        
+
     /**
      * Focus on the editable area for this editor.
      *
@@ -515,7 +515,7 @@ var LOGNAME_NOTIFY = 'moodle-editor_ousupsub-editor-notify',
 
 function EditorNotify() {}
 
-EditorNotify.ATTRS= {
+EditorNotify.ATTRS = {
 };
 
 EditorNotify.prototype = {
@@ -651,7 +651,7 @@ Y.Base.mix(Y.M.editor_ousupsub.Editor, [EditorNotify]);
 
 function EditorTextArea() {}
 
-EditorTextArea.ATTRS= {
+EditorTextArea.ATTRS = {
 };
 
 EditorTextArea.prototype = {
@@ -759,7 +759,7 @@ Y.Base.mix(Y.M.editor_ousupsub.Editor, [EditorTextArea]);
 
 function EditorClean() {}
 
-EditorClean.ATTRS= {
+EditorClean.ATTRS = {
 };
 
 EditorClean.prototype = {
@@ -779,12 +779,12 @@ EditorClean.prototype = {
         Y.each(editorClone.all('[id^="yui"]'), function(node) {
             node.removeAttribute('id');
         });
-        
+
         // Remove all selection nodes.
         Y.each(editorClone.all('[id^="selectionBoundary_"]'), function(node) {
             node.remove();
         });
-        
+
 //     // Remove all br nodes.
 //        Y.each(editorClone.all('br'), function(node) {
 //            node.remove();
@@ -1106,7 +1106,7 @@ Y.Base.mix(Y.M.editor_ousupsub.Editor, [EditorClean]);
 
 function EditorToolbar() {}
 
-EditorToolbar.ATTRS= {
+EditorToolbar.ATTRS = {
 };
 
 EditorToolbar.prototype = {
@@ -1180,7 +1180,7 @@ Y.Base.mix(Y.M.editor_ousupsub.Editor, [EditorToolbar]);
 
 function EditorToolbarNav() {}
 
-EditorToolbarNav.ATTRS= {
+EditorToolbarNav.ATTRS = {
 };
 
 EditorToolbarNav.prototype = {
@@ -1223,9 +1223,9 @@ EditorToolbarNav.prototype = {
     },
 
     _add_to_console : function (e) {
-    	console.log('called _add_to_console');
+        console.log('called _add_to_console');
     },
-    
+
     _supsub_key_press : function (e) {
         switch (e.type) {
             case 'sup' :
@@ -1408,7 +1408,7 @@ Y.Base.mix(Y.M.editor_ousupsub.Editor, [EditorToolbarNav]);
 
 function EditorSelection() {}
 
-EditorSelection.ATTRS= {
+EditorSelection.ATTRS = {
 };
 
 EditorSelection.prototype = {
@@ -1807,7 +1807,7 @@ Y.Base.mix(Y.M.editor_ousupsub.Editor, [EditorSelection]);
 
 function EditorStyling() {}
 
-EditorStyling.ATTRS= {
+EditorStyling.ATTRS = {
 };
 
 EditorStyling.prototype = {

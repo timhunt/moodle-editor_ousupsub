@@ -121,7 +121,7 @@ class ousupsub_texteditor extends texteditor {
             $groupplugins = array();
             foreach ($plugins as $plugin) {
                 // Do not die on missing plugin.
-                if (!core_component::get_component_directory('ousupsub_' . $plugin))  {
+                if (!core_component::get_component_directory('ousupsub_' . $plugin)) {
                     continue;
                 }
 
@@ -140,7 +140,7 @@ class ousupsub_texteditor extends texteditor {
                 $PAGE->requires->string_for_js('pluginname', 'ousupsub_' . $plugin);
                 $groupplugins[] = $jsplugin;
             }
-            $jsplugins[] = array('group'=>$group, 'plugins'=>$groupplugins);
+            $jsplugins[] = array('group' => $group, 'plugins' => $groupplugins);
         }
 
         $PAGE->requires->strings_for_js(array(

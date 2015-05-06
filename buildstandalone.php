@@ -229,7 +229,7 @@ document.body.className += " jsenabled";
         $preferredlocation = $CFG->dirroot . '/theme/ou/pix/editor/';
         $fallbacklocation = $CFG->dirroot . '/pix/e/';
 
-        // OU sup sub icons
+        // OU sup sub icons.
         foreach ($names as $name) {
             $source = $preferredlocation . $name . '.svg';
             if (!is_readable($source)) {
@@ -284,10 +284,10 @@ body {
             $path = str_replace('manager', $name, $editoryuipath);
             $contents = file_get_contents($path);
             if ($name == 'plugin') {
-                $to_replace = "_normalizeIcon: function(config) {
+                $toreplace = "_normalizeIcon: function(config) {
         // Set standalone icon and ignore moodle iconurl.
         config.icon = 'editor_'  + config.exec";
-                $contents = str_replace("_normalizeIcon: function(config) {", $to_replace, $contents);
+                $contents = str_replace("_normalizeIcon: function(config) {", $toreplace, $contents);
             }
             $combinedcontents .= $contents;
         }

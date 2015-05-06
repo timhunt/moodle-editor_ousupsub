@@ -29,7 +29,7 @@
 
 function EditorToolbarNav() {}
 
-EditorToolbarNav.ATTRS= {
+EditorToolbarNav.ATTRS = {
 };
 
 EditorToolbarNav.prototype = {
@@ -72,9 +72,9 @@ EditorToolbarNav.prototype = {
     },
 
     _add_to_console : function (e) {
-    	console.log('called _add_to_console');
+        console.log('called _add_to_console');
     },
-    
+
     _supsub_key_press : function (e) {
         switch (e.type) {
             case 'sup' :
