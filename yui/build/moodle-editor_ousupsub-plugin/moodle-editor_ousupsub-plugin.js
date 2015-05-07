@@ -1160,21 +1160,18 @@ EditorPluginButtons.prototype = {
      */
     _normaliseTextareaAndGetSelectedNodes: function() {
 
-     // Save the current selection (cursor position).
+        // Save the current selection (cursor position).
         var selection = window.rangy.saveSelection();
         // Remove all the span tags added to the editor textarea by the browser.
         // Get the html directly inside the editor <p> tag and remove span tags from the html inside it.
-        var editor = this.get('host').editor
-        this._removeNodesByName(editor._node.childNodes[0], 'p');
-        
-        this._removeSingleNodesByName(editor._node, 'br');
+        var editor_node = this._getEditorNode();
+        this._removeSingleNodesByName(editor_node, 'br');
         
         // Remove specific tags.
-        var tagsToRemove = new Array('b', 'i', 'span', 'u');
+        var tagsToRemove = new Array('p', 'b', 'i', 'span', 'u');
         for (var i=0; i<tagsToRemove.length; i++) {
-            this._removeNodesByName(editor._node, tagsToRemove[i]);
+            this._removeNodesByName(editor_node, tagsToRemove[i]);
         }
-//        this._removeNodesByName(editor._node, 'b');
         this._normaliseTagInTextarea('sup');
         this._normaliseTagInTextarea('sub');
 
@@ -1184,7 +1181,7 @@ EditorPluginButtons.prototype = {
         selection = host.getSelection()[0];
 
      // Get the editor html from the <p>.
-        var editor_node = host.editor._node.childNodes[0];
+        var editor_node = this._getEditorNode(host);
 
         // Normalise the editor html.
         editor_node.normalize();
@@ -1229,7 +1226,7 @@ EditorPluginButtons.prototype = {
         }
 
         // Get the editor html from the <p>.
-        var editor_node = host.editor._node.childNodes[0];
+        var editor_node = this._getEditorNode(host);
 
         // Normalise the editor html.
         editor_node.normalize();
@@ -1241,6 +1238,21 @@ EditorPluginButtons.prototype = {
 //        this._updateSelection(startNode, selection.startOffset, endNode, selection.endOffset);
 
         return nodes;
+    },
+
+    /**
+     * Get the node containing the editor html to be updated..
+     *
+     * @method _getEditorNode
+     * @private
+     * @return node.
+     */
+    _getEditorNode: function(host) {
+        if (!host) {
+            host = this.get('host');
+        }
+        
+        return host.editor._node;
     },
 
     /**
@@ -1283,24 +1295,38 @@ EditorPluginButtons.prototype = {
      * @return string.
      */
     _normaliseTagInTextarea: function(name) {
-        var nodes = new Array(), container = this.get('host').editor._node;
-        if(container.childNodes[0].nodeName.toLowerCase() == "p") {
-            container = container.childNodes[0];
-        }
+        var nodes = new Array(), container = this._getEditorNode();
 
         // Remove nested nodes.
+        
+        /*
+         * Where the node.firstChild == nodes[i+1] since it ignores text elements 
+         * I know it's the first node. Since the two elements match they should cancel 
+         * each other out. Currently we remove only the child sup. We should remove 
+         * both and move their children out.
+         */
         var container_nodes = container.querySelectorAll(name);
         for (i = 0; i < container_nodes.length; i++) {
             nodes.push(container_nodes.item(i));
         }
 
+        var parentNode, removeParent = false;
         // Nodelists change as nodes are added and removed. Use an array of nodes instead.
         for (var i = 0; i < nodes.length; i++) {
             node = nodes[i];
-            if (node.parentNode == container) {
+            parentNode = node.parentNode;
+            removeParent = false;
+            if (parentNode == container ) {
                 continue;
             }
+            if (parentNode.firstChild == node && parentNode.nodeName.toLowerCase() == name) {
+                removeParent = true;
+            }
             this._removeNodesByName(node, name);
+
+            if (removeParent) {
+                this._removeNodesByName(parentNode, name);
+            }
         }
 
         // Combine Sibling nodes.
@@ -1351,7 +1377,7 @@ EditorPluginButtons.prototype = {
     /**
      * Move all elements in container node before the reference node.
      * If recursive mode is equired then where childnodes exist that are not
-     * text nodes. Move their children and remove the node existing node.
+     * text nodes. Move their children and remove the existing node.
      *
      * Can't use other dom methods like querySelectorAll because they don't return text elements.
      * @method _removeNodesByName
@@ -1390,12 +1416,10 @@ EditorPluginButtons.prototype = {
     },
     
     /**
-     * Move all elements in container node before the reference node.
-     * If recursive mode is equired then where childnodes exist that are not
-     * text nodes. Move their children and remove the node existing node.
+     * Recursively remove any tag with the given name. Removes child nodes too.
      *
      * Can't use other dom methods like querySelectorAll because they don't return text elements.
-     * @method _removeNodesByName
+     * @method _removeSingleNodesByName
      * @private
      * @return void.
      */
