@@ -1113,7 +1113,6 @@ EditorPluginButtons.prototype = {
      * @return void
      */
     _applyTextCommand: function() {
-
         document.execCommand(this._config.exec, false, null);
 
         // Find the selection in the surrounding text.
@@ -1185,7 +1184,15 @@ EditorPluginButtons.prototype = {
         var selection = window.rangy.saveSelection();
         // Remove all the span tags added to the editor textarea by the browser.
         // Get the html directly inside the editor <p> tag and remove span tags from the html inside it.
-        this._removeNodesByName(this.get('host').editor._node.childNodes[0], 'span');
+        var editor = this.get('host').editor
+        this._removeNodesByName(editor._node.childNodes[0], 'p');
+        
+        // Remove specific tags.
+        var tagsToRemove = new Array('b', 'i', 'span', 'u');
+        for (var i=0; i<tagsToRemove.length; i++) {
+            this._removeNodesByName(editor._node, tagsToRemove[i]);
+        }
+//        this._removeNodesByName(editor._node, 'b');
         this._normaliseTagInTextarea('sup');
         this._normaliseTagInTextarea('sub');
 

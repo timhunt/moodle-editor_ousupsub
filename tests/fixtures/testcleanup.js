@@ -7,7 +7,14 @@
 var testcases = [
                  {input: "<span><sup>12</sup></span>", expected: "<sup>12</sup>"},
                  {input: "<sup>12</sup><sup>34</sup>", expected: "<sup>1234</sup>"},
-                 {input: "<sup>12</sup> <sup>34</sup>", expected: "<sup>12 34</sup>"}
+                 {input: "<sup>12</sup> <sup>34</sup>", expected: "<sup>12 34</sup>"},
+                 {input: "<sup><sup>12</sup></sup>", expected: "<sup>12</sup>"},
+                 {input: "<sup><sub>12</sub></sup>", expected: "<sup>12</sup>"},
+                 {input: "<p><sup><sub>12</sub></sup></p>", expected: "<sup>12</sup>"},
+                 {input: "<sup><p>12</p></sup>", expected: "<sup>12</sup>"},
+                 {input: "<sup><b>12</b></sup>", expected: "<sup>12</sup>"},
+                 {input: "<sup><i>12</i></sup>", expected: "<sup>12</sup>"},
+                 {input: "<sup><u>12</u></sup>", expected: "<sup>12</sup>"}
 ];
 
 function init_ousupsub(id, params) {
