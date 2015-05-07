@@ -1122,26 +1122,6 @@ EditorPluginButtons.prototype = {
      */
     _applyTextCommand: function() {
         document.execCommand(this._config.exec, false, null);
-
-        // Find the selection in the surrounding text.
-        var selectedNode = this.get('host').getSelectionParentNode(),
-            selection = this._getCurrentSelection();
-
-        // Prevent resolving superscript when we don't have focus.
-        if (!this.get('host').isActive()) {
-            return false;
-        }
-
-        // Note this is a document fragment and YUI doesn't like them.
-        if (!selectedNode) {
-            return false;
-        }
-
-        // We don't yet have a cursor selection somehow so we can't possible be resolving a string that has selection.
-        if (!selection || selection.length === 0) {
-            return false;
-        }
-
         this._normaliseTextareaAndGetSelectedNodes();
 
      // And mark the text area as updated.
@@ -1194,6 +1174,8 @@ EditorPluginButtons.prototype = {
         // Get the html directly inside the editor <p> tag and remove span tags from the html inside it.
         var editor = this.get('host').editor
         this._removeNodesByName(editor._node.childNodes[0], 'p');
+        
+        this._removeSingleNodesByName(editor._node, 'br');
         
         // Remove specific tags.
         var tagsToRemove = new Array('b', 'i', 'span', 'u');
@@ -1412,6 +1394,36 @@ EditorPluginButtons.prototype = {
         }
         if (remove_node) {
             container_node.remove();
+        }
+    },
+    
+    /**
+     * Move all elements in container node before the reference node.
+     * If recursive mode is equired then where childnodes exist that are not
+     * text nodes. Move their children and remove the node existing node.
+     *
+     * Can't use other dom methods like querySelectorAll because they don't return text elements.
+     * @method _removeNodesByName
+     * @private
+     * @return void.
+     */
+    _removeSingleNodesByName: function(container_node, name) {
+        var node;
+        var nodes = new Array();
+        var container_nodes = container_node.childNodes;
+
+        for (i = 0; i < container_nodes.length; i++) {
+            nodes.push(container_nodes.item(i));
+        }
+        for (var i = 0; i < nodes.length; i++) {
+            node = nodes[i];
+            if (node.childNodes && node.childNodes.length) {
+                this._removeSingleNodesByName(node, name);
+            }
+
+            if (node.nodeName.toLowerCase() == name) {
+                node.remove();
+            }
         }
     },
 

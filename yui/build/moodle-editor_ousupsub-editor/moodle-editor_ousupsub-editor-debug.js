@@ -707,6 +707,9 @@ EditorClean.prototype = {
         var rules = [
             //Remove empty paragraphs.
             {regex: /<p[^>]*>(&nbsp;|\s)*<\/p>/gi, replace: ""},
+            
+            //Remove empty br tags.
+            {regex: /<br>/gi, replace: ""},
 
             // Remove any style blocks. Some browsers do not work well with them in a contenteditable.
             // Plus style blocks are not allowed in body html, except with "scoped", which most browsers don't support as of 2015.

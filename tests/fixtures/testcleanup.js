@@ -14,7 +14,13 @@ var testcases = [
                  {input: "<sup><p>12</p></sup>", expected: "<sup>12</sup>"},
                  {input: "<sup><b>12</b></sup>", expected: "<sup>12</sup>"},
                  {input: "<sup><i>12</i></sup>", expected: "<sup>12</sup>"},
-                 {input: "<sup><u>12</u></sup>", expected: "<sup>12</sup>"}
+                 {input: "<sup><u>12</u></sup>", expected: "<sup>12</sup>"},
+                 {input: "1<br>", expected: "1"},
+                 {input: "1<br />", expected: "1"},
+                 {input: "1<span><sup>2</sup></span>3", expected: "1<sup>2</sup>3"}, // Add sup.
+                 {input: "1<sup><sup>2</sup></sup>3", expected: "123"}, // Remove sup.
+                 {input: "1<sub><sup>2</sup>3</sub>4<br>", expected: "1<sub>23</sub>4"}, // Keep sub.
+                 {input: "1<sup>2</sup><sub><sup>3</sup>4</sub>5<br>", expected: "1<sup>2</sup><sub>34</sub>5"} // Keep sub.
 ];
 
 function init_ousupsub(id, params) {
@@ -56,7 +62,7 @@ function run_tests(Y) {
 
 function run_test(editor, test) {
     editor.editor.set('innerHTML', test.input);
-    editor.plugins.subscript._normaliseTextareaAndGetSelectedNodes();
+    editor.plugins.subscript._applyTextCommand();
     test.actual = editor.editor.get('innerHTML'); 
     test.matched = test.expected == test.actual;
 }
