@@ -681,15 +681,7 @@ EditorClean.prototype = {
      * @chainable
      */
     cleanEditorHTML: function() {
-        var startValue = this.editor.get('innerHTML');
-
-        // Add root p tag  if it doesn't exist.
-        if (startValue.indexOf('<p>') !== 0) {
-            startValue = '<p>' + startValue + '</p>';
-        }
-
-        this.editor.set('innerHTML', this._cleanHTML(startValue));
-
+        this.editor.set('innerHTML', this._cleanHTML(this.editor.get('innerHTML')));
         return this;
     },
 
@@ -707,7 +699,22 @@ EditorClean.prototype = {
         var rules = [
             //Remove empty paragraphs.
             {regex: /<p[^>]*>(&nbsp;|\s)*<\/p>/gi, replace: ""},
-            
+
+            //Remove attributes on sup and sub tags.
+            {regex: /<sup[^>]*(&nbsp;|\s)*>/gi, replace: "<sup>"},
+            {regex: /<sub[^>]*(&nbsp;|\s)*>/gi, replace: "<sub>"},
+
+            //Replace &nbsp; with space.
+            {regex: /&nbsp;/gi, replace: " "},
+
+            //Combine matching tags with a space in between.
+            {regex: /<\/sup> <sup>/gi, replace: " "},
+            {regex: /<\/sub> <sub>/gi, replace: " "},
+
+            //Move spaces before sup and sub tags to after.
+            {regex: / <\/sup>/gi, replace: "</sup> "},
+            {regex: / <\/sub>/gi, replace: "</sub> "},
+
             //Remove empty br tags.
             {regex: /<br>/gi, replace: ""},
 

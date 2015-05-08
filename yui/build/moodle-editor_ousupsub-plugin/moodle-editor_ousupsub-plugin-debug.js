@@ -1209,23 +1209,26 @@ EditorPluginButtons.prototype = {
         var selection = window.rangy.saveSelection();
         // Remove all the span tags added to the editor textarea by the browser.
         // Get the html directly inside the editor <p> tag and remove span tags from the html inside it.
+        
+        var editor = this._getEditor();
+        editor.cleanEditorHTML();
         var editor_node = this._getEditorNode();
         this._removeSingleNodesByName(editor_node, 'br');
         
         // Remove specific tags.
-        var tagsToRemove = new Array('p', 'b', 'i', 'span', 'u');
+        var tagsToRemove = new Array('p', 'b', 'i', 'span', 'u', 'ul', 'ol', 'li');
         for (var i=0; i<tagsToRemove.length; i++) {
             this._removeNodesByName(editor_node, tagsToRemove[i]);
         }
         this._normaliseTagInTextarea('sup');
         this._normaliseTagInTextarea('sub');
 
-     // Restore the selection (cursor position).
+        // Restore the selection (cursor position).
         window.rangy.restoreSelection(selection);
         var host = this.get('host');
         selection = host.getSelection()[0];
 
-     // Get the editor html from the <p>.
+        // Get the editor html from the <p>.
         var editor_node = this._getEditorNode(host);
 
         // Normalise the editor html.
@@ -1286,18 +1289,29 @@ EditorPluginButtons.prototype = {
     },
 
     /**
-     * Get the node containing the editor html to be updated..
+     * Get the editor object.
+     *
+     * @method _getEditor
+     * @private
+     * @return node.
+     */
+    _getEditor: function(host) {
+        if (!host) {
+            host = this.get('host');
+        }
+        
+        return host;
+    },
+
+    /**
+     * Get the node containing the editor html to be updated.
      *
      * @method _getEditorNode
      * @private
      * @return node.
      */
     _getEditorNode: function(host) {
-        if (!host) {
-            host = this.get('host');
-        }
-        
-        return host.editor._node;
+        return this._getEditor(host).editor._node;
     },
 
     /**
@@ -1469,6 +1483,9 @@ EditorPluginButtons.prototype = {
      * @return void.
      */
     _removeSingleNodesByName: function(container_node, name) {
+        if (!container_node.childNodes) {
+            return;
+        }
         var node;
         var nodes = new Array();
         var container_nodes = container_node.childNodes;
