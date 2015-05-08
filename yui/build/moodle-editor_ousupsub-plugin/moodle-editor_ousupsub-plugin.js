@@ -1144,9 +1144,13 @@ EditorPluginButtons.prototype = {
     _applyTextCommand: function(type) {
 
         // TODO: Trigger supperscript when type is 1, trigger subscript when type is -1.
+        /*
+         * Store a clone of the editor contents or the selection contents before
+         * applying sup/sub. Then you can determine the initial state and what the result should be.
+         */
 
         document.execCommand(this._config.exec, false, null);
-        this._normaliseTextareaAndGetSelectedNodes();
+        this._normaliseTextarea();
 
      // And mark the text area as updated.
         this.markUpdated();
@@ -1186,11 +1190,11 @@ EditorPluginButtons.prototype = {
      * at the end of each selection and also creates empty text nodes. Fix these changes
      * and provide a standard array of nodes to match the existing selection to.
      *
-     * @method _normaliseTextareaAndGetSelectedNodes
+     * @method _normaliseTextarea
      * @private
      * @return string.
      */
-    _normaliseTextareaAndGetSelectedNodes: function() {
+    _normaliseTextarea: function() {
 
         // Save the current selection (cursor position).
         var selection = window.rangy.saveSelection();
@@ -1203,12 +1207,13 @@ EditorPluginButtons.prototype = {
         this._removeSingleNodesByName(editor_node, 'br');
         
         // Remove specific tags.
-        var tagsToRemove = new Array('p', 'b', 'i', 'span', 'u', 'ul', 'ol', 'li');
+        var tagsToRemove = new Array('p', 'b', 'i', 'u', 'ul', 'ol', 'li');
         for (var i=0; i<tagsToRemove.length; i++) {
             this._removeNodesByName(editor_node, tagsToRemove[i]);
         }
         this._normaliseTagInTextarea('sup');
         this._normaliseTagInTextarea('sub');
+        this._removeNodesByName(editor_node, 'span');
 
         // Restore the selection (cursor position).
         window.rangy.restoreSelection(selection);
@@ -1222,8 +1227,18 @@ EditorPluginButtons.prototype = {
         editor_node.normalize();
 //        this.set('host', host);
 
-        return;
-
+    },
+    
+    /**
+     * Get a normalised array of the currently selected nodes. Chrome splits text nodes
+     * at the end of each selection and also creates empty text nodes. Fix these changes
+     * and provide a standard array of nodes to match the existing selection to.
+     *
+     * @method _normaliseTextarea
+     * @private
+     * @return string.
+     */
+    _getSelectedNodes: function() {
         // Get the html directly inside the editor <p> tag.
         var nodes = this.get('host').editor._node.childNodes[0].childNodes;
 
