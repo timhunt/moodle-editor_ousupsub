@@ -238,7 +238,7 @@ EditorPluginButtons.prototype = {
                 // A keyboard shortcut description was specified - use it.
                 this._primaryKeyboardShortcut[buttonClass] = config.keyDescription;
             }
-            this._addKeyboardListener(config.callback, config.keys, buttonClass);
+            //this._addKeyboardListener(config.callback, config.keys, buttonClass);
 
             if (this._primaryKeyboardShortcut[buttonClass]) {
                 // If we have a valid keyboard shortcut description, then set it with the title.
@@ -275,6 +275,9 @@ EditorPluginButtons.prototype = {
         // Prevent carriage return to produce a new line.
         this._preventEnter();
 
+        // Trigger keys like up/down-arrow.
+        this._handle_key_press();
+
         // Add the button reference to the buttons array for later reference.
         this.buttonNames.push(config.buttonName);
         this.buttons[config.buttonName] = button;
@@ -299,6 +302,35 @@ EditorPluginButtons.prototype = {
             }
         }, this);
     },
+
+    /**
+     * 
+     */
+    _handle_key_press: function() {
+        var keyEvent = 'keypress';
+        if (Y.UA.webkit || Y.UA.ie) {
+            keyEvent = 'keydown';
+        }
+        this.editor.on(keyEvent, function(e) {
+            //Cross browser event object.
+            var evt = window.event || e;
+            //Y.log(evt.keyCode, 'debug', 'You have pressed');
+
+            // Call superscript.
+            if ((evt.keyCode === 38) || (evt.keyCode === 94)) {
+                //document.execCommand('superscript', false, null);
+                //Y.log(evt.keyCode + '(up-arrow or ^), so trigger superscript', 'debug', 'You have pressed');
+                this._applyTextCommand(1);
+             // Call subscript.
+             } else if ((evt.keyCode === 40) || (evt.keyCode === 95)) {
+                 //document.execCommand('subscript', false, null);
+                 //Y.log(evt.keyCode + '(down-arrow or _), so trigger subscript', 'debug', 'You have pressed');
+                 this._applyTextCommand(-1);
+             }
+             //this._buttonHandlers.push(this.editor.delegate('key', 'down', evt.keyCode, CSS.EDITORWRAPPER, this));
+        }, this);
+    },
+
 
     /**
      * Add a basic button which ties into the execCommand.
@@ -948,7 +980,12 @@ EditorPluginButtons.prototype = {
      * @private
      * @return void
      */
-    _applyTextCommand: function() {
+    _applyTextCommand: function(type) {
+        Y.log(type, 'debug', '111 _applyTextCommand')
+        Y.log(this._config.exec, 'debug', '2222 _applyTextCommand');
+
+        // TODO: Trigger supperscript when type is 1, trigger subscript when type is -1.
+
         document.execCommand(this._config.exec, false, null);
         this._normaliseTextareaAndGetSelectedNodes();
 
