@@ -14,6 +14,7 @@ var testcases = [
                  {input: "<sup>12</sup> <sup>34</sup>", expected: "<sup>12 34</sup>"}, // Space between matching tags.
                  {input: "<sub>12</sub> <sub>34</sub>", expected: "<sub>12 34</sub>"}, // Space between matching tags.
                  {input: "<sup><sup>12</sup></sup>", expected: "12"},
+                 {input: "1<sup>2</sup>3<sup>4</sup>5", expected: "1<sup>2</sup>3<sup>4</sup>5"},
                  {input: "<sup><sub>12</sub></sup>", expected: "<sup>12</sup>"},
                  {input: "<p><sup><sub>12</sub></sup></p>", expected: "<sup>12</sup>"},
                  

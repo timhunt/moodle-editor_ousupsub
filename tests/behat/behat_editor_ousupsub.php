@@ -98,7 +98,7 @@ class behat_editor_ousupsub extends behat_base {
 
         if (!$field->matches($text)) {
             throw new ExpectationException("The field '" . $fieldlocator .
-                    "' does not contain the text '" . $text . "'.", $this->getSession());
+                    "' does not contain the text '" . $text . "'. It contains '" . $field->get_value() . "'.", $this->getSession());
         }
     }
 

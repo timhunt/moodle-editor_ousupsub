@@ -9,3 +9,13 @@ Feature: ousupsub subscript button
     And I select the text in the "Input" ousupsub editor
     When I click on "Subscript" "button"
     Then I should see "<sub>Submarine</sub>" in the "Input" ousupsub editor
+
+    # Apply subscript inside existing Subscript 
+    When I select the range "'sub',2,'sub',5" in the "Input" ousupsub editor
+    And I click on "Subscript" "button"
+    #And I pause
+    Then I should see "<sub>Su</sub>bma<sub>rine</sub>" in the "Input" ousupsub editor
+    
+    # Revert Subscript 
+    And I click on "Subscript" "button"
+    Then I should see "<sub>Submarine</sub>" in the "Input" ousupsub editor

@@ -13,6 +13,7 @@ Feature: ousupsub subscript button
 
   @javascript
   Scenario: Applying Subscript and Superscript on text
+    #And I am using the OU theme
     Given I am on the integrated "both" editor test page
     And I set the field "Input" to "<p>Superscript and Subscript</p>"
 
@@ -22,7 +23,6 @@ Feature: ousupsub subscript button
     Then I should see "Superscript and <sub>Subscript</sub>" in the "Input" ousupsub editor
 
     # Apply superscript
-    # And I pause
     When I select the range "'',0,'',11" in the "Input" ousupsub editor
     
     And I click on "Superscript" "button"
