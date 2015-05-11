@@ -1033,7 +1033,7 @@ EditorPluginButtons.prototype = {
      *
      * @method _normaliseTextarea
      * @private
-     * @return string.
+     * @return string
      */
     _normaliseTextarea: function() {
 
@@ -1058,16 +1058,9 @@ EditorPluginButtons.prototype = {
 
         // Restore the selection (cursor position).
         window.rangy.restoreSelection(selection);
-        var host = this.get('host');
-        selection = host.getSelection()[0];
-
-        // Get the editor html from the <p>.
-        var editor_node = this._getEditorNode(host);
 
         // Normalise the editor html.
         editor_node.normalize();
-//        this.set('host', host);
-
     },
     
     /**
