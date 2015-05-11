@@ -141,8 +141,8 @@ class behat_editor_ousupsub extends behat_base {
         endoffset = endoffset?endoffset:0;
 
         // Find the text nodes from the Start/end queries or default to the editor node.
-        var startnode = startquery?e.querySelector(startquery): e.firstChild;
-        var endnode = endquery?e.querySelector(endquery):e.firstChild;
+        var startnode = startquery?e.querySelector(startquery): e;
+        var endnode = endquery?e.querySelector(endquery):e;
         r.setStart(startnode.firstChild, startoffset);
         r.setEnd(endnode.firstChild, endoffset);
     }

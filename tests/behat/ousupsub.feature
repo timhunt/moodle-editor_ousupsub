@@ -17,12 +17,14 @@ Feature: ousupsub subscript button
     And I set the field "Input" to "<p>Superscript and Subscript</p>"
 
     # Apply subscript
-    When I select the range "'',16,'',25" in the "Input" ousupsub editor
+    When I select the range "'p',16,'p',25" in the "Input" ousupsub editor
     And I click on "Subscript" "button"
     Then I should see "Superscript and <sub>Subscript</sub>" in the "Input" ousupsub editor
 
     # Apply superscript
+    # And I pause
     When I select the range "'',0,'',11" in the "Input" ousupsub editor
+    
     And I click on "Superscript" "button"
     Then I should see "<sup>Superscript</sup> and <sub>Subscript</sub>" in the "Input" ousupsub editor
 
