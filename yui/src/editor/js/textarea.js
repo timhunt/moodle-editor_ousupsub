@@ -46,9 +46,9 @@ EditorTextArea.prototype = {
      */
     _getEmptyContent: function() {
         if (Y.UA.ie && Y.UA.ie < 10) {
-            return '<p></p>';
+            return '';
         } else {
-            return '<p><br></p>';
+            return '';
         }
     },
 

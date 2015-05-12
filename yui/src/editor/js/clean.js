@@ -43,7 +43,7 @@ EditorClean.prototype = {
     getCleanHTML: function() {
         // Clone the editor so that we don't actually modify the real content.
         var editorClone = this.editor.cloneNode(true),
-            html, startParagraph = '<p>', endParagraph = '</p>';
+            html, startParagraph = '', endParagraph = '';
 
         // Remove all YUI IDs.
         Y.each(editorClone.all('[id^="yui"]'), function(node) {
@@ -64,7 +64,7 @@ EditorClean.prototype = {
         html = editorClone.get('innerHTML');
 
         // Revert untouched editor contents to an empty string.
-        if (html === '<p></p>' || html === '<p><br></p>') {
+        if (html === '' || html === '<br>') {
             return '';
         }
 
