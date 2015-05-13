@@ -492,12 +492,12 @@ EditorPluginButtons.prototype = {
             if ((code === 38) || (code === 94)) {
                 evt.preventDefault();
                 type = 1;
-                this._applySupSub(type);
+                this._applyTextCommand(type);
             // Call subscript.
             } else if ((code === 40) || (code === 95)) {
                 evt.preventDefault();
                 type = -1;
-                this._applySupSub(type);
+                this._applyTextCommand(type);
             }
             // Pass on the type.
             //this._applySupSub(type);
@@ -1159,6 +1159,7 @@ EditorPluginButtons.prototype = {
      */
     _applyTextCommand: function(type) {
 
+        /*
         if (type === 1) {
             document.execCommand('superscript', false, null);
         } else if (type === -1) {
@@ -1166,13 +1167,14 @@ EditorPluginButtons.prototype = {
         } else if (type === 0) {
             //document.execComand('', false, null);
         }
+        */
         // TODO: Trigger supperscript when type is 1, trigger subscript when type is -1.
         /*
          * Store a clone of the editor contents or the selection contents before
          * applying sup/sub. Then you can determine the initial state and what the result should be.
          */
 
-        //document.execCommand(this._config.exec, false, null);
+        document.execCommand(this._config.exec, false, null);
         this._normaliseTextarea();
 
         // And mark the text area as updated.
