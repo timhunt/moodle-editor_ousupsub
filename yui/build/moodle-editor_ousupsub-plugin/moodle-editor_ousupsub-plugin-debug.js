@@ -475,34 +475,36 @@ EditorPluginButtons.prototype = {
         }, this);
     },
 
+
     /**
      * 
      */
     _handle_key_press: function() {
-        var keyEvent = 'keypress';
-        if (Y.UA.webkit || Y.UA.ie) {
-            keyEvent = 'keydown';
+        var type = 0;
+        var keyEvent = 'press';
+            if (Y.UA.webkit || Y.UA.ie) {
+            keyEvent = 'down';
         }
-        this.editor.on(keyEvent, function(e) {
+        this.editor.on('key' + keyEvent, function(e) {
             //Cross browser event object.
             var evt = window.event || e;
-            //Y.log(evt.keyCode, 'debug', 'You have pressed');
-
+            var code =  evt.keyCode ? evt.keyCode : evt.charCode;
             // Call superscript.
-            if ((evt.keyCode === 38) || (evt.keyCode === 94)) {
-                //document.execCommand('superscript', false, null);
-                //Y.log(evt.keyCode + '(up-arrow or ^), so trigger superscript', 'debug', 'You have pressed');
-                this._applyTextCommand(1);
-             // Call subscript.
-             } else if ((evt.keyCode === 40) || (evt.keyCode === 95)) {
-                 //document.execCommand('subscript', false, null);
-                 //Y.log(evt.keyCode + '(down-arrow or _), so trigger subscript', 'debug', 'You have pressed');
-                 this._applyTextCommand(-1);
-             }
-             //this._buttonHandlers.push(this.editor.delegate('key', 'down', evt.keyCode, CSS.EDITORWRAPPER, this));
+            if ((code === 38) || (code === 94)) {
+                evt.preventDefault();
+                type = 1;
+                this._applySupSub(type);
+            // Call subscript.
+            } else if ((code === 40) || (code === 95)) {
+                evt.preventDefault();
+                type = -1;
+                this._applySupSub(type);
+            }
+            // Pass on the type.
+            //this._applySupSub(type);
+            this._buttonHandlers.push(this.editor.delegate('key', keyEvent, code, CSS.EDITORWRAPPER, this));
         }, this);
     },
-
 
     /**
      * Add a basic button which ties into the execCommand.
@@ -1144,6 +1146,18 @@ EditorPluginButtons.prototype = {
     /**
      * Add sup/sup related methods.
      */
+    _applySupSub: function(type) {
+        Y.log(type, 'debug', '111 _applySupSub');
+
+        if (type === 1) {
+            document.execCommand('superscript', false, null);
+        } else if (type === -1) {
+            document.execCommand('subscript', false, null);
+        } else if (type === 0) {
+            //document.execComand('', false, null);
+        }
+     },
+
 
     /**
      * Apply the given document.execCommand and tidy up the editor dom afterwards.
@@ -1153,19 +1167,25 @@ EditorPluginButtons.prototype = {
      * @return void
      */
     _applyTextCommand: function(type) {
-        Y.log(type, 'debug', '111 _applyTextCommand')
-        Y.log(this._config.exec, 'debug', '2222 _applyTextCommand');
+        Y.log(type, 'debug', '111 _applyTextCommand');
 
+        if (type === 1) {
+            document.execCommand('superscript', false, null);
+        } else if (type === -1) {
+            document.execCommand('subscript', false, null);
+        } else if (type === 0) {
+            //document.execComand('', false, null);
+        }
         // TODO: Trigger supperscript when type is 1, trigger subscript when type is -1.
         /*
          * Store a clone of the editor contents or the selection contents before
          * applying sup/sub. Then you can determine the initial state and what the result should be.
          */
 
-        document.execCommand(this._config.exec, false, null);
+        //document.execCommand(this._config.exec, false, null);
         this._normaliseTextarea();
 
-     // And mark the text area as updated.
+        // And mark the text area as updated.
         this.markUpdated();
     },
 
