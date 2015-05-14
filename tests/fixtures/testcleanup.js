@@ -5,6 +5,8 @@
 
 
 var testcases = [
+
+{input: "su<sup>pe<sup><span id=\"selectionBoundary_1431530981054_6934265333693475\" class=\"rangySelectionBoundary\" style=\"line-height: 0; display: none;\">﻿</span>rs<span id=\"selectionBoundary_1431530981054_9319285324309021\" class=\"rangySelectionBoundary\" style=\"line-height: 0; display: none;\">﻿</span></sup>cr</sup>ipt and subscript", expected: "su<sup>pe</sup>rs<sup>cr</sup>ipt and subscript"}, // Nested matching sup tag.
 {input: "<sup>1<sup>2</sup>3</sup>", expected: "<sup>1</sup>2<sup>3</sup>"}, // Nested matching sup tag.
                  {input: "<sup id=\"yui12345\">1</sup>", expected: "<sup>1</sup>"},
                  {input: "&nbsp;", expected: " "},
