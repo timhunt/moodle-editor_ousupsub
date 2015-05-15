@@ -566,10 +566,7 @@ EditorClean.prototype = {
          * each other out. Currently we remove only the child sup. We should remove 
          * both and move their children out.
          */
-        var container_nodes = container.querySelectorAll(name);
-        for (i = 0; i < container_nodes.length; i++) {
-            nodes.push(container_nodes.item(i));
-        }
+        nodes = this._copyArray(container.querySelectorAll(name), nodes);
 
         var parentNode, removeParent = false;
         // Nodelists change as nodes are added and removed. Use an array of nodes instead.
@@ -597,14 +594,9 @@ EditorClean.prototype = {
         }
 
         // Combine Sibling nodes.
-        // Get fresh nodelist.
-        var container_nodes = container.querySelectorAll(name);
-
-        // Get a new node array and fill with the nodelist.
+        // Get a new node array and fill with the a fresh nodelist.
         nodes = new Array();
-        for (i = 0; i < container_nodes.length; i++) {
-            nodes.push(container_nodes.item(i));
-        }
+        nodes = this._copyArray(container.querySelectorAll(name), nodes);
 
         for (var i = 0; i < nodes.length; i++) {
             node = nodes[i];
@@ -650,23 +642,40 @@ EditorClean.prototype = {
      * @return void.
      */
     _splitParentNode: function(container_node, name) {
-        var nodes = [], node, nodeToAppend;
-        for (var i = 0; i < container_node.childNodes.length; i++) {
-            nodes[i] = container_node.childNodes[i];
-        }
+        var nodes = [], node, nodesToAppend = [];
+        nodes = this._copyArray(container_node.childNodes, nodes);
 
+        var j;
         for (i = 0; i < nodes.length; i++) {
             node = nodes[i];
+            nodesToAppend = [];
             if (node.nodeName.toLowerCase() == name) {
-                nodeToAppend = node.firstChild;
-//                container_node.parentNode.appendChild(node.firstChild, container_node);
-//                continue;
+                nodesToAppend = this._copyArray(node.childNodes, nodesToAppend);
             } else {
-                nodeToAppend = document.createElement(name);
-                nodeToAppend.appendChild(node);
+                nodesToAppend[0] = document.createElement(name);
+                nodesToAppend[0].appendChild(node);
             }
-            container_node.parentNode.appendChild(nodeToAppend, container_node);
+            for (j = 0; j < nodesToAppend.length; j++) {
+                container_node.parentNode.insertBefore(nodesToAppend[j], container_node);
+            }
         }
+    },
+
+    /**
+     * Copy array values from a dom node list to the given array.
+     *
+     * A dom node list reduces as children are removed. Copying to a standard array provides
+     * an array that doesn't change.
+     * @method _copyArray
+     * @private
+     * @return array.
+     */
+    _copyArray: function(from, to) {
+        for (var i = 0; i < from.length; i++) {
+            to.push(from[i]);
+        }
+
+        return to;
     },
 
     /**
@@ -690,9 +699,7 @@ EditorClean.prototype = {
             remove_node = false;
         }
 
-        for (i = 0; i < container_nodes.length; i++) {
-            nodes.push(container_nodes.item(i));
-        }
+        nodes = this._copyArray(container_nodes, nodes);
         for (var i = 0; i < nodes.length; i++) {
             node = nodes[i];
             if (node.childNodes && node.childNodes.length) {
@@ -724,11 +731,7 @@ EditorClean.prototype = {
         }
         var node;
         var nodes = new Array();
-        var container_nodes = container_node.childNodes;
-
-        for (i = 0; i < container_nodes.length; i++) {
-            nodes.push(container_nodes.item(i));
-        }
+        nodes = this._copyArray(container_node.childNodes, nodes);
         for (var i = 0; i < nodes.length; i++) {
             node = nodes[i];
             if (node.childNodes && node.childNodes.length) {

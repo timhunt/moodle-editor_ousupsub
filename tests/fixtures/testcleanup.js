@@ -5,9 +5,6 @@
 
 
 var testcases = [
-
-{input: "su<sup>pe<sup><span id=\"selectionBoundary_1431530981054_6934265333693475\" class=\"rangySelectionBoundary\" style=\"line-height: 0; display: none;\">﻿</span>rs<span id=\"selectionBoundary_1431530981054_9319285324309021\" class=\"rangySelectionBoundary\" style=\"line-height: 0; display: none;\">﻿</span></sup>cr</sup>ipt and subscript", expected: "su<sup>pe</sup>rs<sup>cr</sup>ipt and subscript"}, // Nested matching sup tag.
-{input: "<sup>1<sup>2</sup>3</sup>", expected: "<sup>1</sup>2<sup>3</sup>"}, // Nested matching sup tag.
                  {input: "<sup id=\"yui12345\">1</sup>", expected: "<sup>1</sup>"},
                  {input: "&nbsp;", expected: " "},
                  {input: "<sup>1 </sup>2", expected: "<sup>1</sup> 2"}, // Space before end sup tag.
@@ -18,6 +15,8 @@ var testcases = [
                  {input: "<sub>12</sub> <sub>34</sub>", expected: "<sub>12 34</sub>"}, // Space between matching tags.
                  {input: "<sup>1<sup>2</sup>3</sup>", expected: "<sup>1</sup>2<sup>3</sup>"}, // Nested matching sup tag.
                  {input: "<sub>1<sub>2</sub>3</sub>", expected: "<sub>1</sub>2<sub>3</sub>"}, // Nested matching sub tag.
+                 {input: "0<sup>12<sup>34</sup>56</sup>789", expected: "0<sup>12</sup>34<sup>56</sup>789"}, // Nested matching sup tag.
+                 {input: "0<sub>12<sub>34</sub>56</sub>789", expected: "0<sub>12</sub>34<sub>56</sub>789"}, // Nested matching sub tag.
                  {input: "<sup><sup>12</sup></sup>", expected: "12"},
                  {input: "1<sup>2</sup>3<sup>4</sup>5", expected: "1<sup>2</sup>3<sup>4</sup>5"},
                  {input: "<sup><sub>12</sub></sup>", expected: "<sup>12</sup>"},
