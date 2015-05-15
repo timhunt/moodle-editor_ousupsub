@@ -643,7 +643,7 @@ EditorClean.prototype = {
 
         // Remove all selection nodes.
         Y.each(editorClone.all('[id^="selectionBoundary_"]'), function(node) {
-            node.remove();
+            this._removeNode(node);
         });
 
 //     // Remove all br nodes.
@@ -1220,7 +1220,7 @@ EditorClean.prototype = {
             node = nodes[i];
             to.appendChild(node);
         }
-        from.remove();
+        this._removeNode(from);
     },
 
     /**
@@ -1303,7 +1303,7 @@ EditorClean.prototype = {
 
         }
         if (remove_node) {
-            container_node.remove();
+            this._removeNode(container_node);
         }
     },
     
@@ -1329,7 +1329,7 @@ EditorClean.prototype = {
             }
 
             if (node.nodeName.toLowerCase() == name) {
-                node.remove();
+                this._removeNode(node);
             }
         }
     },
@@ -1385,6 +1385,21 @@ EditorClean.prototype = {
        return offset;
    },
 
+   /**
+    * Remove a dom node in a cross browser way.
+    *
+    * @method _removeNode
+    * @private
+    * @return bool.
+    */
+   _removeNode: function(node) {
+       if(!node.remove) {
+           return node.parentNode.removeChild(node);
+       } 
+       return node.remove();
+   },
+
+   
    /**
     * Get the editor object.
     *
