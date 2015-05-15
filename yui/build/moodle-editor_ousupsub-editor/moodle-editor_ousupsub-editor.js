@@ -815,6 +815,7 @@ EditorClean.prototype = {
 
                     // Update the text area.
                     this.updateOriginal();
+                    this._normaliseTextarea();
                     return false;
                 } else {
                     // This is a non-html paste event, we can just let this continue on and call updateOriginalDelayed.
@@ -942,7 +943,470 @@ EditorClean.prototype = {
         content = this._cleanHTML(content);
 
         return content;
-    }
+    },
+
+    /**
+     * Apply the given document.execCommand and tidy up the editor dom afterwards.
+     *
+     * @method _applyTextCommand
+     * @private
+     * @return void
+     */
+    _applyTextCommand: function(command, type) {
+        /*
+        if (type === 1) {
+            document.execCommand('superscript', false, null);
+        } else if (type === -1) {
+            document.execCommand('subscript', false, null);
+        } else if (type === 0) {
+            //document.execComand('', false, null);
+        }
+        */
+        // TODO: Trigger supperscript when type is 1, trigger subscript when type is -1.
+        /*
+         * Store a clone of the editor contents or the selection contents before
+         * applying sup/sub. Then you can determine the initial state and what the result should be.
+         */
+
+        document.execCommand(command, false, null);
+        this._normaliseTextarea();
+
+        // And mark the text area as updated.
+     // Save selection after changes to the DOM. If you don't do this here,
+        // subsequent calls to restoreSelection() will fail expecting the
+        // previous DOM state.
+        this.saveSelection();
+        this.updateOriginal();
+    },
+
+    /**
+     * Helper method to get the current selection from the editor
+     *
+     * @method _getCurrentSelection
+     * @private
+     * @return mixed.
+     */
+    _getCurrentSelection: function() {
+        var selection = this.get('host').getSelection();
+        return (!selection || selection.length === 0) ? null : selection[0];
+    },
+
+    /**
+     * Find the text relevant in a particular node selection.
+     *
+     * @method _getWholeText
+     * @private
+     * @return string.
+     */
+    _getWholeText: function(selection) {
+        var wholetext = '';
+        // Matching common ancestor
+        if (selection.startContainer === selection.commonAncestorContainer &&
+                        selection.endContainer === selection.commonAncestorContainer) {
+            wholetext = selection.commonAncestorContainer.wholeText;
+        }
+        return wholetext;
+    },
+
+    /**
+     * Get a normalised array of the currently selected nodes. Chrome splits text nodes
+     * at the end of each selection and also creates empty text nodes. Fix these changes
+     * and provide a standard array of nodes to match the existing selection to.
+     *
+     * @method _normaliseTextarea
+     * @private
+     * @return string
+     */
+    _normaliseTextarea: function() {
+
+        // Save the current selection (cursor position).
+        var selection = window.rangy.saveSelection();
+        // Remove all the span tags added to the editor textarea by the browser.
+        // Get the html directly inside the editor <p> tag and remove span tags from the html inside it.
+        
+        var editor = this._getEditor();
+        editor.cleanEditorHTML();
+        var editor_node = this._getEditorNode();
+        this._removeSingleNodesByName(editor_node, 'br');
+        
+        // Remove specific tags.
+        var tagsToRemove = new Array('p', 'b', 'i', 'u', 'ul', 'ol', 'li');
+        for (var i=0; i<tagsToRemove.length; i++) {
+            this._removeNodesByName(editor_node, tagsToRemove[i]);
+        }
+        this._normaliseTagInTextarea('sup');
+        this._normaliseTagInTextarea('sub');
+        this._removeNodesByName(editor_node, 'span');
+
+        // Restore the selection (cursor position).
+        window.rangy.restoreSelection(selection);
+
+        // Normalise the editor html.
+        editor_node.normalize();
+    },
+
+    /**
+     * Get a normalised array of the currently selected nodes. Chrome splits text nodes
+     * at the end of each selection and also creates empty text nodes. Fix these changes
+     * and provide a standard array of nodes to match the existing selection to.
+     *
+     * @method _normaliseTextarea
+     * @private
+     * @return string.
+     */
+    _getSelectedNodes: function() {
+        // Get the html directly inside the editor <p> tag.
+        var nodes = this.get('host').editor._node.childNodes[0].childNodes;
+
+//        this.get('host').getSelectedNodes()._nodes[0] == this.get('host').getSelection()[0].startContainer
+//        this.get('host').getSelectedNodes()._nodes[7] == this.get('host').getSelection()[0].endContainer
+        var offset = 0, startContainerIndex = 0, endContainerIndex = 0, currentContainerIndex = 0,
+            matchesStartContainer = false, matchesEndContainer = false, depth = 0;
+        for (var i = 0; i < nodes.length; i++) {
+            node = nodes[i];
+            matchesStartContainer = false, matchesEndContainer = false;
+            if (this._matchesSelectedNode(node, selection.startContainer)) {
+                matchesStartContainer = true;
+            }
+            if (this._matchesSelectedNode(node, selection.endContainer)) {
+                matchesEndContainer = true;
+            }
+
+            // Keep track of the index of the new child node;
+            if (node.children || (node.previousSibling && node.previousSibling.children)) {
+                currentContainerIndex++;
+                offset = 0;
+            }
+            if (matchesStartContainer) {
+                selection.startOffset = selection.startOffset + offset;
+                startContainerIndex = currentContainerIndex;
+            }
+            if (matchesEndContainer) {
+                selection.endOffset = selection.endOffset + offset;
+                endContainerIndex = currentContainerIndex;
+            }
+
+            if(node.nodeValue) {
+                offset += node.nodeValue.length;
+            }
+        }
+
+        // Get the editor html from the <p>.
+        var editor_node = this._getEditorNode(host);
+
+        // Normalise the editor html.
+        editor_node.normalize();
+        this.set('host', host);
+
+        // Update the selection objects.
+        var startNode = this._getTranslatedSelectionNode(editor_node, startContainerIndex);
+        var endNode = this._getTranslatedSelectionNode(editor_node, endContainerIndex);
+//        this._updateSelection(startNode, selection.startOffset, endNode, selection.endOffset);
+
+        return nodes;
+    },
+
+    /**
+     * Check whether a node matches or contains a given node.
+    *
+    * @method _matchesSelectedNode
+    * @private
+    * @return bool.
+    */
+   _updateSelection: function(startNode, startOffset, endNode, endOffset) {
+       var host = this.get('host');
+       var ranges = host.getSelection();
+       var selection = ranges[0];
+
+       // Update the selection objects.
+       selection.setStart(startNode, startOffset);
+       selection.setEnd(endNode, endOffset);
+       host.setSelection(ranges);
+       this.set('host', host);
+   },
+
+    /**
+     * Check whether a node matches or contains a given node.
+     *
+     * @method _matchesSelectedNode
+     * @private
+     * @return bool.
+     */
+    _matchesSelectedNode: function(container_node, selected_node) {
+        return container_node == selected_node || container_node.contains(selected_node);
+    },
+
+    /**
+     * Remove all tags nested inside other tags of the same name. No nesting of
+     * similar tags e.g. <sup><sup></sup></sup> is not allowed.
+     *
+     * @method _normaliseTagInTextarea
+     * @private
+     * @param string name Name of tag to normalise.
+     * @return string.
+     */
+    _normaliseTagInTextarea: function(name) {
+        var nodes = new Array(), container = this._getEditorNode();
+
+        // Remove nested nodes.
+        
+        /*
+         * Where the node.firstChild == nodes[i+1] since it ignores text elements 
+         * I know it's the first node. Since the two elements match they should cancel 
+         * each other out. Currently we remove only the child sup. We should remove 
+         * both and move their children out.
+         */
+        var container_nodes = container.querySelectorAll(name);
+        for (i = 0; i < container_nodes.length; i++) {
+            nodes.push(container_nodes.item(i));
+        }
+
+        var parentNode, removeParent = false;
+        // Nodelists change as nodes are added and removed. Use an array of nodes instead.
+        for (var i = 0; i < nodes.length; i++) {
+            node = nodes[i];
+            parentNode = node.parentNode;
+            removeParent = false;
+            if (parentNode == container ) {
+                continue;
+            }
+            if (parentNode.firstChild == node && parentNode.lastChild == node && 
+                            parentNode.nodeName.toLowerCase() == name) {
+                removeParent = true;
+            }
+            
+            if (!removeParent && node && parentNode.nodeName.toLowerCase() == name) {
+                removeParent = true;
+                this._splitParentNode(parentNode, name);
+            }
+            this._removeNodesByName(node, name);
+
+            if (removeParent) {
+                this._removeNodesByName(parentNode, name);
+            }
+        }
+
+        // Combine Sibling nodes.
+        // Get fresh nodelist.
+        var container_nodes = container.querySelectorAll(name);
+
+        // Get a new node array and fill with the nodelist.
+        nodes = new Array();
+        for (i = 0; i < container_nodes.length; i++) {
+            nodes.push(container_nodes.item(i));
+        }
+
+        for (var i = 0; i < nodes.length; i++) {
+            node = nodes[i];
+            // Combine Sibling tags.
+            if (!node.previousSibling || node.previousSibling.nodeName.toLowerCase() != name) {
+                continue;
+            }
+            this._mergeNodes(node, node.previousSibling);
+        }
+    },
+
+    /**
+     * Merge the from and to nodes by moving all elements in from node to the to node.
+     * Append nodes in order to the to node.
+     *
+     * Can't use other dom methods like querySelectorAll because they don't return text elements.
+     * @method _mergeNodes
+     * @private
+     * @return void.
+     */
+    _mergeNodes: function(from, to) {
+        var nodes = new Array();
+        var merge_nodes = from.childNodes;
+
+        // Node lists reduce in size as nodes are removed. Use an array of nodes instead.
+        for (i = 0; i < merge_nodes.length; i++) {
+            nodes.push(merge_nodes.item(i));
+        }
+
+        for (var i = 0; i < nodes.length; i++) {
+            node = nodes[i];
+            to.appendChild(node);
+        }
+        from.remove();
+    },
+
+    /**
+     * Split the parent node into two with the node with the given name in the middle.
+     *
+     * Can't use other dom methods like querySelectorAll because they don't return text elements.
+     * @method _splitParentNode
+     * @private
+     * @return void.
+     */
+    _splitParentNode: function(container_node, name) {
+        var nodes = [], node, nodeToAppend;
+        for (var i = 0; i < container_node.childNodes.length; i++) {
+            nodes[i] = container_node.childNodes[i];
+        }
+
+        for (i = 0; i < nodes.length; i++) {
+            node = nodes[i];
+            if (node.nodeName.toLowerCase() == name) {
+                nodeToAppend = node.firstChild;
+//                container_node.parentNode.appendChild(node.firstChild, container_node);
+//                continue;
+            } else {
+                nodeToAppend = document.createElement(name);
+                nodeToAppend.appendChild(node);
+            }
+            container_node.parentNode.appendChild(nodeToAppend, container_node);
+        }
+    },
+
+    /**
+     * Move all elements in container node before the reference node.
+     * If recursive mode is equired then where childnodes exist that are not
+     * text nodes. Move their children and remove the existing node.
+     *
+     * Can't use other dom methods like querySelectorAll because they don't return text elements.
+     * @method _removeNodesByName
+     * @private
+     * @return void.
+     */
+    _removeNodesByName: function(container_node, name) {
+        var node, remove_node = container_node.nodeName.toLowerCase() == name;
+        var nodes = new Array();
+        var container_nodes = container_node.childNodes;
+
+        // Don't remove the span used by rangy to save and restore the user selection.
+        if (container_node.nodeName.toLowerCase() == 'span' &&
+                container_node.id.indexOf('selectionBoundary_') > -1) {
+            remove_node = false;
+        }
+
+        for (i = 0; i < container_nodes.length; i++) {
+            nodes.push(container_nodes.item(i));
+        }
+        for (var i = 0; i < nodes.length; i++) {
+            node = nodes[i];
+            if (node.childNodes && node.childNodes.length) {
+                this._removeNodesByName(node, name);
+
+            }
+            if (remove_node) {
+                var parentNode = container_node.parentNode;
+                parentNode.insertBefore(node, container_node);
+            }
+
+        }
+        if (remove_node) {
+            container_node.remove();
+        }
+    },
+    
+    /**
+     * Recursively remove any tag with the given name. Removes child nodes too.
+     *
+     * Can't use other dom methods like querySelectorAll because they don't return text elements.
+     * @method _removeSingleNodesByName
+     * @private
+     * @return void.
+     */
+    _removeSingleNodesByName: function(container_node, name) {
+        if (!container_node.childNodes) {
+            return;
+        }
+        var node;
+        var nodes = new Array();
+        var container_nodes = container_node.childNodes;
+
+        for (i = 0; i < container_nodes.length; i++) {
+            nodes.push(container_nodes.item(i));
+        }
+        for (var i = 0; i < nodes.length; i++) {
+            node = nodes[i];
+            if (node.childNodes && node.childNodes.length) {
+                this._removeSingleNodesByName(node, name);
+            }
+
+            if (node.nodeName.toLowerCase() == name) {
+                node.remove();
+            }
+        }
+    },
+
+    /**
+     * Find the selectable node from a given adjusted node.
+    *
+    * @method _getTranslatedSelectionNode
+    * @private
+    * @return node.
+    */
+    _getTranslatedSelectionNode: function(node, index) {
+        var translatedNode = node.childNodes[index];
+        if(node.childNodes[index].nodeName !== '#text') {
+            translatedNode = node.childNodes[index].childNodes[0];
+        }
+        return this._getSelectionNode(translatedNode);
+    },
+
+    /**
+     * Return a selectable node from the given node.
+    *
+    * @method _getSelectionNode
+    * @private
+    * @return node
+    */
+    _getSelectionNode: function(node) {
+        if(node.nodeName == '#text') {
+            return node;
+        }
+        return node.childNodes[0];
+    },
+
+    /**
+     * Return an array containing the position of every sup and sub start and end tag
+    *
+    * @method _getAdjustedOffset
+    * @private
+    * @return array.
+    */
+   _getAdjustedOffset: function(text, offset, tag_positions) {
+       if(!tag_positions || !tag_positions.length){
+           return offset;
+       }
+       var tag_position = null;
+       for(var x = 0; x < tag_positions.length; x++) {
+           tag_position = tag_positions[x];
+           if (tag_position.position > offset) {
+               break;
+           }
+           offset += tag_position.tag.length;
+       }
+       return offset;
+   },
+
+   /**
+    * Get the editor object.
+    *
+    * @method _getEditor
+    * @private
+    * @return node.
+    */
+   _getEditor: function(host) {
+       if (!host) {
+           host = this.get('host');
+       }
+       
+       return this;
+   },
+
+   /**
+    * Get the node containing the editor html to be updated.
+    *
+    * @method _getEditorNode
+    * @private
+    * @return node.
+    */
+   _getEditorNode: function(host) {
+       return this._getEditor(host).editor._node;
+   }
 };
 
 Y.Base.mix(Y.M.editor_ousupsub.Editor, [EditorClean]);
