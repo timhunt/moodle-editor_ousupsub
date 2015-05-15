@@ -1572,6 +1572,7 @@ EditorToolbarNav.prototype = {
                 }, '.' + CSS.TOOLBAR + ' button', this));
 
         this._registerEventHandle(this._wrapper.delegate('key',
+                this.toolbarKeyboardNavigation,
                 'up:38,40',
                 '.' + CSS.TOOLBAR,
                 this));
