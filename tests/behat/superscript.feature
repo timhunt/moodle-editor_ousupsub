@@ -52,11 +52,7 @@ Feature: ousupsub superscript button
     Then I should see "He<sup>li</sup>co<sup>pte</sup>r" in the "Input" ousupsub editor
 
     # Apply superscript inside existing superscript using a longer phrase
-    When I set the field "Input" to "superscript and subscript"
-    And I select the range "'',1,'',9" in the "Input" ousupsub editor
+    When I set the field "Input" to "He<sup>lic</sup>opter"
+    And I select the range "'sup',1,2,3" in the "Input" ousupsub editor
     And I click on "Superscript" "button"
-    Then I should see "s<sup>uperscri</sup>pt and subscript" in the "Input" ousupsub editor
-
-    When I select the range "'sup',2,'sup',4" in the "Input" ousupsub editor
-    And I click on "Superscript" "button"
-    Then I should see "s<sup>up</sup>er<sup>scri</sup>pt and subscript" in the "Input" ousupsub editor
+    Then I should see "He<sup>licopt</sup>er" in the "Input" ousupsub editor
