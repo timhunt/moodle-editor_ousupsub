@@ -75,7 +75,7 @@ function get_editor(id) {
 }
 
 function escape_html(str) {
-    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') ;
+    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/ /g,'.') ;
 }
 
 function run_tests(Y) {
