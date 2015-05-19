@@ -707,13 +707,17 @@ EditorClean.prototype = {
             //Replace &nbsp; with space.
             {regex: /&nbsp;/gi, replace: " "},
 
-            //Combine matching tags with a space in between.
-            {regex: /<\/sup> <sup>/gi, replace: " "},
-            {regex: /<\/sub> <sub>/gi, replace: " "},
+            //Combine matching tags with spaces in between.
+            {regex: /<\/sup>(\s*)+<sup>/gi, replace: "$1"},
+            {regex: /<\/sub>(\s*)+<sub>/gi, replace: "$1"},
+            
+            //Move spaces after start sup and sub tags to before.
+            {regex: /<sup>(\s*)+/gi, replace: "$1<sup>"},
+            {regex: /<sub>(\s*)+/gi, replace: "$1<sub>"},
 
-            //Move spaces before sup and sub tags to after.
-            {regex: / <\/sup>/gi, replace: "</sup> "},
-            {regex: / <\/sub>/gi, replace: "</sub> "},
+            //Move spaces before end sup and sub tags to after.
+            {regex: /(\s*)+<\/sup>/gi, replace: "</sup>$1"},
+            {regex: /(\s*)+<\/sub>/gi, replace: "</sub>$1"},
 
             //Remove empty br tags.
             {regex: /<br>/gi, replace: ""},

@@ -8,12 +8,20 @@ var testcases = [
                  {input: "<sup id=\"yui12345\" class=\"yui12345\" alt=\"\" style=\"\">1</sup>", expected: "<sup>1</sup>"},
                  {input: "<sub id=\"yui12345\" class=\"yui12345\" alt=\"\" style=\"\">1</sub>", expected: "<sub>1</sub>"},
                  {input: "&nbsp;", expected: " "},
+                 {input: "1<sup> 2</sup>", expected: "1 <sup>2</sup>"}, // Space after start sup tag.
+                 {input: "1<sub> 2</sub>", expected: "1 <sub>2</sub>"}, // Space after start sub tag.
+                 {input: "1<sup>   2</sup>", expected: "1   <sup>2</sup>"}, // Spaces after start sup tag.
+                 {input: "1<sub>   2</sub>", expected: "1   <sub>2</sub>"}, // Spaces after start sub tag.
                  {input: "<sup>1 </sup>2", expected: "<sup>1</sup> 2"}, // Space before end sup tag.
                  {input: "<sub>1 </sub>2", expected: "<sub>1</sub> 2"}, // Space before end sub tag.
+                 {input: "<sup>1   </sup>2", expected: "<sup>1</sup>   2"}, // Spaces before end sup tag.
+                 {input: "<sub>1   </sub>2", expected: "<sub>1</sub>   2"}, // Spaces before end sub tag.
+                 
                  {input: "<span><sup>12</sup></span>", expected: "12"},
                  {input: "<sup>12</sup><sup>34</sup>", expected: "<sup>1234</sup>"},
                  {input: "<sup>12</sup> <sup>34</sup>", expected: "<sup>12 34</sup>"}, // Space between matching tags.
                  {input: "<sub>12</sub> <sub>34</sub>", expected: "<sub>12 34</sub>"}, // Space between matching tags.
+                 {input: "<sup>12</sup>    <sup>34</sup>", expected: "<sup>12    34</sup>"}, // Spaces between matching tags.
                  {input: "<sup>1<sup>2</sup>3</sup>", expected: "<sup>1</sup>2<sup>3</sup>"}, // Nested matching sup tag.
                  {input: "<sub>1<sub>2</sub>3</sub>", expected: "<sub>1</sub>2<sub>3</sub>"}, // Nested matching sub tag.
                  {input: "0<sup>12<sup>34</sup>56</sup>789", expected: "0<sup>12</sup>34<sup>56</sup>789"}, // Nested matching sup tag.
