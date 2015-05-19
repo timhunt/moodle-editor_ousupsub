@@ -5,7 +5,8 @@
 
 
 var testcases = [
-                 {input: "<sup id=\"yui12345\">1</sup>", expected: "<sup>1</sup>"},
+                 {input: "<sup id=\"yui12345\" class=\"yui12345\" alt=\"\" style=\"\">1</sup>", expected: "<sup>1</sup>"},
+                 {input: "<sub id=\"yui12345\" class=\"yui12345\" alt=\"\" style=\"\">1</sub>", expected: "<sub>1</sub>"},
                  {input: "&nbsp;", expected: " "},
                  {input: "<sup>1 </sup>2", expected: "<sup>1</sup> 2"}, // Space before end sup tag.
                  {input: "<sub>1 </sub>2", expected: "<sub>1</sub> 2"}, // Space before end sub tag.
