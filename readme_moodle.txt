@@ -52,10 +52,14 @@ the plugin. This task is performed during development of the editor. If you are 
 need to run this script.
 
 Testing
-Automated testing is through behat. There is a test for the moodle plugin and an identical test for the standalone 
-version
+Automated testing is through behat and custom javascript unit tests. There is a behat test for the moodle plugin and an 
+identical test for the standalone version
 
-The editor will work any where moodle editors work but it's designed to be used with the specificThe main places to test are:
+The javascript unit tests run in a browser. Load /tests/fixtures/testcleanup.html in a specific browser to see if the 
+tests pass in that browser.
+
+The editor will work any where moodle editors work but it's designed to be used with specific OU question types 
+The main places to test are:
 * pattern match questions (OU specific question type)
 * variable numeric  questions (OU specific question type)
 
