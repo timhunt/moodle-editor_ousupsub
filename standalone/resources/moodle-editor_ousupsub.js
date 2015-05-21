@@ -853,13 +853,17 @@ EditorClean.prototype = {
             //Replace &nbsp; with space.
             {regex: /&nbsp;/gi, replace: " "},
 
-            //Combine matching tags with a space in between.
-            {regex: /<\/sup> <sup>/gi, replace: " "},
-            {regex: /<\/sub> <sub>/gi, replace: " "},
+            //Combine matching tags with spaces in between.
+            {regex: /<\/sup>(\s*)+<sup>/gi, replace: "$1"},
+            {regex: /<\/sub>(\s*)+<sub>/gi, replace: "$1"},
+            
+            //Move spaces after start sup and sub tags to before.
+            {regex: /<sup>(\s*)+/gi, replace: "$1<sup>"},
+            {regex: /<sub>(\s*)+/gi, replace: "$1<sub>"},
 
-            //Move spaces before sup and sub tags to after.
-            {regex: / <\/sup>/gi, replace: "</sup> "},
-            {regex: / <\/sub>/gi, replace: "</sub> "},
+            //Move spaces before end sup and sub tags to after.
+            {regex: /(\s*)+<\/sup>/gi, replace: "</sup>$1"},
+            {regex: /(\s*)+<\/sub>/gi, replace: "</sub>$1"},
 
             //Remove empty br tags.
             {regex: /<br>/gi, replace: ""},
@@ -1131,35 +1135,6 @@ EditorClean.prototype = {
     },
 
     /**
-     * Helper method to get the current selection from the editor
-     *
-     * @method _getCurrentSelection
-     * @private
-     * @return mixed.
-     */
-    _getCurrentSelection: function() {
-        var selection = this.get('host').getSelection();
-        return (!selection || selection.length === 0) ? null : selection[0];
-    },
-
-    /**
-     * Find the text relevant in a particular node selection.
-     *
-     * @method _getWholeText
-     * @private
-     * @return string.
-     */
-    _getWholeText: function(selection) {
-        var wholetext = '';
-        // Matching common ancestor
-        if (selection.startContainer === selection.commonAncestorContainer &&
-                        selection.endContainer === selection.commonAncestorContainer) {
-            wholetext = selection.commonAncestorContainer.wholeText;
-        }
-        return wholetext;
-    },
-
-    /**
      * Get a normalised array of the currently selected nodes. Chrome splits text nodes
      * at the end of each selection and also creates empty text nodes. Fix these changes
      * and provide a standard array of nodes to match the existing selection to.
@@ -1194,97 +1169,6 @@ EditorClean.prototype = {
 
         // Normalise the editor html.
         editor_node.normalize();
-    },
-
-    /**
-     * Get a normalised array of the currently selected nodes. Chrome splits text nodes
-     * at the end of each selection and also creates empty text nodes. Fix these changes
-     * and provide a standard array of nodes to match the existing selection to.
-     *
-     * @method _normaliseTextarea
-     * @private
-     * @return string.
-     */
-    _getSelectedNodes: function() {
-        // Get the html directly inside the editor <p> tag.
-        var nodes = this.get('host').editor._node.childNodes[0].childNodes;
-
-//        this.get('host').getSelectedNodes()._nodes[0] == this.get('host').getSelection()[0].startContainer
-//        this.get('host').getSelectedNodes()._nodes[7] == this.get('host').getSelection()[0].endContainer
-        var offset = 0, startContainerIndex = 0, endContainerIndex = 0, currentContainerIndex = 0,
-            matchesStartContainer = false, matchesEndContainer = false, depth = 0;
-        for (var i = 0; i < nodes.length; i++) {
-            node = nodes[i];
-            matchesStartContainer = false, matchesEndContainer = false;
-            if (this._matchesSelectedNode(node, selection.startContainer)) {
-                matchesStartContainer = true;
-            }
-            if (this._matchesSelectedNode(node, selection.endContainer)) {
-                matchesEndContainer = true;
-            }
-
-            // Keep track of the index of the new child node;
-            if (node.children || (node.previousSibling && node.previousSibling.children)) {
-                currentContainerIndex++;
-                offset = 0;
-            }
-            if (matchesStartContainer) {
-                selection.startOffset = selection.startOffset + offset;
-                startContainerIndex = currentContainerIndex;
-            }
-            if (matchesEndContainer) {
-                selection.endOffset = selection.endOffset + offset;
-                endContainerIndex = currentContainerIndex;
-            }
-
-            if(node.nodeValue) {
-                offset += node.nodeValue.length;
-            }
-        }
-
-        // Get the editor html from the <p>.
-        var editor_node = this._getEditorNode(host);
-
-        // Normalise the editor html.
-        editor_node.normalize();
-        this.set('host', host);
-
-        // Update the selection objects.
-        var startNode = this._getTranslatedSelectionNode(editor_node, startContainerIndex);
-        var endNode = this._getTranslatedSelectionNode(editor_node, endContainerIndex);
-//        this._updateSelection(startNode, selection.startOffset, endNode, selection.endOffset);
-
-        return nodes;
-    },
-
-    /**
-     * Check whether a node matches or contains a given node.
-    *
-    * @method _matchesSelectedNode
-    * @private
-    * @return bool.
-    */
-   _updateSelection: function(startNode, startOffset, endNode, endOffset) {
-       var host = this.get('host');
-       var ranges = host.getSelection();
-       var selection = ranges[0];
-
-       // Update the selection objects.
-       selection.setStart(startNode, startOffset);
-       selection.setEnd(endNode, endOffset);
-       host.setSelection(ranges);
-       this.set('host', host);
-   },
-
-    /**
-     * Check whether a node matches or contains a given node.
-     *
-     * @method _matchesSelectedNode
-     * @private
-     * @return bool.
-     */
-    _matchesSelectedNode: function(container_node, selected_node) {
-        return container_node == selected_node || container_node.contains(selected_node);
     },
 
     /**
@@ -1484,57 +1368,6 @@ EditorClean.prototype = {
             }
         }
     },
-
-    /**
-     * Find the selectable node from a given adjusted node.
-    *
-    * @method _getTranslatedSelectionNode
-    * @private
-    * @return node.
-    */
-    _getTranslatedSelectionNode: function(node, index) {
-        var translatedNode = node.childNodes[index];
-        if(node.childNodes[index].nodeName !== '#text') {
-            translatedNode = node.childNodes[index].childNodes[0];
-        }
-        return this._getSelectionNode(translatedNode);
-    },
-
-    /**
-     * Return a selectable node from the given node.
-    *
-    * @method _getSelectionNode
-    * @private
-    * @return node
-    */
-    _getSelectionNode: function(node) {
-        if(node.nodeName == '#text') {
-            return node;
-        }
-        return node.childNodes[0];
-    },
-
-    /**
-     * Return an array containing the position of every sup and sub start and end tag
-    *
-    * @method _getAdjustedOffset
-    * @private
-    * @return array.
-    */
-   _getAdjustedOffset: function(text, offset, tag_positions) {
-       if(!tag_positions || !tag_positions.length){
-           return offset;
-       }
-       var tag_position = null;
-       for(var x = 0; x < tag_positions.length; x++) {
-           tag_position = tag_positions[x];
-           if (tag_position.position > offset) {
-               break;
-           }
-           offset += tag_position.tag.length;
-       }
-       return offset;
-   },
 
    /**
     * Remove a dom node in a cross browser way.

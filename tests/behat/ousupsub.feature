@@ -47,4 +47,4 @@ Feature: ousupsub subscript button
     # Apply superscript across existing subscript
     And I select the range "'sup',2,'sub',3" in the "Input" ousupsub editor
     And I click on "Superscript" "button"
-    Then I should see "Super<sup>scr</sup>ipt<sub> and Sub</sub>script" in the "Input" ousupsub editor
+    Then I should see "Super<sup>scr</sup>ipt <sub>and Sub</sub>script" in the "Input" ousupsub editor
