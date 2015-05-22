@@ -34,16 +34,21 @@ if (!in_array($type, array('both', 'sub', 'sup'))) {
     throw new coding_exception("'type' in the URL must be 'both', 'sub', or 'sup'.");
 }
 
-$editor = get_texteditor('ousupsub');
+$neweditor = get_texteditor('ousupsub');
+$originaleditor = get_texteditor('supsub');
 
 $PAGE->set_title('Test superscript/subscript editor');
 $PAGE->set_heading('Test superscript/subscript editor');
 
 echo $OUTPUT->header();
-
+echo html_writer::tag('h2', 'New (Atto) supsub');
 echo html_writer::label('Input', 'supsub');
 echo html_writer::tag('textarea', '', array('name' => 'supsub', 'id' => 'supsub', 'rows' => 2, 'cols' => 20));
-$editor->use_editor('supsub', array('supsub' => $type));
+$neweditor->use_editor('supsub', array('supsub' => $type));
+echo html_writer::tag('h2', 'Original (Tinymce) supsub');
+echo html_writer::label('Original Input', 'originalsupsub');
+echo html_writer::tag('textarea', '', array('name' => 'originalsupsub', 'id' => 'originalsupsub', 'rows' => 2, 'cols' => 20));
+$originaleditor->use_editor('originalsupsub', array('supsub' => $type));
 
 echo $OUTPUT->footer();
 

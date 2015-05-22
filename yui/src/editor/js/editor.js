@@ -208,7 +208,7 @@ Y.extend(Editor, Y.Base, {
         this.editor.setStyle('minWidth', width);
         this.editor.setStyle('maxWidth', width);
         
-        var height = (this.textarea.getAttribute('rows') * 6 + 7) + 'px';
+        var height = (this.textarea.getAttribute('rows') * 6 + 13) + 'px';
         this.editor.setStyle('height', height);
         this.editor.setStyle('minHeight', height);
         this.editor.setStyle('maxHeight', height);
