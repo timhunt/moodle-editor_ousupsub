@@ -65,7 +65,7 @@ EditorToolbar.prototype = {
         }
 
         // Add keyboard navigation for the toolbar.
-        this.setupToolbarNavigation();
+//        this.setupToolbarNavigation();
 
         return this;
     }

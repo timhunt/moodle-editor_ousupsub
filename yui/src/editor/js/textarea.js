@@ -102,7 +102,152 @@ EditorTextArea.prototype = {
         }
 
         return this;
-    }
+    },
+
+    /**
+     * Set up the watchers for textarea navigation.
+     *
+     * @method setupTextareaNavigation
+     * @chainable
+     */
+    setupTextareaNavigation: function() {
+//        return;
+        // Listen for Arrow down, underscore, hat (^) and Up Arrow  keys.
+        this._registerEventHandle(this._wrapper.delegate('key',
+                this.textareaKeyboardNavigation,
+                'down:40,95',
+                '.' + CSS.CONTENT,
+                this));
+        this._registerEventHandle(this._wrapper.delegate('focus',
+                function(e) {
+                    this._setTabFocus(e.currentTarget);
+                }, '.' + CSS.CONTENT , this));
+
+        this._registerEventHandle(this._wrapper.delegate('key',
+                this.textareaKeyboardNavigation,
+                'down:38,94',
+                '.' + CSS.CONTENT,
+                this));
+        console.log('setup textarea keyboard navigation');
+
+        return this;
+    },
+
+    /**
+     * Implement arrow key navigation for the buttons in the toolbar.
+     *
+     * @method toolbarKeyboardNavigation
+     * @param {EventFacade} e - the keyboard event.
+     */
+    textareaKeyboardNavigation: function(e) {
+
+        // Moving left or right ignore.
+//        if (e.keyCode === 37 || e.keyCode === 39) {
+//          return;;
+//      }
+        // Prevent the default browser behaviour.
+        e.preventDefault();
+        
+        // From editor-plugins_buttons::callbackWrapper().
+        if (!(YUI.Env.UA.android || this.isActive())) {
+            // We must not focus for Android here, even if the editor is not active because the keyboard auto-completion
+            // changes the cursor position.
+            // If we save that change, then when we restore the change later we get put in the wrong place.
+            // Android is fine to save the selection without the editor being in focus.
+            this.focus();
+        }
+
+        // Save the selection.
+//        this.saveSelection();
+//
+//        // Restore selection before making changes.
+//        this.restoreSelection();
+        
+        var command = '', type = 1;
+        
+        // Cross browser event object.
+        var evt = window.event || e;
+        var code =  evt.keyCode ? evt.keyCode : evt.charCode;
+        // Call superscript.
+        if ((code === 38) || (code === 94)) {
+            command = 'superscript';
+        // Call subscript.
+        } else if ((code === 40) || (code === 95)) {
+            command = 'subscript';
+        }
+
+       
+        // On cursor moves we loops through the buttons.
+//        var buttons = this.toolbar.all('button'),
+//            direction = 1,
+//            button,
+//            current = e.target.ancestor('button', true);
+//
+//        if (e.keyCode === 37) {
+//            // Moving left so reverse the direction.
+//            direction = -1;
+//        }
+        
+        console.log('setup textareaKeyboardNavigation');
+        this._applyTextCommand(command, type);
+
+//        button = this._findFirstFocusable(buttons, current, direction);
+//        if (button) {
+//            button.focus();
+//            this._setTabFocus(button);
+//        } else {
+//            Y.log("Unable to find a button to focus on", 'debug', LOGNAME);
+//        }
+    },
+
+    /**
+     * 
+     */
+    _handle_key_press: function() {
+        var type = 0;
+        var keyEvent = 'press';
+            if (Y.UA.webkit || Y.UA.ie) {
+            keyEvent = 'down';
+        }
+        this.editor.on('key' + keyEvent, function(e) {
+            //Cross browser event object.
+            var evt = window.event || e;
+            var code =  evt.keyCode ? evt.keyCode : evt.charCode;
+            // Call superscript.
+            if ((code === 38) || (code === 94)) {
+                evt.preventDefault();
+                type = 1;
+                this._applyTextCommand(type);
+            // Call subscript.
+            } else if ((code === 40) || (code === 95)) {
+                evt.preventDefault();
+                type = -1;
+                this._applyTextCommand(type);
+            }
+            // Pass on the type.
+            //this._applySupSub(type);
+            
+//            this._buttonHandlers.push(this.editor.delegate('key', keyEvent, code, CSS.EDITORWRAPPER, this), this);
+        }, this);
+    },
+
+    /**
+     * Prevent carriage return to produce a new line.
+     */
+     _preventEnter: function() {
+         var keyEvent = 'keypress';
+         if (Y.UA.webkit || Y.UA.ie) {
+             keyEvent = 'keydown';
+         }
+         this.editor.on(keyEvent, function(e) {
+             //Cross browser event object.
+             var evt = window.event || e;
+             if (evt.keyCode === 13) { // Enter.
+                 // do nothing.
+                 evt.preventDefault();
+             }
+         }, this);
+     },
 };
 
 Y.Base.mix(Y.M.editor_ousupsub.Editor, [EditorTextArea]);

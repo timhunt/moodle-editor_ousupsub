@@ -238,7 +238,7 @@ EditorPluginButtons.prototype = {
                 // A keyboard shortcut description was specified - use it.
                 this._primaryKeyboardShortcut[buttonClass] = config.keyDescription;
             }
-            //this._addKeyboardListener(config.callback, config.keys, buttonClass);
+            this._addKeyboardListener(config.callback, config.keys, buttonClass);
 
             if (this._primaryKeyboardShortcut[buttonClass]) {
                 // If we have a valid keyboard shortcut description, then set it with the title.
@@ -272,66 +272,13 @@ EditorPluginButtons.prototype = {
             );
         }
 
-        // Prevent carriage return to produce a new line.
-        this._preventEnter();
-
-        // Trigger keys like up/down-arrow.
-        this._handle_key_press();
+        
 
         // Add the button reference to the buttons array for later reference.
         this.buttonNames.push(config.buttonName);
         this.buttons[config.buttonName] = button;
         this.buttonStates[config.buttonName] = this.ENABLED;
         return button;
-    },
-
-   /**
-    * Prevent carriage return to produce a new line.
-    */
-    _preventEnter: function() {
-        var keyEvent = 'keypress';
-        if (Y.UA.webkit || Y.UA.ie) {
-            keyEvent = 'keydown';
-        }
-        this.editor.on(keyEvent, function(e) {
-            //Cross browser event object.
-            var evt = window.event || e;
-            if (evt.keyCode === 13) { // Enter.
-                // do nothing.
-                evt.preventDefault();
-            }
-        }, this);
-    },
-
-
-    /**
-     * 
-     */
-    _handle_key_press: function() {
-        var type = 0;
-        var keyEvent = 'press';
-            if (Y.UA.webkit || Y.UA.ie) {
-            keyEvent = 'down';
-        }
-        this.editor.on('key' + keyEvent, function(e) {
-            //Cross browser event object.
-            var evt = window.event || e;
-            var code =  evt.keyCode ? evt.keyCode : evt.charCode;
-            // Call superscript.
-            if ((code === 38) || (code === 94)) {
-                evt.preventDefault();
-                type = 1;
-                this._applyTextCommand(type);
-            // Call subscript.
-            } else if ((code === 40) || (code === 95)) {
-                evt.preventDefault();
-                type = -1;
-                this._applyTextCommand(type);
-            }
-            // Pass on the type.
-            //this._applySupSub(type);
-            this._buttonHandlers.push(this.editor.delegate('key', keyEvent, code, CSS.EDITORWRAPPER, this));
-        }, this);
     },
 
     /**
@@ -742,6 +689,7 @@ EditorPluginButtons.prototype = {
             }
             // Wrap the callback into a handler to check if it uses the specified modifiers, not more.
             handler = Y.bind(function(modifiers, e) {
+                /*
                 if (buttonName === 'ousupsub_superscript_button_superscript') {
                     if ((keys === '40') || (keys === '95')) {
                         return;
@@ -754,6 +702,10 @@ EditorPluginButtons.prototype = {
                     }
                     callback.apply(this, [e]);
                 }
+                */
+//                if (this._eventUsesExactKeyModifiers(modifiers, e)) {
+                    callback.apply(this, [e]);
+//                }
             }, this, [modifier]);
         }
 
@@ -767,8 +719,7 @@ EditorPluginButtons.prototype = {
             )
         );
 
-        Y.log('ousupsub shortcut registered: ' + keys + ' now triggers for ' + buttonName,
-                'debug', LOGNAME);
+        console.log('ousupsub shortcut registered: ' + keys + ' now triggers for ' + buttonName);
     },
 
     /**

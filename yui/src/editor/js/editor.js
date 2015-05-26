@@ -229,6 +229,15 @@ Y.extend(Editor, Y.Base, {
 
         // Copy the text to the contenteditable div.
         this.updateFromTextArea();
+        
+        // Add keyboard navigation for the textarea.
+        this.setupTextareaNavigation();
+
+        // Trigger keys like up/down-arrow.
+//        this._handle_key_press();
+        
+        // Prevent carriage return to produce a new line.
+        this._preventEnter();
 
         // Publish the events that are defined by this editor.
         this.publishEvents();
