@@ -44,7 +44,7 @@ Y.namespace('M.ousupsub_subscript').Button = Y.Base.create('button', Y.M.editor_
 
             icon: 'e/subscript',
             callback: this._applyTextCommand
-        }
+        };
         this.addButton(this._config);
     }
 });

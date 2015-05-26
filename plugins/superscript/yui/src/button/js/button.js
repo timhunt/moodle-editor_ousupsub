@@ -31,8 +31,8 @@ Y.namespace('M.ousupsub_superscript').Button = Y.Base.create('button', Y.M.edito
 
             icon: 'e/superscript',
             callback: this._applyTextCommand
-        }
+        };
         this.addButton(this._config);
-    },
+    }
 
 });
