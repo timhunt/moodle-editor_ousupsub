@@ -904,21 +904,6 @@ EditorPluginButtons.prototype = {
         return 'down:';
     },
 
-    /**
-     * Add sup/sup related methods.
-     */
-    _applySupSub: function(type) {
-        Y.log(type, 'debug', '111 _applySupSub');
-
-        if (type === 1) {
-            document.execCommand('superscript', false, null);
-        } else if (type === -1) {
-            document.execCommand('subscript', false, null);
-        } else if (type === 0) {
-            //document.execComand('', false, null);
-        }
-     },
-
      /**
       * Apply the given document.execCommand and tidy up the editor dom afterwards.
       *
@@ -962,6 +947,5 @@ EditorPluginButtons.prototype = {
         return this._getEditor(host).editor._node;
     }
 };
-
 
 Y.Base.mix(Y.M.editor_ousupsub.EditorPlugin, [EditorPluginButtons]);
