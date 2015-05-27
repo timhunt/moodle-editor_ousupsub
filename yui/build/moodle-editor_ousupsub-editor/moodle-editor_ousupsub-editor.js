@@ -1057,7 +1057,20 @@ EditorClean.prototype = {
             }
         }
 
+        // Apply command.
         document.execCommand(command, false, null);
+        
+        // If nothing is selected add a relevant tag. 
+        var selection = rangy.getSelection();
+        // If it's a collapsed selection the cursor is in the editor but no selection has been made.
+        if (selection.isCollapsed) {
+            // Insert tag at cursor focus point.
+            var tag = command == 'superscript' ? 'sup':'sub';
+            var node = this.insertContentAtFocusPoint('<'+tag+'>﻿&#65279;</'+tag+'>');
+            var range = rangy.createRange();
+            range.selectNode(node._node.childNodes[0]);
+            this.setSelection([range]);
+        }
         this._normaliseTextarea();
 
         // And mark the text area as updated.
