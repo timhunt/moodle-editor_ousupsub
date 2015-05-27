@@ -849,30 +849,14 @@ EditorPluginButtons.prototype = {
             handler = callback;
 
         } else {
-            modifier = '';//this._getDefaultMetaKey();
-            //keys = this._getKeyEvent() + keyConfig + '+' + modifier;
+            modifier = '';
             keys = keyConfig;
             if (typeof this._primaryKeyboardShortcut[buttonName] === 'undefined') {
                 this._primaryKeyboardShortcut[buttonName] = this._getDefaultMetaKeyDescription(keyConfig);
             }
             // Wrap the callback into a handler to check if it uses the specified modifiers, not more.
             handler = Y.bind(function(modifiers, e) {
-                /*
-                if (buttonName === 'ousupsub_superscript_button_superscript') {
-                    if ((keys === '40') || (keys === '95')) {
-                        return;
-                    }
                     callback.apply(this, [e]);
-                } else if (buttonName === 'ousupsub_subscript_button_subscript') {
-                    if ((keys === '38') || (keys === '94')) {
-                        return;
-                    }
-                    callback.apply(this, [e]);
-                }
-                */
-//                if (this._eventUsesExactKeyModifiers(modifiers, e)) {
-                    callback.apply(this, [e]);
-//                }
             }, this, [modifier]);
         }
 
@@ -886,7 +870,6 @@ EditorPluginButtons.prototype = {
             )
         );
 
-        console.log('ousupsub shortcut registered: ' + keys + ' now triggers for ' + buttonName);
     },
 
     /**
@@ -1109,23 +1092,14 @@ EditorPluginButtons.prototype = {
       * @private
       * @return void
       */
-     _applyTextCommand: function(type) {
+     _applyTextCommand: function(e) {
+         var mode = 0;
 
-         /*
-         if (type === 1) {
-             document.execCommand('superscript', false, null);
-         } else if (type === -1) {
-             document.execCommand('subscript', false, null);
-         } else if (type === 0) {
-             //document.execComand('', false, null);
+         if(e && e.type == 'key') {
+             mode = 1;
          }
-         */
-         // TODO: Trigger supperscript when type is 1, trigger subscript when type is -1.
-         /*
-          * Store a clone of the editor contents or the selection contents before
-          * applying sup/sub. Then you can determine the initial state and what the result should be.
-          */
-         this._getEditor()._applyTextCommand(this._config.exec);
+
+         this._getEditor()._applyTextCommand(this._config.exec, mode);
      },
 
     /**

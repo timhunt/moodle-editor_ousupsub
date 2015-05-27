@@ -111,7 +111,6 @@ EditorTextArea.prototype = {
      * @chainable
      */
     setupTextareaNavigation: function() {
-//        return;
         // Listen for Arrow down, underscore, hat (^) and Up Arrow  keys.
         this._registerEventHandle(this._wrapper.delegate('key',
                 this.textareaKeyboardNavigation,
@@ -122,13 +121,11 @@ EditorTextArea.prototype = {
                 function(e) {
                     this._setTabFocus(e.currentTarget);
                 }, '.' + CSS.CONTENT , this));
-
         this._registerEventHandle(this._wrapper.delegate('key',
                 this.textareaKeyboardNavigation,
                 'down:38,94',
                 '.' + CSS.CONTENT,
                 this));
-        console.log('setup textarea keyboard navigation');
 
         return this;
     },
@@ -141,10 +138,6 @@ EditorTextArea.prototype = {
      */
     textareaKeyboardNavigation: function(e) {
 
-        // Moving left or right ignore.
-//        if (e.keyCode === 37 || e.keyCode === 39) {
-//          return;;
-//      }
         // Prevent the default browser behaviour.
         e.preventDefault();
         
@@ -157,13 +150,7 @@ EditorTextArea.prototype = {
             this.focus();
         }
 
-        // Save the selection.
-//        this.saveSelection();
-//
-//        // Restore selection before making changes.
-//        this.restoreSelection();
-        
-        var command = '', type = 1;
+        var command = '', mode = 1;
         
         // Cross browser event object.
         var evt = window.event || e;
@@ -176,59 +163,7 @@ EditorTextArea.prototype = {
             command = 'subscript';
         }
 
-       
-        // On cursor moves we loops through the buttons.
-//        var buttons = this.toolbar.all('button'),
-//            direction = 1,
-//            button,
-//            current = e.target.ancestor('button', true);
-//
-//        if (e.keyCode === 37) {
-//            // Moving left so reverse the direction.
-//            direction = -1;
-//        }
-        
-        console.log('setup textareaKeyboardNavigation');
-        this._applyTextCommand(command, type);
-
-//        button = this._findFirstFocusable(buttons, current, direction);
-//        if (button) {
-//            button.focus();
-//            this._setTabFocus(button);
-//        } else {
-//            Y.log("Unable to find a button to focus on", 'debug', LOGNAME);
-//        }
-    },
-
-    /**
-     * 
-     */
-    _handle_key_press: function() {
-        var type = 0;
-        var keyEvent = 'press';
-            if (Y.UA.webkit || Y.UA.ie) {
-            keyEvent = 'down';
-        }
-        this.editor.on('key' + keyEvent, function(e) {
-            //Cross browser event object.
-            var evt = window.event || e;
-            var code =  evt.keyCode ? evt.keyCode : evt.charCode;
-            // Call superscript.
-            if ((code === 38) || (code === 94)) {
-                evt.preventDefault();
-                type = 1;
-                this._applyTextCommand(type);
-            // Call subscript.
-            } else if ((code === 40) || (code === 95)) {
-                evt.preventDefault();
-                type = -1;
-                this._applyTextCommand(type);
-            }
-            // Pass on the type.
-            //this._applySupSub(type);
-            
-//            this._buttonHandlers.push(this.editor.delegate('key', keyEvent, code, CSS.EDITORWRAPPER, this), this);
-        }, this);
+        this._applyTextCommand(command, mode);
     },
 
     /**

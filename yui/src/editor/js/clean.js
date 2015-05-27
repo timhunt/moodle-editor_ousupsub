@@ -55,11 +55,6 @@ EditorClean.prototype = {
             this._removeNode(node);
         });
 
-//     // Remove all br nodes.
-//        Y.each(editorClone.all('br'), function(node) {
-//            node.remove();
-//        });
-
         editorClone.all('.ousupsub_control').remove(true);
         html = editorClone.get('innerHTML');
 
@@ -364,33 +359,53 @@ EditorClean.prototype = {
      *
      * @method _applyTextCommand
      * @private
+     * @param int mode (optional) default is button (0), keyboard is 1
      * @return void
      */
-    _applyTextCommand: function(command, type) {
-        /*
-        if (type === 1) {
-            document.execCommand('superscript', false, null);
-        } else if (type === -1) {
-            document.execCommand('subscript', false, null);
-        } else if (type === 0) {
-            //document.execComand('', false, null);
+    _applyTextCommand: function(command, mode) {
+        // Handle keyboard mode.
+        if (mode) {
+            var tag = this.getCursorTag();
+            if (tag == 'superscript' && command == tag ||
+                    tag == 'subscript' && command == tag) {
+                return; // Do nothing.
+            } else if (tag == 'superscript' && command == 'subscript') {
+                command = 'superscript';
+            }  else if (tag == 'subscript' && command == 'superscript') {
+                command = 'subscript';
+            }
         }
-        */
-        // TODO: Trigger supperscript when type is 1, trigger subscript when type is -1.
-        /*
-         * Store a clone of the editor contents or the selection contents before
-         * applying sup/sub. Then you can determine the initial state and what the result should be.
-         */
 
         document.execCommand(command, false, null);
         this._normaliseTextarea();
 
         // And mark the text area as updated.
-     // Save selection after changes to the DOM. If you don't do this here,
+        // Save selection after changes to the DOM. If you don't do this here,
         // subsequent calls to restoreSelection() will fail expecting the
         // previous DOM state.
         this.saveSelection();
         this.updateOriginal();
+    },
+
+    /**
+     * What type of tag surrounds the cursor.
+     *
+     * @method _getCursorTag
+     * @private
+     * @return string
+     */
+    getCursorTag: function() {
+        var tag = 'text'; 
+        var selection = rangy.getSelection();
+
+        if (selection.focusNode.nodeName.toLowerCase() == 'sup' || 
+                    selection.focusNode.parentNode.nodeName.toLowerCase() == 'sup') {
+            tag = 'superscript';
+        } else if (selection.focusNode.nodeName.toLowerCase() == 'sub' || 
+                    selection.focusNode.parentNode.nodeName.toLowerCase() == 'sub') {
+            tag = 'subscript';
+        }
+        return tag;
     },
 
     /**

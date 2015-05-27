@@ -358,6 +358,11 @@ Y.extend(Editor, Y.Base, {
         this.editor.setStyle('width', width);
         this.editor.setStyle('minWidth', width);
         this.editor.setStyle('maxWidth', width);
+        
+        var height = (this.textarea.getAttribute('rows') * 6 + 13) + 'px';
+        this.editor.setStyle('height', height);
+        this.editor.setStyle('minHeight', height);
+        this.editor.setStyle('maxHeight', height);
 
         // Disable odd inline CSS styles.
         this.disableCssStyling();
@@ -375,6 +380,12 @@ Y.extend(Editor, Y.Base, {
 
         // Copy the text to the contenteditable div.
         this.updateFromTextArea();
+        
+        // Add keyboard navigation for the textarea.
+        this.setupTextareaNavigation();
+
+        // Prevent carriage return to produce a new line.
+        this._preventEnter();
 
         // Publish the events that are defined by this editor.
         this.publishEvents();
@@ -736,7 +747,87 @@ EditorTextArea.prototype = {
         }
 
         return this;
-    }
+    },
+
+    /**
+     * Set up the watchers for textarea navigation.
+     *
+     * @method setupTextareaNavigation
+     * @chainable
+     */
+    setupTextareaNavigation: function() {
+        // Listen for Arrow down, underscore, hat (^) and Up Arrow  keys.
+        this._registerEventHandle(this._wrapper.delegate('key',
+                this.textareaKeyboardNavigation,
+                'down:40,95',
+                '.' + CSS.CONTENT,
+                this));
+        this._registerEventHandle(this._wrapper.delegate('focus',
+                function(e) {
+                    this._setTabFocus(e.currentTarget);
+                }, '.' + CSS.CONTENT , this));
+        this._registerEventHandle(this._wrapper.delegate('key',
+                this.textareaKeyboardNavigation,
+                'down:38,94',
+                '.' + CSS.CONTENT,
+                this));
+
+        return this;
+    },
+
+    /**
+     * Implement arrow key navigation for the buttons in the toolbar.
+     *
+     * @method toolbarKeyboardNavigation
+     * @param {EventFacade} e - the keyboard event.
+     */
+    textareaKeyboardNavigation: function(e) {
+
+        // Prevent the default browser behaviour.
+        e.preventDefault();
+        
+        // From editor-plugins_buttons::callbackWrapper().
+        if (!(YUI.Env.UA.android || this.isActive())) {
+            // We must not focus for Android here, even if the editor is not active because the keyboard auto-completion
+            // changes the cursor position.
+            // If we save that change, then when we restore the change later we get put in the wrong place.
+            // Android is fine to save the selection without the editor being in focus.
+            this.focus();
+        }
+
+        var command = '', mode = 1;
+        
+        // Cross browser event object.
+        var evt = window.event || e;
+        var code =  evt.keyCode ? evt.keyCode : evt.charCode;
+        // Call superscript.
+        if ((code === 38) || (code === 94)) {
+            command = 'superscript';
+        // Call subscript.
+        } else if ((code === 40) || (code === 95)) {
+            command = 'subscript';
+        }
+
+        this._applyTextCommand(command, mode);
+    },
+
+    /**
+     * Prevent carriage return to produce a new line.
+     */
+     _preventEnter: function() {
+         var keyEvent = 'keypress';
+         if (Y.UA.webkit || Y.UA.ie) {
+             keyEvent = 'keydown';
+         }
+         this.editor.on(keyEvent, function(e) {
+             //Cross browser event object.
+             var evt = window.event || e;
+             if (evt.keyCode === 13) { // Enter.
+                 // do nothing.
+                 evt.preventDefault();
+             }
+         }, this);
+     },
 };
 
 Y.Base.mix(Y.M.editor_ousupsub.Editor, [EditorTextArea]);
@@ -796,11 +887,6 @@ EditorClean.prototype = {
         Y.each(editorClone.all('[id^="selectionBoundary_"]'), function(node) {
             this._removeNode(node);
         });
-
-//     // Remove all br nodes.
-//        Y.each(editorClone.all('br'), function(node) {
-//            node.remove();
-//        });
 
         editorClone.all('.ousupsub_control').remove(true);
         html = editorClone.get('innerHTML');
@@ -1105,33 +1191,53 @@ EditorClean.prototype = {
      *
      * @method _applyTextCommand
      * @private
+     * @param int mode (optional) default is button (0), keyboard is 1
      * @return void
      */
-    _applyTextCommand: function(command, type) {
-        /*
-        if (type === 1) {
-            document.execCommand('superscript', false, null);
-        } else if (type === -1) {
-            document.execCommand('subscript', false, null);
-        } else if (type === 0) {
-            //document.execComand('', false, null);
+    _applyTextCommand: function(command, mode) {
+        // Handle keyboard mode.
+        if (mode) {
+            var tag = this.getCursorTag();
+            if (tag == 'superscript' && command == tag ||
+                    tag == 'subscript' && command == tag) {
+                return; // Do nothing.
+            } else if (tag == 'superscript' && command == 'subscript') {
+                command = 'superscript';
+            }  else if (tag == 'subscript' && command == 'superscript') {
+                command = 'subscript';
+            }
         }
-        */
-        // TODO: Trigger supperscript when type is 1, trigger subscript when type is -1.
-        /*
-         * Store a clone of the editor contents or the selection contents before
-         * applying sup/sub. Then you can determine the initial state and what the result should be.
-         */
 
         document.execCommand(command, false, null);
         this._normaliseTextarea();
 
         // And mark the text area as updated.
-     // Save selection after changes to the DOM. If you don't do this here,
+        // Save selection after changes to the DOM. If you don't do this here,
         // subsequent calls to restoreSelection() will fail expecting the
         // previous DOM state.
         this.saveSelection();
         this.updateOriginal();
+    },
+
+    /**
+     * What type of tag surrounds the cursor.
+     *
+     * @method _getCursorTag
+     * @private
+     * @return string
+     */
+    getCursorTag: function() {
+        var tag = 'text'; 
+        var selection = rangy.getSelection();
+
+        if (selection.focusNode.nodeName.toLowerCase() == 'sup' || 
+                    selection.focusNode.parentNode.nodeName.toLowerCase() == 'sup') {
+            tag = 'superscript';
+        } else if (selection.focusNode.nodeName.toLowerCase() == 'sub' || 
+                    selection.focusNode.parentNode.nodeName.toLowerCase() == 'sub') {
+            tag = 'subscript';
+        }
+        return tag;
     },
 
     /**
@@ -1479,7 +1585,7 @@ EditorToolbar.prototype = {
         }
 
         // Add keyboard navigation for the toolbar.
-        this.setupToolbarNavigation();
+//        this.setupToolbarNavigation();
 
         return this;
     }
@@ -2787,7 +2893,7 @@ EditorPluginButtons.prototype = {
                 // A keyboard shortcut description was specified - use it.
                 this._primaryKeyboardShortcut[buttonClass] = config.keyDescription;
             }
-            //this._addKeyboardListener(config.callback, config.keys, buttonClass);
+            this._addKeyboardListener(config.callback, config.keys, buttonClass);
 
             if (this._primaryKeyboardShortcut[buttonClass]) {
                 // If we have a valid keyboard shortcut description, then set it with the title.
@@ -2821,66 +2927,13 @@ EditorPluginButtons.prototype = {
             );
         }
 
-        // Prevent carriage return to produce a new line.
-        this._preventEnter();
-
-        // Trigger keys like up/down-arrow.
-        this._handle_key_press();
+        
 
         // Add the button reference to the buttons array for later reference.
         this.buttonNames.push(config.buttonName);
         this.buttons[config.buttonName] = button;
         this.buttonStates[config.buttonName] = this.ENABLED;
         return button;
-    },
-
-   /**
-    * Prevent carriage return to produce a new line.
-    */
-    _preventEnter: function() {
-        var keyEvent = 'keypress';
-        if (Y.UA.webkit || Y.UA.ie) {
-            keyEvent = 'keydown';
-        }
-        this.editor.on(keyEvent, function(e) {
-            //Cross browser event object.
-            var evt = window.event || e;
-            if (evt.keyCode === 13) { // Enter.
-                // do nothing.
-                evt.preventDefault();
-            }
-        }, this);
-    },
-
-
-    /**
-     * 
-     */
-    _handle_key_press: function() {
-        var type = 0;
-        var keyEvent = 'press';
-            if (Y.UA.webkit || Y.UA.ie) {
-            keyEvent = 'down';
-        }
-        this.editor.on('key' + keyEvent, function(e) {
-            //Cross browser event object.
-            var evt = window.event || e;
-            var code =  evt.keyCode ? evt.keyCode : evt.charCode;
-            // Call superscript.
-            if ((code === 38) || (code === 94)) {
-                evt.preventDefault();
-                type = 1;
-                this._applyTextCommand(type);
-            // Call subscript.
-            } else if ((code === 40) || (code === 95)) {
-                evt.preventDefault();
-                type = -1;
-                this._applyTextCommand(type);
-            }
-            // Pass on the type.
-            //this._applySupSub(type);
-            this._buttonHandlers.push(this.editor.delegate('key', keyEvent, code, CSS.EDITORWRAPPER, this));
-        }, this);
     },
 
     /**
@@ -3282,25 +3335,14 @@ EditorPluginButtons.prototype = {
             handler = callback;
 
         } else {
-            modifier = '';//this._getDefaultMetaKey();
-            //keys = this._getKeyEvent() + keyConfig + '+' + modifier;
+            modifier = '';
             keys = keyConfig;
             if (typeof this._primaryKeyboardShortcut[buttonName] === 'undefined') {
                 this._primaryKeyboardShortcut[buttonName] = this._getDefaultMetaKeyDescription(keyConfig);
             }
             // Wrap the callback into a handler to check if it uses the specified modifiers, not more.
             handler = Y.bind(function(modifiers, e) {
-                if (buttonName === 'ousupsub_superscript_button_superscript') {
-                    if ((keys === '40') || (keys === '95')) {
-                        return;
-                    }
                     callback.apply(this, [e]);
-                } else if (buttonName === 'ousupsub_subscript_button_subscript') {
-                    if ((keys === '38') || (keys === '94')) {
-                        return;
-                    }
-                    callback.apply(this, [e]);
-                }
             }, this, [modifier]);
         }
 
@@ -3536,23 +3578,14 @@ EditorPluginButtons.prototype = {
       * @private
       * @return void
       */
-     _applyTextCommand: function(type) {
+     _applyTextCommand: function(e) {
+         var mode = 0;
 
-         /*
-         if (type === 1) {
-             document.execCommand('superscript', false, null);
-         } else if (type === -1) {
-             document.execCommand('subscript', false, null);
-         } else if (type === 0) {
-             //document.execComand('', false, null);
+         if(e && e.type == 'key') {
+             mode = 1;
          }
-         */
-         // TODO: Trigger supperscript when type is 1, trigger subscript when type is -1.
-         /*
-          * Store a clone of the editor contents or the selection contents before
-          * applying sup/sub. Then you can determine the initial state and what the result should be.
-          */
-         this._getEditor()._applyTextCommand(this._config.exec);
+
+         this._getEditor()._applyTextCommand(this._config.exec, mode);
      },
 
     /**
