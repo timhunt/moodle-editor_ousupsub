@@ -182,7 +182,7 @@ EditorTextArea.prototype = {
                  evt.preventDefault();
              }
          }, this);
-     },
+     }
 };
 
 Y.Base.mix(Y.M.editor_ousupsub.Editor, [EditorTextArea]);

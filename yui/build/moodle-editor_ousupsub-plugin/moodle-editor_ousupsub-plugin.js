@@ -211,7 +211,6 @@ var MENUTEMPLATE = '' +
 
 var DISABLED = 'disabled',
     HIGHLIGHT = 'highlight',
-    LOGNAME = 'moodle-editor_ousupsub-editor-plugin',
     CSS = {
         EDITORWRAPPER: '.editor_ousupsub_content'
     };
@@ -1081,7 +1080,7 @@ EditorPluginButtons.prototype = {
      _applyTextCommand: function(e) {
          var mode = 0;
 
-         if(e && e.type == 'key') {
+         if(e && e.type === 'key') {
              mode = 1;
          }
 

@@ -363,28 +363,29 @@ EditorClean.prototype = {
      * @return void
      */
     _applyTextCommand: function(command, mode) {
+        var selection, tag;
         // Handle keyboard mode.
         if (mode) {
-            var tag = this.getCursorTag();
-            if (tag == 'superscript' && command == tag ||
-                    tag == 'subscript' && command == tag) {
+            tag = this.getCursorTag();
+            if (tag === 'superscript' && command === tag ||
+                    tag === 'subscript' && command === tag) {
                 return; // Do nothing.
-            } else if (tag == 'superscript' && command == 'subscript') {
+            } else if (tag === 'superscript' && command === 'subscript') {
                 command = 'superscript';
-            }  else if (tag == 'subscript' && command == 'superscript') {
+            }  else if (tag === 'subscript' && command === 'superscript') {
                 command = 'subscript';
             }
         }
 
         // Apply command.
         document.execCommand(command, false, null);
-        
-        // If nothing is selected add a relevant tag. 
-        var selection = rangy.getSelection();
+
+        // If nothing is selected add a relevant tag.
+        selection = rangy.getSelection();
         // If it's a collapsed selection the cursor is in the editor but no selection has been made.
         if (selection.isCollapsed) {
             // Insert tag at cursor focus point.
-            var tag = command == 'superscript' ? 'sup':'sub';
+            tag = command === 'superscript' ? 'sup':'sub';
             var node = this.insertContentAtFocusPoint('<'+tag+'>﻿&#65279;</'+tag+'>');
             var range = rangy.createRange();
             range.selectNode(node._node.childNodes[0]);
@@ -408,14 +409,14 @@ EditorClean.prototype = {
      * @return string
      */
     getCursorTag: function() {
-        var tag = 'text'; 
+        var tag = 'text';
         var selection = rangy.getSelection();
 
-        if (selection.focusNode.nodeName.toLowerCase() == 'sup' || 
-                    selection.focusNode.parentNode.nodeName.toLowerCase() == 'sup') {
+        if (selection.focusNode.nodeName.toLowerCase() === 'sup' ||
+                    selection.focusNode.parentNode.nodeName.toLowerCase() === 'sup') {
             tag = 'superscript';
-        } else if (selection.focusNode.nodeName.toLowerCase() == 'sub' || 
-                    selection.focusNode.parentNode.nodeName.toLowerCase() == 'sub') {
+        } else if (selection.focusNode.nodeName.toLowerCase() === 'sub' ||
+                    selection.focusNode.parentNode.nodeName.toLowerCase() === 'sub') {
             tag = 'subscript';
         }
         return tag;
@@ -443,7 +444,7 @@ EditorClean.prototype = {
         this._removeSingleNodesByName(editor_node, 'br');
         
         // Remove specific tags.
-        var tagsToRemove = new Array('p', 'b', 'i', 'u', 'ul', 'ol', 'li');
+        var tagsToRemove = ['p', 'b', 'i', 'u', 'ul', 'ol', 'li'];
         for (var i=0; i<tagsToRemove.length; i++) {
             this._removeNodesByName(editor_node, tagsToRemove[i]);
         }
@@ -468,38 +469,34 @@ EditorClean.prototype = {
      * @return string.
      */
     _normaliseTagInTextarea: function(name) {
-        var nodes = new Array(), container = this._getEditorNode();
+        var nodes = [], container = this._getEditorNode(), parentNode, removeParent = false;
 
         // Remove nested nodes.
-        
         /*
-         * Where the node.firstChild == nodes[i+1] since it ignores text elements 
-         * I know it's the first node. Since the two elements match they should cancel 
-         * each other out. Currently we remove only the child sup. We should remove 
+         * Where the node.firstChild == nodes[i+1] since it ignores text elements
+         * I know it's the first node. Since the two elements match they should cancel
+         * each other out. Currently we remove only the child sup. We should remove
          * both and move their children out.
          */
+        // Nodelists change as nodes are added and removed. Use an array of nodes instead.
         nodes = this._copyArray(container.querySelectorAll(name), nodes);
 
-        var parentNode, removeParent = false;
-        // Nodelists change as nodes are added and removed. Use an array of nodes instead.
         for (var i = 0; i < nodes.length; i++) {
             node = nodes[i];
             parentNode = node.parentNode;
             removeParent = false;
-            if (parentNode == container ) {
+            if (parentNode === container ) {
                 continue;
             }
-            if (parentNode.firstChild == node && parentNode.lastChild == node && 
-                            parentNode.nodeName.toLowerCase() == name) {
+            if (parentNode.firstChild === node && parentNode.lastChild === node &&
+                            parentNode.nodeName.toLowerCase() === name) {
                 removeParent = true;
             }
-            
-            if (!removeParent && node && parentNode.nodeName.toLowerCase() == name) {
+            if (!removeParent && node && parentNode.nodeName.toLowerCase() === name) {
                 removeParent = true;
                 this._splitParentNode(parentNode, name);
             }
             this._removeNodesByName(node, name);
-
             if (removeParent) {
                 this._removeNodesByName(parentNode, name);
             }
@@ -507,13 +504,12 @@ EditorClean.prototype = {
 
         // Combine Sibling nodes.
         // Get a new node array and fill with the a fresh nodelist.
-        nodes = new Array();
+        nodes = [];
         nodes = this._copyArray(container.querySelectorAll(name), nodes);
 
-        for (var i = 0; i < nodes.length; i++) {
+        for (i = 0; i < nodes.length; i++) {
             node = nodes[i];
-            // Combine Sibling tags.
-            if (!node.previousSibling || node.previousSibling.nodeName.toLowerCase() != name) {
+            if (!node.previousSibling || node.previousSibling.nodeName.toLowerCase() !== name) {
                 continue;
             }
             this._mergeNodes(node, node.previousSibling);
@@ -530,15 +526,15 @@ EditorClean.prototype = {
      * @return void.
      */
     _mergeNodes: function(from, to) {
-        var nodes = new Array();
+        var nodes = [];
         var merge_nodes = from.childNodes;
 
         // Node lists reduce in size as nodes are removed. Use an array of nodes instead.
-        for (i = 0; i < merge_nodes.length; i++) {
+        for (var i = 0; i < merge_nodes.length; i++) {
             nodes.push(merge_nodes.item(i));
         }
 
-        for (var i = 0; i < nodes.length; i++) {
+        for (i = 0; i < nodes.length; i++) {
             node = nodes[i];
             to.appendChild(node);
         }
@@ -561,7 +557,7 @@ EditorClean.prototype = {
         for (i = 0; i < nodes.length; i++) {
             node = nodes[i];
             nodesToAppend = [];
-            if (node.nodeName.toLowerCase() == name) {
+            if (node.nodeName.toLowerCase() === name) {
                 nodesToAppend = this._copyArray(node.childNodes, nodesToAppend);
             } else {
                 nodesToAppend[0] = document.createElement(name);
@@ -601,12 +597,12 @@ EditorClean.prototype = {
      * @return void.
      */
     _removeNodesByName: function(container_node, name) {
-        var node, remove_node = container_node.nodeName.toLowerCase() == name;
-        var nodes = new Array();
+        var node, remove_node = container_node.nodeName.toLowerCase() === name;
+        var nodes = [];
         var container_nodes = container_node.childNodes;
 
         // Don't remove the span used by rangy to save and restore the user selection.
-        if (container_node.nodeName.toLowerCase() == 'span' &&
+        if (container_node.nodeName.toLowerCase() === 'span' &&
                 container_node.id.indexOf('selectionBoundary_') > -1) {
             remove_node = false;
         }
@@ -642,7 +638,7 @@ EditorClean.prototype = {
             return;
         }
         var node;
-        var nodes = new Array();
+        var nodes = [];
         nodes = this._copyArray(container_node.childNodes, nodes);
         for (var i = 0; i < nodes.length; i++) {
             node = nodes[i];
@@ -650,7 +646,7 @@ EditorClean.prototype = {
                 this._removeSingleNodesByName(node, name);
             }
 
-            if (node.nodeName.toLowerCase() == name) {
+            if (node.nodeName.toLowerCase() === name) {
                 this._removeNode(node);
             }
         }
@@ -666,7 +662,7 @@ EditorClean.prototype = {
    _removeNode: function(node) {
        if(!node.remove) {
            return node.parentNode.removeChild(node);
-       } 
+       }
        return node.remove();
    },
 

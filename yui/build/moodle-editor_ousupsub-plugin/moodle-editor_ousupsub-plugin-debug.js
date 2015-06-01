@@ -211,7 +211,6 @@ var MENUTEMPLATE = '' +
 
 var DISABLED = 'disabled',
     HIGHLIGHT = 'highlight',
-    LOGNAME = 'moodle-editor_ousupsub-editor-plugin',
     CSS = {
         EDITORWRAPPER: '.editor_ousupsub_content'
     };
@@ -351,7 +350,6 @@ EditorPluginButtons.prototype = {
      * @return {Node} The Node representing the newly created button.
      */
     addButton: function(config) {
-        Y.log('addButton', 'debug', 'addButton');
         var group = this.get('group'),
             pluginname = this.name,
             buttonClass = 'ousupsub_' + pluginname + '_button',
@@ -854,7 +852,6 @@ EditorPluginButtons.prototype = {
         } else {
             modifier = '';
             keys = keyConfig;
-            Y.log(keys, 'debug', 'keys 333');
             if (typeof this._primaryKeyboardShortcut[buttonName] === 'undefined') {
                 this._primaryKeyboardShortcut[buttonName] = this._getDefaultMetaKeyDescription(keyConfig);
             }
@@ -1057,7 +1054,6 @@ EditorPluginButtons.prototype = {
      * @private
      */
     _getDefaultMetaKeyDescription: function(keyCode) {
-        Y.log('_getDefaultMetaKeyDescription', 'debug', '_getDefaultMetaKeyDescription');
         if (Y.UA.os === 'macintosh') {
             return M.util.get_string('editor_command_keycode', 'editor_ousupsub', String.fromCharCode(keyCode).toLowerCase());
         } else {
@@ -1086,7 +1082,7 @@ EditorPluginButtons.prototype = {
      _applyTextCommand: function(e) {
          var mode = 0;
 
-         if(e && e.type == 'key') {
+         if(e && e.type === 'key') {
              mode = 1;
          }
 
