@@ -386,6 +386,10 @@ EditorClean.prototype = {
         if (selection.isCollapsed) {
             // Insert tag at cursor focus point.
             tag = command === 'superscript' ? 'sup':'sub';
+            // ﻿&#65279; is is the Unicode Character 'ZERO WIDTH NO-BREAK SPACE' (U+FEFF). Used
+            // by TinyMCE to add empty sup/sub tags when nothing is selected. This causes lint
+            // errors but I couldn't find a better solution.
+            // http://stackoverflow.com/questions/9691771/why-is-65279-appearing-in-my-html.
             var node = this.insertContentAtFocusPoint('<'+tag+'>﻿&#65279;</'+tag+'>');
             var range = rangy.createRange();
             range.selectNode(node._node.childNodes[0]);
