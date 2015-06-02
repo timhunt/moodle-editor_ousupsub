@@ -140,7 +140,7 @@ EditorTextArea.prototype = {
 
         // Prevent the default browser behaviour.
         e.preventDefault();
-        
+
         // From editor-plugins_buttons::callbackWrapper().
         if (!(YUI.Env.UA.android || this.isActive())) {
             // We must not focus for Android here, even if the editor is not active because the keyboard auto-completion
@@ -151,7 +151,6 @@ EditorTextArea.prototype = {
         }
 
         var command = '', mode = 1;
-        
         // Cross browser event object.
         var evt = window.event || e;
         var code =  evt.keyCode ? evt.keyCode : evt.charCode;

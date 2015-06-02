@@ -275,7 +275,6 @@ Y.extend(Editor, Y.Base, {
      */
     focus: function() {
         this.editor.focus();
-
         return this;
     },
 
