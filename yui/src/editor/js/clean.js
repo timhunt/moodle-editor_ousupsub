@@ -442,8 +442,6 @@ EditorClean.prototype = {
         // Remove all the span tags added to the editor textarea by the browser.
         // Get the html directly inside the editor <p> tag and remove span tags from the html inside it.
         
-        var editor = this._getEditor();
-        editor.cleanEditorHTML();
         var editor_node = this._getEditorNode();
         this._removeSingleNodesByName(editor_node, 'br');
         
