@@ -1524,8 +1524,6 @@ EditorToolbarNav.prototype = {
                 'up:38,40',
                 '.' + CSS.TOOLBAR,
                 this));
-        console.log('setuptool navigation');
-
         return this;
     },
 

@@ -29,7 +29,8 @@ Y.namespace('M.ousupsub_superscript').Button = Y.Base.create('button', Y.M.edito
             tags: 'sup',
 
             // Key code (up arrow) for the keyboard shortcut which triggers this button:
-            keys: ['94', '38'],
+            // Up arrow should be 38 but doesn't register and is handled elsewhere.
+            keys: ['94'],
 
             icon: 'e/superscript',
             callback: this._applyTextCommand

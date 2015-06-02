@@ -41,8 +41,9 @@ Y.namespace('M.ousupsub_subscript').Button = Y.Base.create('button', Y.M.editor_
             // Watch the following tags and add/remove highlighting as appropriate:
             tags: 'sub',
 
-            // Key codes (down-arrow, underscore) for the keyboard shortcut which triggers this button:
-            keys: ['95', '40'],
+            // Key codes (underscore) for the keyboard shortcut which triggers this button:
+            // Down arrow should be 40 but doesn't register.
+            keys: ['95'],
 
             icon: 'e/subscript',
             callback: this._applyTextCommand
