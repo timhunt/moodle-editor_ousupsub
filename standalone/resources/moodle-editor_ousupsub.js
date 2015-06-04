@@ -426,7 +426,6 @@ Y.extend(Editor, Y.Base, {
      */
     focus: function() {
         this.editor.focus();
-
         return this;
     },
 
@@ -785,7 +784,7 @@ EditorTextArea.prototype = {
 
         // Prevent the default browser behaviour.
         e.preventDefault();
-        
+
         // From editor-plugins_buttons::callbackWrapper().
         if (!(YUI.Env.UA.android || this.isActive())) {
             // We must not focus for Android here, even if the editor is not active because the keyboard auto-completion
@@ -796,7 +795,6 @@ EditorTextArea.prototype = {
         }
 
         var command = '', mode = 1;
-        
         // Cross browser event object.
         var evt = window.event || e;
         var code =  evt.keyCode ? evt.keyCode : evt.charCode;
@@ -1274,8 +1272,6 @@ EditorClean.prototype = {
         // Remove all the span tags added to the editor textarea by the browser.
         // Get the html directly inside the editor <p> tag and remove span tags from the html inside it.
         
-        var editor = this._getEditor();
-        editor.cleanEditorHTML();
         var editor_node = this._getEditorNode();
         this._removeSingleNodesByName(editor_node, 'br');
         
@@ -1673,8 +1669,6 @@ EditorToolbarNav.prototype = {
                 'up:38,40',
                 '.' + CSS.TOOLBAR,
                 this));
-        console.log('setuptool navigation');
-
         return this;
     },
 
@@ -8111,7 +8105,8 @@ Y.namespace('M.ousupsub_superscript').Button = Y.Base.create('button', Y.M.edito
             tags: 'sup',
 
             // Key code (up arrow) for the keyboard shortcut which triggers this button:
-            keys: ['38', '94'],
+            // Up arrow should be 38 but doesn't register and is handled elsewhere.
+            keys: ['94'],
 
             
             callback: this._applyTextCommand
@@ -8166,8 +8161,9 @@ Y.namespace('M.ousupsub_subscript').Button = Y.Base.create('button', Y.M.editor_
             // Watch the following tags and add/remove highlighting as appropriate:
             tags: 'sub',
 
-            // Key codes (down-arrow, underscore) for the keyboard shortcut which triggers this button:
-            keys: ['40', '95'],
+            // Key codes (underscore) for the keyboard shortcut which triggers this button:
+            // Down arrow should be 40 but doesn't register.
+            keys: ['95'],
 
             
             callback: this._applyTextCommand

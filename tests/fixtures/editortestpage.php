@@ -45,10 +45,21 @@ echo html_writer::tag('h2', 'New (Atto) supsub');
 echo html_writer::label('Input', 'supsub');
 echo html_writer::tag('textarea', '', array('name' => 'supsub', 'id' => 'supsub', 'rows' => 2, 'cols' => 20));
 $neweditor->use_editor('supsub', array('supsub' => $type));
+
+echo html_writer::tag('h2', 'New (Atto) supsub rows 4, cols 40');
+echo html_writer::label('Input rows 4 cols 40', 'supsub2');
+echo html_writer::tag('textarea', '', array('name' => 'supsub2', 'id' => 'supsub2', 'rows' => 4, 'cols' => 40));
+$neweditor->use_editor('supsub2', array('supsub' => $type));
+
 echo html_writer::tag('h2', 'Original (Tinymce) supsub');
 echo html_writer::label('Original Input', 'originalsupsub');
 echo html_writer::tag('textarea', '', array('name' => 'originalsupsub', 'id' => 'originalsupsub', 'rows' => 2, 'cols' => 20));
 $originaleditor->use_editor('originalsupsub', array('supsub' => $type));
+
+echo html_writer::tag('h2', 'Original (Tinymce) supsub rows 4, cols 40');
+echo html_writer::label('Original Input rows 4, cols 40', 'originalsupsub2');
+echo html_writer::tag('textarea', '', array('name' => 'originalsupsub2', 'id' => 'originalsupsub2', 'rows' => 4, 'cols' => 40));
+$originaleditor->use_editor('originalsupsub2', array('supsub' => $type));
 
 echo $OUTPUT->footer();
 
