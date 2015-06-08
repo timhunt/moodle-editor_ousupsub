@@ -88,7 +88,10 @@ function run_tests(Y) {
 
 function run_test(editor, test) {
     editor.editor.set('innerHTML', test.input);
+    // Fake the subscript button.
     editor.plugins.subscript._applyTextCommand();
+    // Fake submit
+    editor.updateFromTextArea();
     test.actual = editor.editor.get('innerHTML'); 
     test.matched = test.expected == test.actual;
 }
