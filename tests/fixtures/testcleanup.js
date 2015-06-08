@@ -7,7 +7,7 @@
 var testcases = [
                  {input: "<sup id=\"yui12345\" class=\"yui12345\" alt=\"\" style=\"\">1</sup>", expected: "<sup>1</sup>"},
                  {input: "<sub id=\"yui12345\" class=\"yui12345\" alt=\"\" style=\"\">1</sub>", expected: "<sub>1</sub>"},
-                 {input: "&nbsp;", expected: " "},
+                 {input: "&nbsp;", expected: ""},
                  {input: "1<sup> 2</sup>", expected: "1 <sup>2</sup>"}, // Space after start sup tag.
                  {input: "1<sub> 2</sub>", expected: "1 <sub>2</sub>"}, // Space after start sub tag.
                  {input: "1<sup>   2</sup>", expected: "1   <sup>2</sup>"}, // Spaces after start sup tag.
