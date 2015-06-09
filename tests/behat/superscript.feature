@@ -3,7 +3,7 @@ Feature: ousupsub superscript button
   To format text in ousupsub, I need to use the superscript button.
 
   @javascript
-  Scenario: Subscript some text
+  Scenario: Superscript some text
     Given I am on the integrated "sup" editor test page
     And I set the field "Input" to "Helicopter"
     And I select the text in the "Input" ousupsub editor
