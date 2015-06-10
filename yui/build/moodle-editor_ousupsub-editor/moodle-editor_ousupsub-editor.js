@@ -730,11 +730,6 @@ EditorClean.prototype = {
             node.removeAttribute('id');
         });
 
-        // Remove all selection nodes.
-        Y.each(editorClone.all('[id^="selectionBoundary_"]'), function(node) {
-            this._removeNode(node);
-        });
-
         editorClone.all('.ousupsub_control').remove(true);
         html = editorClone.get('innerHTML');
 
@@ -808,10 +803,32 @@ EditorClean.prototype = {
 
             // Remove any open HTML comment opens that are not followed by a close. This can completely break page layout.
             {regex: /<!--(?![\s\S]*?-->)/gi, replace: ""},
+            
+            // Remove elements that can not contain visible text.
+            {regex: /<script[^>]*>[\s\S]*?<\/script>/gi, replace: ""},
 
             // Source: "http://www.codinghorror.com/blog/2006/01/cleaning-words-nasty-html.html"
             // Remove forbidden tags for content, title, meta, style, st0-9, head, font, html, body, link.
-            {regex: /<\/?(?:br|title|meta|style|st\d|head|font|html|body|link)[^>]*?>/gi, replace: ""}
+            {regex: /<\/?(?:br|title|meta|style|std|font|html|body|link|a|ul|li|ol)[^>]*?>/gi, replace: ""},
+            {regex: /<\/?(?:b|i|u|ul|ol|li|img)[^>]*?>/gi, replace: ""},
+            // Source:"https://developer.mozilla.org/en/docs/Web/HTML/Element"
+            // Remove all elements except sup and sub.
+            {regex: /<\/?(?:abbr|address|area|article|aside|audio|base|bdi|bdo|blockquote)[^>]*?>/gi, replace: ""},
+            {regex: /<\/?(?:button|canvas|caption|cite|code|col|colgroup|content|data)[^>]*?>/gi, replace: ""},
+            {regex: /<\/?(?:datalist|dd|decorator|del|details|dialog|dfn|div|dl|dt|element)[^>]*?>/gi, replace: ""},
+            {regex: /<\/?(?:em|embed|fieldset|figcaption|figure|footer|form|h1|h2|h3|h4|h5)[^>]*?>/gi, replace: ""},
+            {regex: /<\/?(?:h6|header|hgroup|hr|iframe|input|ins|kbd|keygen|label|legend)[^>]*?>/gi, replace: ""},
+            {regex: /<\/?(?:main|map|mark|menu|menuitem|meter|nav|noscript|object|optgroup)[^>]*?>/gi, replace: ""},
+            {regex: /<\/?(?:option|output|p|param|pre|progress|q|rp|rt|rtc|ruby|samp)[^>]*?>/gi, replace: ""},
+            {regex: /<\/?(?:section|select|script|shadow|small|source|std|strong|summary)[^>]*?>/gi, replace: ""},
+            {regex: /<\/?(?:table|tbody|td|template|textarea|time|tfoot|th|thead|tr|track)[^>]*?>/gi, replace: ""},
+            {regex: /<\/?(?:var|wbr|video)[^>]*?>/gi, replace: ""},
+
+            // Deprecated elements that might still be used by older sites.
+            {regex: /<\/?(?:acronym|applet|basefont|big|blink|center|dir|frame|frameset|isindex)[^>]*?>/gi, replace: ""},
+            {regex: /<\/?(?:listing|noembed|plaintext|spacer|strike|tt|xmp)[^>]*?>/gi, replace: ""},
+            
+            {regex: /<span(?![^>]*?rangySelectionBoundary[^>]*?)[^>]*>[\s\S]*?([\s\S]*?)<\/span>/gi, replace: "$1"}
         ];
 
         return this._filterContentWithRules(content, rules);
@@ -1021,7 +1038,7 @@ EditorClean.prototype = {
             // Remove OLE_LINK# anchors that may litter the code.
             {regex: /<a [^>]*?name\s*?=\s*?"OLE_LINK\d*?"[^>]*?>\s*?<\/a>/gi, replace: ""},
             // Remove empty spans, but not ones from Rangy.
-            {regex: /<span(?![^>]*?rangySelectionBoundary[^>]*?)[^>]*>(&nbsp;|\s)*<\/span>/gi, replace: ""}
+            {regex: /<span(?![^>]*?rangySelectionBoundary[^>]*?)[^>]*>[\s\S]*?([\s\S]*?)<\/span>/gi, replace: "$1"}
         ];
 
         // Apply the rules.
@@ -1124,7 +1141,7 @@ EditorClean.prototype = {
         var editor_node = this._getEditorNode();
         this._removeSingleNodesByName(editor_node, 'br');
         
-        // Remove specific tags.
+        // Remove specific tags that can be added through keyboard shortcuts.
         var tagsToRemove = ['p', 'b', 'i', 'u', 'ul', 'ol', 'li'];
         for (var i=0; i<tagsToRemove.length; i++) {
             this._removeNodesByName(editor_node, tagsToRemove[i]);

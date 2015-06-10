@@ -35,19 +35,53 @@ var testcases = [
                  {input: "1<sup><sup>2</sup></sup>3", expected: "123"}, // Remove sup.
                  {input: "1<sub><sup>2</sup>3</sub>4<br>", expected: "1<sub>23</sub>4"}, // Keep sub.
                  {input: "1<sup>2</sup><sub><sup>3</sup>4</sub>5<br>", expected: "1<sup>2</sup><sub>34</sub>5"}, // Keep sub.
+                 
+                 // Test paste event.
+                 {input: "<div><ul><li><span><a href=\"\">1<img /></a></span></li></ul></div>", expected: "1", event: "paste"},
 
+                 // Spans with rangy and without.
+                 {input: "1<span id=\"selectionBoundary_123\" class=\"rangySelectionBoundary\"></span>2<span>3<span></span>4</span>5", expected: "1<span id=\"selectionBoundary_123\" class=\"rangySelectionBoundary\"></span>2345"}, // Keep sub.
+                 
                  /* Check for disallowed characters */
                  {input: "<sup><p>12</p></sup>", expected: "<sup>12</sup>"},
                  {input: "<sup><b>12</b></sup>", expected: "<sup>12</sup>"},
                  {input: "<sup><i>12</i></sup>", expected: "<sup>12</sup>"},
                  {input: "<sup><u>12</u></sup>", expected: "<sup>12</sup>"},
-                 {input: "<ol>1</ol>", expected: "1"},
-                 {input: "<li>1</li>", expected: "1"},
-                 {input: "<ul>1</ul>", expected: "1"},
                  {input: "1<br>", expected: "1"},
                  {input: "1<br />", expected: "1"}
-                 
 ];
+
+// Elements to remove completely including contents.
+var disallowed_characters_and_text = ['style','script'];
+for (var x=0;x<disallowed_characters_and_text.length;x++) {
+    testcases[testcases.length] = {input: "<"+disallowed_characters_and_text[x]+">1</"+disallowed_characters_and_text[x]+">", expected: ""};
+}
+
+// Elements to remove while contents are left.
+var disallowed_characters = ['br','title','std','font','html','body','link',
+                             'a','ul','li','ol','b','i','u','ul','ol','li','img',
+                             'abbr','address','area','article','address','article',
+                             'aside','audio','base','bdi','bdo','blockquote','button',
+                             'canvas','caption','cite','code','col','colgroup','content',
+                             'data','datalist','dd','decorator','del','details','dialog',
+                             'dfn','div','dl','dt','element','em','embed','fieldset',
+                             'figcaption','figure','footer','form','h1','h2','h3','h4',
+                             'h5','h6','head','header','hgroup','hr','iframe','input',
+                             'ins','kbd','keygen','label','legend','main','map','mark',
+                             'menu','menuitem','meter','meta','nav','noscript',
+                             'object','optgroup','option','output','optgroup','options',
+                             'p','param','pre','progress','q','rp','rt','rtc','ruby',
+                             'samp','section','select','shadow','small','source','std',
+                             'strong','summary','span','table','tbody','td','template',
+                             'textarea','time','tfoot','th','thead','tr','track','var',
+                             'wbr','video',
+                             // Deprecated elements
+                             'acronym','applet','basefont','big','blink','center','dir',
+                             'frame','frameset','isindex','listing','noembed',
+                             'spacer','strike','tt','xmp'];
+for (var x=0;x<disallowed_characters.length;x++) {
+    testcases[testcases.length] = {input: "<"+disallowed_characters[x]+">1</"+disallowed_characters[x]+">", expected: "1"};
+}
 
 function init_ousupsub(id, params) {
     M.str = {"moodle":{"error":"Error","morehelp":"More help","changesmadereallygoaway":"You have made changes. Are you sure you want to navigate away and lose your changes?"},"ousupsub_subscript":{"pluginname":"Subscript"},"ousupsub_superscript":{"pluginname":"Superscript"},"editor_ousupsub":{"editor_command_keycode":"Cmd + {$a}","editor_control_keycode":"Ctrl + {$a}","plugin_title_shortcut":"{$a->title} [{$a->shortcut}]","plugin_title_shortcut":"{$a->title} [{$a->shortcut}]"},"error":{"serverconnection":"Error connecting to the server"}}
@@ -87,7 +121,11 @@ function run_tests(Y) {
 
 
 function run_test(editor, test) {
-    editor.editor.set('innerHTML', test.input);
+    var input = test.input
+    if(test.event && test.event == 'paste') {
+        input = editor._cleanPasteHTML(input);
+    }
+    editor.editor.set('innerHTML', input);
     // Fake the subscript button.
     editor.plugins.subscript._applyTextCommand();
     // Fake submit
