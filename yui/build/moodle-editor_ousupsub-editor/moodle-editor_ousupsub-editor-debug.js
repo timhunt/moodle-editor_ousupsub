@@ -832,6 +832,9 @@ EditorClean.prototype = {
             // Deprecated elements that might still be used by older sites.
             {regex: /<\/?(?:acronym|applet|basefont|big|blink|center|dir|frame|frameset|isindex)[^>]*?>/gi, replace: ""},
             {regex: /<\/?(?:listing|noembed|plaintext|spacer|strike|tt|xmp)[^>]*?>/gi, replace: ""},
+
+            // Elements from common sites including google.com.
+            {regex: /<\/?(?:jsl|nobr)[^>]*?>/gi, replace: ""},
             
             {regex: /<span(?![^>]*?rangySelectionBoundary[^>]*?)[^>]*>[\s\S]*?([\s\S]*?)<\/span>/gi, replace: "$1"},
             

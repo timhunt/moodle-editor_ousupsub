@@ -78,7 +78,10 @@ var disallowed_characters = ['br','title','std','font','html','body','link',
                              // Deprecated elements
                              'acronym','applet','basefont','big','blink','center','dir',
                              'frame','frameset','isindex','listing','noembed',
-                             'spacer','strike','tt','xmp'];
+                             'spacer','strike','tt','xmp',
+                             // Elements from common sites including google.com.
+                             'jsl','nobr'
+                             ];
 for (var x=0;x<disallowed_characters.length;x++) {
     testcases[testcases.length] = {input: "<"+disallowed_characters[x]+">1</"+disallowed_characters[x]+">", expected: "1"};
 }
