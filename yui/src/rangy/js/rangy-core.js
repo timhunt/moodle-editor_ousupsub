@@ -1049,7 +1049,15 @@ rangy.createModule("DomUtil", function(api, module) {
 
     function assertValidOffset(node, offset) {
         if (offset < 0 || offset > (dom.isCharacterDataNode(node) ? node.length : node.childNodes.length)) {
-            throw new DOMException("INDEX_SIZE_ERR");
+            /*
+             * IE 8 would through this error any time the sup/sub buttons were used though
+             * we couldn't track down exactly why. The node sent was the page footer not and editor 
+             * textarea or toolbar node.
+             * 
+             * More detail is in #85875. The record of the need to solve the issue and uncomment this
+             * code is at  #85770
+             */
+//            throw new DOMException("INDEX_SIZE_ERR");
         }
     }
 
