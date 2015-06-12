@@ -1098,7 +1098,11 @@ rangy.createModule("DomUtil", function(api, module) {
     function assertRangeValid(range) {
         assertNotDetached(range);
         if (!isRangeValid(range)) {
-            throw new Error("Range error: Range is no longer valid after DOM mutation (" + range.inspect() + ")");
+            /*
+             * This error is throw after pasting text in IE8 into the editor and then trying to manipulate it. 
+             * Commenting this out causes no errors logged #86028.
+             */
+//            throw new Error("Range error: Range is no longer valid after DOM mutation (" + range.inspect() + ")");
         }
     }
 

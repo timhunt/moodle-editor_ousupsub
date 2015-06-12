@@ -364,8 +364,7 @@ EditorClean.prototype = {
             // Remove Apple- classes in class attributes. Only removes one or more that appear in succession.
             {regex: /(<[^>]*?class\s*?=\s*?"[^>"]*?)(?:[\s]*Apple-[_a-zA-Z0-9\-]*)+/gi, replace: "$1"},
             // Remove OLE_LINK# anchors that may litter the code.
-            {regex: /<a [^>]*?name\s*?=\s*?"OLE_LINK\d*?"[^>]*?>\s*?<\/a>/gi, replace: ""},
-            
+            {regex: /<a [^>]*?name\s*?=\s*?"OLE_LINK\d*?"[^>]*?>\s*?<\/a>/gi, replace: ""}
         ];
 
         // Apply the rules.
