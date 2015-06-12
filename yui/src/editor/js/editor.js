@@ -213,13 +213,13 @@ Y.extend(Editor, Y.Base, {
         this.editor.setStyle('height', height);
         this.editor.setStyle('minHeight', height);
         this.editor.setStyle('maxHeight', height);
-        
+
         // IE needs the editor wrapper height to be set too. It include 4px of padding.
         height = (rows * 6 + 17) + 'px';
         content.setStyle('height', height);
         content.setStyle('minHeight', height);
         content.setStyle('maxHeight', height);
-        
+
         // Disable odd inline CSS styles.
         this.disableCssStyling();
 
