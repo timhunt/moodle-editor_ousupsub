@@ -358,11 +358,18 @@ Y.extend(Editor, Y.Base, {
         this.editor.setStyle('width', width);
         this.editor.setStyle('minWidth', width);
         this.editor.setStyle('maxWidth', width);
-        
-        var height = (this.textarea.getAttribute('rows') * 6 + 13) + 'px';
+
+        var rows = this.textarea.getAttribute('rows');
+        var height = (rows * 6 + 13) + 'px';
         this.editor.setStyle('height', height);
         this.editor.setStyle('minHeight', height);
         this.editor.setStyle('maxHeight', height);
+
+        // IE needs the editor wrapper height to be set too. It include 4px of padding.
+        height = (rows * 6 + 17) + 'px';
+        content.setStyle('height', height);
+        content.setStyle('minHeight', height);
+        content.setStyle('maxHeight', height);
 
         // Disable odd inline CSS styles.
         this.disableCssStyling();
@@ -822,6 +829,10 @@ EditorTextArea.prototype = {
              var evt = window.event || e;
              if (evt.keyCode === 13) { // Enter.
                  // do nothing.
+                 if(!evt.preventDefault) {
+                     evt.returnValue = false;
+                     return;
+                 }
                  evt.preventDefault();
              }
          }, this);
@@ -986,7 +997,11 @@ EditorClean.prototype = {
             
             // Remove empty spans, but not ones from Rangy.
             {regex: /<span(?![^>]*?rangySelectionBoundary[^>]*?)[^>]*>(&nbsp;|\s)*<\/span>/gi, replace: ""},
-            {regex: /<span(?![^>]*?rangySelectionBoundary[^>]*?)[^>]*>[\s\S]*?([\s\S]*?)<\/span>/gi, replace: "$1"}
+            {regex: /<span(?![^>]*?rangySelectionBoundary[^>]*?)[^>]*>[\s\S]*?([\s\S]*?)<\/span>/gi, replace: "$1"},
+            
+            // Remove empty sup and sub tags that appear after pasting text.
+            {regex: /<sup[^>]*>(&nbsp;|\s)*<\/sup>/gi, replace: ""},
+            {regex: /<sub[^>]*>(&nbsp;|\s)*<\/sub>/gi, replace: ""}
         ];
 
         return this._filterContentWithRules(content, rules);
@@ -1194,8 +1209,7 @@ EditorClean.prototype = {
             // Remove Apple- classes in class attributes. Only removes one or more that appear in succession.
             {regex: /(<[^>]*?class\s*?=\s*?"[^>"]*?)(?:[\s]*Apple-[_a-zA-Z0-9\-]*)+/gi, replace: "$1"},
             // Remove OLE_LINK# anchors that may litter the code.
-            {regex: /<a [^>]*?name\s*?=\s*?"OLE_LINK\d*?"[^>]*?>\s*?<\/a>/gi, replace: ""},
-            
+            {regex: /<a [^>]*?name\s*?=\s*?"OLE_LINK\d*?"[^>]*?>\s*?<\/a>/gi, replace: ""}
         ];
 
         // Apply the rules.
@@ -4685,7 +4699,15 @@ rangy.createModule("DomUtil", function(api, module) {
 
     function assertValidOffset(node, offset) {
         if (offset < 0 || offset > (dom.isCharacterDataNode(node) ? node.length : node.childNodes.length)) {
-            throw new DOMException("INDEX_SIZE_ERR");
+            /*
+             * IE 8 would through this error any time the sup/sub buttons were used though
+             * we couldn't track down exactly why. The node sent was the page footer not and editor 
+             * textarea or toolbar node.
+             * 
+             * More detail is in #85875. The record of the need to solve the issue and uncomment this
+             * code is at  #85770
+             */
+//            throw new DOMException("INDEX_SIZE_ERR");
         }
     }
 
@@ -4726,7 +4748,11 @@ rangy.createModule("DomUtil", function(api, module) {
     function assertRangeValid(range) {
         assertNotDetached(range);
         if (!isRangeValid(range)) {
-            throw new Error("Range error: Range is no longer valid after DOM mutation (" + range.inspect() + ")");
+            /*
+             * This error is throw after pasting text in IE8 into the editor and then trying to manipulate it. 
+             * Commenting this out causes no errors logged #86028.
+             */
+//            throw new Error("Range error: Range is no longer valid after DOM mutation (" + range.inspect() + ")");
         }
     }
 

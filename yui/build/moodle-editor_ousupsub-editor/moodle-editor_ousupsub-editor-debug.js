@@ -683,6 +683,10 @@ EditorTextArea.prototype = {
              var evt = window.event || e;
              if (evt.keyCode === 13) { // Enter.
                  // do nothing.
+                 if(!evt.preventDefault) {
+                     evt.returnValue = false;
+                     return;
+                 }
                  evt.preventDefault();
              }
          }, this);
