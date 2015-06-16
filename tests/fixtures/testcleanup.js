@@ -142,8 +142,18 @@ function run_test(editor, test) {
 function update_display(Y) {
     // Update table.
     var table = Y.one('#results');
+    var onlyDisplayFalse = true;
+    var numberPassed = 0, numberFailed = 0;
+    var summary = '';
+    var summaryNode = Y.one('#summary');
     for(var i=0; i<testcases.length;i++) {
         test = testcases[i];
+        test.matched ? ++numberPassed:++numberFailed;
+
+        if (onlyDisplayFalse && test.matched) {
+            continue;
+        }
+
         var rowText = '<tr>';
         rowText += '<td>'+escape_html(test.input)+'</td>';
         rowText += '<td>'+escape_html(test.expected)+'</td>';
@@ -153,6 +163,9 @@ function update_display(Y) {
         var row = Y.Node.create(rowText);
         table.appendChild(row);
     }
+    
+    summary = 'Of '+testcases.length+' tests run there were '+numberPassed+' test passes and '+numberFailed+' failures.';
+    summaryNode.set('innerHTML', summary);
 }
 
 YUI().use("node", "moodle-editor_ousupsub-editor","moodle-ousupsub_subscript-button","moodle-ousupsub_superscript-button",
