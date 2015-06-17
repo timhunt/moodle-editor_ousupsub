@@ -33,10 +33,12 @@ defined('MOODLE_INTERNAL') || die();
  */
 class editor_ousupsub_helper {
     public static function get_editor() {
-        if (get_config('editor_ousupsub', 'use')) {
-            return get_texteditor('ousupsub');
-        } else {
+        // Show tinymce version is browser is IE and below version 9 or new editor is not enabled.
+        $props = core_useragent::check_ie_properties();
+        if (($props && $props['version'] < 9) || !get_config('editor_ousupsub', 'use')) {
             return get_texteditor('supsub');
+        } else {
+            return get_texteditor('ousupsub');
         }
     }
 }
