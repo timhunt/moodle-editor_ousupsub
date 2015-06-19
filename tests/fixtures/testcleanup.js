@@ -163,9 +163,23 @@ function update_display(Y) {
         var row = Y.Node.create(rowText);
         table.appendChild(row);
     }
+
+    // Explain if there are no failures to show.
+    if (!numberFailed) {
+        var rowText = '<tr>';
+        rowText += '<td class="matched" colspan = "4">There were no failures to show.</td>';
+        rowText += '</tr>';
+        var row = Y.Node.create(rowText);
+        table.appendChild(row);
+    }
     
     summary = 'Of '+testcases.length+' tests run there were '+numberPassed+' test passes and '+numberFailed+' failures.';
     summaryNode.set('innerHTML', summary);
+    
+    var statusNode = Y.one('#status');
+    var status = numberFailed?'failure':'success';
+    statusNode.set('innerHTML', 'Overall status = <span class="'+status+'">'+status+'</span>');
+//    statusNode.addClass(status);
 }
 
 YUI().use("node", "moodle-editor_ousupsub-editor","moodle-ousupsub_subscript-button","moodle-ousupsub_superscript-button",
