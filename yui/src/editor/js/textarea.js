@@ -83,6 +83,10 @@ EditorTextArea.prototype = {
      * @chainable
      */
     updateOriginal : function() {
+        // Save the current selection (cursor position).
+        this.saveSelection();
+        var selection = window.rangy.saveSelection();
+
         // Get the previous and current value to compare them.
         var oldValue = this.textarea.get('value'),
             newValue = this.getCleanHTML();
@@ -99,6 +103,10 @@ EditorTextArea.prototype = {
 
             // Trigger handlers for this action.
             this.fire('change');
+
+            this.editor.set('innerHTML', newValue);
+            // Restore the selection (cursor position).
+            window.rangy.restoreSelection(selection);
         }
 
         return this;
