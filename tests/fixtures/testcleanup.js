@@ -179,7 +179,6 @@ function update_display(Y) {
     var statusNode = Y.one('#status');
     var status = numberFailed?'failure':'success';
     statusNode.set('innerHTML', 'Overall status = <span class="'+status+'">'+status+'</span>');
-//    statusNode.addClass(status);
 }
 
 YUI().use("node", "moodle-editor_ousupsub-editor","moodle-ousupsub_subscript-button","moodle-ousupsub_superscript-button",
