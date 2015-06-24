@@ -14,7 +14,7 @@ Feature: ousupsub subscript button
   @javascript
   Scenario: Applying Subscript and Superscript on text
     Given I am on the stand-alone supsub editor test page
-    And I set the field "Both Superscript and Subscript allowed" to "<p>Superscript and Subscript</p>"
+    And I set the field "Both Superscript and Subscript allowed" to "Superscript and Subscript"
 
     # Apply subscript
     When I select the range "'',16,'',25" in the "Both Superscript and Subscript allowed" ousupsub editor
@@ -35,3 +35,14 @@ Feature: ousupsub subscript button
     When I select the range "'sub',0,'sub',9" in the "Both Superscript and Subscript allowed" ousupsub editor
     And I click on "Subscript" "button"
     Then I should see "Superscript and Subscript" in the "Both Superscript and Subscript allowed" ousupsub editor
+
+    # Apply subscript across existing superscript
+    When I set the field "Both Superscript and Subscript allowed" to "Super<sup>script</sup> and Subscript"
+    And I select the range "'sup',3,2,8" in the "Both Superscript and Subscript allowed" ousupsub editor
+    And I click on "Subscript" "button"
+    Then I should see "Super<sup>scr</sup><sub>ipt and Sub</sub>script" in the "Both Superscript and Subscript allowed" ousupsub editor
+
+    # Apply superscript across existing subscript
+    And I select the range "'sup',2,'sub',3" in the "Both Superscript and Subscript allowed" ousupsub editor
+    And I click on "Superscript" "button"
+    Then I should see "Super<sup>scr</sup>ipt <sub>and Sub</sub>script" in the "Both Superscript and Subscript allowed" ousupsub editor
