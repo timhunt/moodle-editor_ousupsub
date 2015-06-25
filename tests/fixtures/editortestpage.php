@@ -36,6 +36,7 @@ if (!in_array($type, array('both', 'sub', 'sup'))) {
 
 $neweditor = get_texteditor('ousupsub');
 $originaleditor = get_texteditor('supsub');
+$attoeditor = get_texteditor('atto');
 
 $PAGE->set_title('Test superscript/subscript editor');
 $PAGE->set_heading('Test superscript/subscript editor');
@@ -70,6 +71,13 @@ echo html_writer::label('Original Input rows 4, cols 40', 'originalsupsub2');
 echo html_writer::tag('textarea', '', array('name' => 'originalsupsub2', 'id' => 'originalsupsub2', 'rows' => 4, 'cols' => 40));
 $originaleditor->use_editor('originalsupsub2', array('supsub' => $type));
 $submitoptions['id'] = 'submitoriginalsupsub2';
+echo html_writer::tag('input', '', $submitoptions);
+
+echo html_writer::tag('h2', 'ATTO Editor');
+echo html_writer::label('ATTO Input', 'attoeditor');
+echo html_writer::tag('textarea', '', array('name' => 'attoeditor', 'id' => 'attoeditor', 'rows' => 2, 'cols' => 20));
+$attoeditor->use_editor('attoeditor', array('supsub' => $type));
+$submitoptions['id'] = 'submitattoeditor';
 echo html_writer::tag('input', '', $submitoptions);
 ?>
 <script type="text/javascript">
