@@ -254,8 +254,10 @@ EditorClean.prototype = {
                     this._normaliseTextarea();
                     return false;
                 } else {
-                    // This is a non-html paste event, we can just let this continue on and call updateOriginalDelayed.
-                    this.updateOriginalDelayed();
+                    // Due to poor cross browser clipboard compatibility, the failure to find html doesn't 
+                    // mean it isn't there.
+                    // Wait for the clipboard event to finish then fallback clean the entire editor.
+                    this.fallbackPasteCleanupDelayed();
                     return true;
                 }
             } else {
