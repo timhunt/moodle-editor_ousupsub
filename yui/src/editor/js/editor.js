@@ -236,7 +236,7 @@ Y.extend(Editor, Y.Base, {
 
         // Copy the text to the contenteditable div.
         this.updateFromTextArea();
-        
+
         // Add keyboard navigation for the textarea.
         this.setupTextareaNavigation();
 

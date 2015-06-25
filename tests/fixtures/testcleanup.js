@@ -16,7 +16,7 @@ var testcases = [
                  {input: "<sub>1 </sub>2", expected: "<sub>1</sub> 2"}, // Space before end sub tag.
                  {input: "<sup>1   </sup>2", expected: "<sup>1</sup>   2"}, // Spaces before end sup tag.
                  {input: "<sub>1   </sub>2", expected: "<sub>1</sub>   2"}, // Spaces before end sub tag.
-                 
+
                  {input: "<span><sup>12</sup></span>", expected: "12"},
                  {input: "<sup>12</sup><sup>34</sup>", expected: "<sup>1234</sup>"},
                  {input: "<sup>12</sup> <sup>34</sup>", expected: "<sup>12 34</sup>"}, // Space between matching tags.
@@ -30,18 +30,18 @@ var testcases = [
                  {input: "1<sup>2</sup>3<sup>4</sup>5", expected: "1<sup>2</sup>3<sup>4</sup>5"},
                  {input: "<sup><sub>12</sub></sup>", expected: "<sup>12</sup>"},
                  {input: "<p><sup><sub>12</sub></sup></p>", expected: "<sup>12</sup>"},
-                 
+
                  {input: "1<span><sup>2</sup></span>3", expected: "123"}, // Add sup.
                  {input: "1<sup><sup>2</sup></sup>3", expected: "123"}, // Remove sup.
                  {input: "1<sub><sup>2</sup>3</sub>4<br>", expected: "1<sub>23</sub>4"}, // Keep sub.
                  {input: "1<sup>2</sup><sub><sup>3</sup>4</sub>5<br>", expected: "1<sup>2</sup><sub>34</sub>5"}, // Keep sub.
-                 
+
                  // Test paste event.
                  {input: "<div><ul><li><span><a href=\"\">1<img /></a></span></li></ul></div>", expected: "1", event: "paste"},
 
                  // Spans with rangy and without.
                  {input: "1<span id=\"selectionBoundary_123\" class=\"rangySelectionBoundary\"></span>2<span>3<span></span>4</span>5", expected: "1<span id=\"selectionBoundary_123\" class=\"rangySelectionBoundary\"></span>2345"}, // Keep sub.
-                 
+
                  /* Check for disallowed characters */
                  {input: "<sup><p>12</p></sup>", expected: "<sup>12</sup>"},
                  {input: "<sup><b>12</b></sup>", expected: "<sup>12</sup>"},
@@ -55,8 +55,8 @@ var testcases = [
 
 // Elements to remove completely including contents.
 var disallowed_characters_and_text = ['style','script'];
-for (var x=0;x<disallowed_characters_and_text.length;x++) {
-    testcases[testcases.length] = {input: "<"+disallowed_characters_and_text[x]+">1</"+disallowed_characters_and_text[x]+">", expected: ""};
+for (var x = 0; x < disallowed_characters_and_text.length; x++) {
+    testcases[testcases.length] = {input: "<" + disallowed_characters_and_text[x] + ">1</" + disallowed_characters_and_text[x] + ">", expected: ""};
 }
 
 // Elements to remove while contents are left.
@@ -84,8 +84,8 @@ var disallowed_characters = ['br','title','std','font','html','body','link',
                              // Elements from common sites including google.com.
                              'jsl','nobr'
                              ];
-for (var x=0;x<disallowed_characters.length;x++) {
-    testcases[testcases.length] = {input: "<"+disallowed_characters[x]+">1</"+disallowed_characters[x]+">", expected: "1"};
+for (var x = 0; x < disallowed_characters.length; x++) {
+    testcases[testcases.length] = {input: "<" + disallowed_characters[x] + ">1</" + disallowed_characters[x] + ">", expected: "1"};
 }
 
 function init_ousupsub(id, params) {
@@ -97,9 +97,10 @@ function init_ousupsub(id, params) {
     if (params.subscript) {
         plugins[plugins.length] = {"name":"subscript","params":[]};
     }
-    
+
     var YUI_config = {base: "resources/yui/3.17.2/"}
-    YUI().use("node", "moodle-editor_ousupsub-editor","moodle-ousupsub_subscript-button","moodle-ousupsub_superscript-button", 
+    YUI().use("node", "moodle-editor_ousupsub-editor","moodle-ousupsub_subscript-button",
+                    "moodle-ousupsub_superscript-button",
             function(Y) {YUI.M.editor_ousupsub.createEditor(
             {"elementid":id,"content_css":"","contextid":0,"language":"en",
                 "directionality":"ltr","plugins":[{"group":"style1","plugins":plugins}],"pageHash":""});
@@ -114,12 +115,12 @@ function get_editor(id) {
 }
 
 function escape_html(str) {
-    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/ /g,'.') ;
+    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/ /g,'.');
 }
 
 function run_tests(Y) {
     var editor = get_editor("id_description_editor");
-    for(var i=0; i<testcases.length;i++) {
+    for(var i = 0; i < testcases.length; i++) {
         run_test(editor, testcases[i]);
     }
 }
@@ -135,7 +136,7 @@ function run_test(editor, test) {
     editor.plugins.subscript._applyTextCommand();
     // Fake submit
     editor.updateFromTextArea();
-    test.actual = editor.editor.get('innerHTML'); 
+    test.actual = editor.editor.get('innerHTML');
     test.matched = test.expected == test.actual;
 }
 
@@ -146,19 +147,19 @@ function update_display(Y) {
     var numberPassed = 0, numberFailed = 0;
     var summary = '';
     var summaryNode = Y.one('#summary');
-    for(var i=0; i<testcases.length;i++) {
+    for(var i = 0; i < testcases.length; i++) {
         test = testcases[i];
-        test.matched ? ++numberPassed:++numberFailed;
+        test.matched ? ++numberPassed : ++numberFailed;
 
         if (onlyDisplayFalse && test.matched) {
             continue;
         }
 
         var rowText = '<tr>';
-        rowText += '<td>'+escape_html(test.input)+'</td>';
-        rowText += '<td>'+escape_html(test.expected)+'</td>';
-        rowText += '<td>'+escape_html(test.actual)+'</td>';
-        rowText += '<td class="'+(test.matched?'matched':'notmatched')+'">'+test.matched+'</td>';
+        rowText += '<td>' + escape_html(test.input) + '</td>';
+        rowText += '<td>' + escape_html(test.expected) + '</td>';
+        rowText += '<td>' + escape_html(test.actual) + '</td>';
+        rowText += '<td class="' + (test.matched ? 'matched' : 'notmatched') + '">' + test.matched + '</td>';
         rowText += '</tr>';
         var row = Y.Node.create(rowText);
         table.appendChild(row);
@@ -172,17 +173,18 @@ function update_display(Y) {
         var row = Y.Node.create(rowText);
         table.appendChild(row);
     }
-    
-    summary = 'Of '+testcases.length+' tests run there were '+numberPassed+' test passes and '+numberFailed+' failures.';
+
+    summary = 'Of ' + testcases.length + ' tests run there were ' + numberPassed + ' test passes and ';
+    summary += numberFailed + ' failures.';
     summaryNode.set('innerHTML', summary);
-    
+
     var statusNode = Y.one('#status');
-    var status = numberFailed?'failure':'success';
-    statusNode.set('innerHTML', 'Overall status = <span class="'+status+'">'+status+'</span>');
+    var status = numberFailed ? 'failure' : 'success';
+    statusNode.set('innerHTML', 'Overall status = <span class="' + status + '">' + status + '</span>');
 }
 
 YUI().use("node", "moodle-editor_ousupsub-editor","moodle-ousupsub_subscript-button","moodle-ousupsub_superscript-button",
-                function(Y) { 
+                function(Y) {
     run_tests();
     update_display(Y);
 });

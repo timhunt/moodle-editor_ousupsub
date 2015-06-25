@@ -1,12 +1,12 @@
-// Miscellaneous core Javascript functions for Moodle
-// Global M object is initilised in inline javascript
+// Miscellaneous core Javascript functions for Moodle.
+// Global M object is initilised in inline javascript.
 
 var M = {}; M.yui = {};
 M.pageloadstarttime = new Date();
 M.pathname = window.location.pathname;
 M.fileroot = M.pathname.substring(0, M.pathname.lastIndexOf("/"));
 M.protocol = window.location.protocol;
-M.host  = window.location.host ;
+M.host = window.location.host;
 M.cfg = {"wwwroot":M.protocol + "//" + M.host + M.fileroot,"sesskey":"","loadingicon":"l",
                 "themerev":-1,"slasharguments":1,"theme":"clean","jsrev":-1,"svgicons":true};
 
@@ -19,16 +19,13 @@ function init_ousupsub(id, params) {
     if (params.subscript) {
         plugins[plugins.length] = {"name":"subscript","params":[]};
     }
-    var YUI_config = {
-                         
-                         base: "resources/yui/3.17.2/"
-                      }
+    var YUI_config = {base: "resources/yui/3.17.2/"}
     YUI().use("node", function(Y) {
         Y.use("moodle-editor_ousupsub-editor", "moodle-ousupsub_subscript-button", "moodle-ousupsub_superscript-button",
             function(Y) {
                 YUI.M.editor_ousupsub.createEditor(
-                    {"elementid":id,"content_css":"","contextid":0,"language":"en",
-                     "directionality":"ltr","plugins":[{"group":"style1","plugins":plugins}],"pageHash":""});
+                    {"elementid" : id, "content_css" : "", "contextid" : 0, "language" : "en",
+                     "directionality" : "ltr", "plugins" : [{"group" : "style1", "plugins" : plugins}],"pageHash" : ""});
                 window.Y = Y; // Required for Behat.
             }
         );
@@ -118,36 +115,6 @@ M.util.get_string = function(identifier, component, a) {
     }
     return stringvalue;
 };
-
-/**
- * Test function created to develop behat test.
- *
- * @method selectText
- * @param {String} id
- */
-function RangySelectText (id, startquery, startoffset, endquery, endoffset) {
-        var e = document.getElementById(id+'editable'),
-            r = rangy.createRange();
-
-        e.focus();
-        if (startquery || startoffset || endquery || endoffset) {
-            // Set defaults for testing.
-            startoffset = startoffset?startoffset:0;
-            endoffset = endoffset?endoffset:0;
-
-            // Find the text nodes from the Start/end queries or default to the editor node.
-            var startnode = startquery?e.querySelector(startquery): e.firstChild;
-            var endnode = endquery?e.querySelector(endquery):e.firstChild;
-            r.setStart(startnode.firstChild, startoffset);
-            r.setEnd(endnode.firstChild, endoffset);
-        }
-        else {
-            r.selectNodeContents(e.firstChild);
-        }
-        var s = rangy.getSelection();
-        s.setSingleRange(r);
-        YUI.M.editor_ousupsub.getEditor(id)._selections = [r];
-}
 
 YUI.add('moodle-editor_ousupsub-editor', function (Y, NAME) {
 
@@ -387,7 +354,7 @@ Y.extend(Editor, Y.Base, {
 
         // Copy the text to the contenteditable div.
         this.updateFromTextArea();
-        
+
         // Add keyboard navigation for the textarea.
         this.setupTextareaNavigation();
 
@@ -804,7 +771,7 @@ EditorTextArea.prototype = {
         var command = '', mode = 1;
         // Cross browser event object.
         var evt = window.event || e;
-        var code =  evt.keyCode ? evt.keyCode : evt.charCode;
+        var code = evt.keyCode ? evt.keyCode : evt.charCode;
         // Call superscript.
         if ((code === 38) || (code === 94)) {
             command = 'superscript';
@@ -946,7 +913,7 @@ EditorClean.prototype = {
             //Combine matching tags with spaces in between.
             {regex: /<\/sup>(\s*)+<sup>/gi, replace: "$1"},
             {regex: /<\/sub>(\s*)+<sub>/gi, replace: "$1"},
-            
+
             //Move spaces after start sup and sub tags to before.
             {regex: /<sup>(\s*)+/gi, replace: "$1<sup>"},
             {regex: /<sub>(\s*)+/gi, replace: "$1<sub>"},
@@ -965,7 +932,7 @@ EditorClean.prototype = {
 
             // Remove any open HTML comment opens that are not followed by a close. This can completely break page layout.
             {regex: /<!--(?![\s\S]*?-->)/gi, replace: ""},
-            
+
             // Remove elements that can not contain visible text.
             {regex: /<script[^>]*>[\s\S]*?<\/script>/gi, replace: ""},
 
@@ -992,13 +959,13 @@ EditorClean.prototype = {
 
             // Elements from common sites including google.com.
             {regex: /<\/?(?:jsl|nobr)[^>]*?>/gi, replace: ""},
-            
+
             {regex: /<span(?![^>]*?rangySelectionBoundary[^>]*?)[^>]*>[\s\S]*?([\s\S]*?)<\/span>/gi, replace: "$1"},
-            
+
             // Remove empty spans, but not ones from Rangy.
             {regex: /<span(?![^>]*?rangySelectionBoundary[^>]*?)[^>]*>(&nbsp;|\s)*<\/span>/gi, replace: ""},
             {regex: /<span(?![^>]*?rangySelectionBoundary[^>]*?)[^>]*>[\s\S]*?([\s\S]*?)<\/span>/gi, replace: "$1"},
-            
+
             // Remove empty sup and sub tags that appear after pasting text.
             {regex: /<sup[^>]*>(&nbsp;|\s)*<\/sup>/gi, replace: ""},
             {regex: /<sub[^>]*>(&nbsp;|\s)*<\/sub>/gi, replace: ""}
@@ -1252,12 +1219,12 @@ EditorClean.prototype = {
         // If it's a collapsed selection the cursor is in the editor but no selection has been made.
         if (selection.isCollapsed) {
             // Insert tag at cursor focus point.
-            tag = command === 'superscript' ? 'sup':'sub';
+            tag = command === 'superscript' ? 'sup' : 'sub';
             // ﻿&#65279; is is the Unicode Character 'ZERO WIDTH NO-BREAK SPACE' (U+FEFF). Used
             // by TinyMCE to add empty sup/sub tags when nothing is selected. This causes lint
             // errors but I couldn't find a better solution.
             // http://stackoverflow.com/questions/9691771/why-is-65279-appearing-in-my-html.
-            var node = this.insertContentAtFocusPoint('<'+tag+'>﻿&#65279;</'+tag+'>');
+            var node = this.insertContentAtFocusPoint('<' + tag + '>﻿&#65279;</' + tag + '>');
             var range = rangy.createRange();
             range.selectNode(node._node.childNodes[0]);
             this.setSelection([range]);
@@ -1303,18 +1270,17 @@ EditorClean.prototype = {
      * @return string
      */
     _normaliseTextarea: function() {
-
         // Save the current selection (cursor position).
         var selection = window.rangy.saveSelection();
         // Remove all the span tags added to the editor textarea by the browser.
         // Get the html directly inside the editor <p> tag and remove span tags from the html inside it.
-        
+
         var editor_node = this._getEditorNode();
         this._removeSingleNodesByName(editor_node, 'br');
-        
+
         // Remove specific tags that can be added through keyboard shortcuts.
         var tagsToRemove = ['p', 'b', 'i', 'u', 'ul', 'ol', 'li'];
-        for (var i=0; i<tagsToRemove.length; i++) {
+        for (var i = 0; i < tagsToRemove.length; i++) {
             this._removeNodesByName(editor_node, tagsToRemove[i]);
         }
         this._normaliseTagInTextarea('sup');
@@ -1493,7 +1459,7 @@ EditorClean.prototype = {
             this._removeNode(container_node);
         }
     },
-    
+
     /**
      * Recursively remove any tag with the given name. Removes child nodes too.
      *
@@ -1535,7 +1501,6 @@ EditorClean.prototype = {
        return node.remove();
    },
 
-   
    /**
     * Get the editor object.
     *
@@ -1547,7 +1512,7 @@ EditorClean.prototype = {
        if (!host) {
            host = this.get('host');
        }
-       
+
        return this;
    },
 
@@ -2970,8 +2935,6 @@ EditorPluginButtons.prototype = {
             );
         }
 
-        
-
         // Add the button reference to the buttons array for later reference.
         this.buttonNames.push(config.buttonName);
         this.buttons[config.buttonName] = button;
@@ -3259,7 +3222,7 @@ EditorPluginButtons.prototype = {
      */
     _normalizeIcon: function(config) {
         // Set standalone icon and ignore moodle iconurl.
-        config.icon = 'editor_'  + config.exec
+        config.icon = 'editor_' + config.exec
         if (!config.iconurl) {
             // The default icon component.
             if (!config.iconComponent) {
@@ -3628,7 +3591,7 @@ EditorPluginButtons.prototype = {
         if (!host) {
             host = this.get('host');
         }
-        
+
         return host;
     },
 

@@ -43,7 +43,6 @@ ini_set('display_startup_errors', true);
 
 ousupsub_texteditor_standalone_builder::create_standalone();
 
-
 /**
  * Creates demonstration editor.
  */
@@ -284,7 +283,7 @@ body {
             if ($name == 'plugin') {
                 $toreplace = "_normalizeIcon: function(config) {
         // Set standalone icon and ignore moodle iconurl.
-        config.icon = 'editor_'  + config.exec";
+        config.icon = 'editor_' + config.exec";
                 $contents = str_replace("_normalizeIcon: function(config) {", $toreplace, $contents);
             }
             $combinedcontents .= $contents;
@@ -317,21 +316,17 @@ body {
      */
     public static function create_javascript_static() {
         $lang = self::create_language_string();
-        $yuidebug = '';
-        if (self::$yuisuffix == '-debug') {
-            $yuidebug = 'debug: true,';
-        }
         // The unconventional indenting is required to produce conventional
         // indenting in the file produced.
-        $data = '// Miscellaneous core Javascript functions for Moodle
-// Global M object is initilised in inline javascript
+        $data = '// Miscellaneous core Javascript functions for Moodle.
+// Global M object is initilised in inline javascript.
 
 var M = {}; M.yui = {};
 M.pageloadstarttime = new Date();
 M.pathname = window.location.pathname;
 M.fileroot = M.pathname.substring(0, M.pathname.lastIndexOf("/"));
 M.protocol = window.location.protocol;
-M.host  = window.location.host ;
+M.host = window.location.host;
 M.cfg = {"wwwroot":M.protocol + "//" + M.host + M.fileroot,"sesskey":"","loadingicon":"l",
                 "themerev":-1,"slasharguments":1,"theme":"clean","jsrev":-1,"svgicons":true};
 
@@ -344,16 +339,13 @@ function init_ousupsub(id, params) {
     if (params.subscript) {
         plugins[plugins.length] = {"name":"subscript","params":[]};
     }
-    var YUI_config = {
-                         '.$yuidebug.'
-                         base: "resources/yui/3.17.2/"
-                      }
+    var YUI_config = {base: "resources/yui/3.17.2/"}
     YUI().use("node", function(Y) {
         Y.use("moodle-editor_ousupsub-editor", "moodle-ousupsub_subscript-button", "moodle-ousupsub_superscript-button",
             function(Y) {
                 YUI.M.editor_ousupsub.createEditor(
-                    {"elementid":id,"content_css":"","contextid":0,"language":"en",
-                     "directionality":"ltr","plugins":[{"group":"style1","plugins":plugins}],"pageHash":""});
+                    {"elementid" : id, "content_css" : "", "contextid" : 0, "language" : "en",
+                     "directionality" : "ltr", "plugins" : [{"group" : "style1", "plugins" : plugins}],"pageHash" : ""});
                 window.Y = Y; // Required for Behat.
             }
         );
@@ -443,36 +435,6 @@ M.util.get_string = function(identifier, component, a) {
     }
     return stringvalue;
 };
-
-/**
- * Test function created to develop behat test.
- *
- * @method selectText
- * @param {String} id
- */
-function RangySelectText (id, startquery, startoffset, endquery, endoffset) {
-        var e = document.getElementById(id+\'editable\'),
-            r = rangy.createRange();
-
-        e.focus();
-        if (startquery || startoffset || endquery || endoffset) {
-            // Set defaults for testing.
-            startoffset = startoffset?startoffset:0;
-            endoffset = endoffset?endoffset:0;
-
-            // Find the text nodes from the Start/end queries or default to the editor node.
-            var startnode = startquery?e.querySelector(startquery): e.firstChild;
-            var endnode = endquery?e.querySelector(endquery):e.firstChild;
-            r.setStart(startnode.firstChild, startoffset);
-            r.setEnd(endnode.firstChild, endoffset);
-        }
-        else {
-            r.selectNodeContents(e.firstChild);
-        }
-        var s = rangy.getSelection();
-        s.setSingleRange(r);
-        YUI.M.editor_ousupsub.getEditor(id)._selections = [r];
-}
 
 '; // Leave extra space to separate from other scripts it will be appended to.
         return $data;

@@ -442,8 +442,6 @@ EditorPluginButtons.prototype = {
             );
         }
 
-        
-
         // Add the button reference to the buttons array for later reference.
         this.buttonNames.push(config.buttonName);
         this.buttons[config.buttonName] = button;
@@ -1100,7 +1098,7 @@ EditorPluginButtons.prototype = {
         if (!host) {
             host = this.get('host');
         }
-        
+
         return host;
     },
 

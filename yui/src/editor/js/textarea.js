@@ -153,7 +153,7 @@ EditorTextArea.prototype = {
         var command = '', mode = 1;
         // Cross browser event object.
         var evt = window.event || e;
-        var code =  evt.keyCode ? evt.keyCode : evt.charCode;
+        var code = evt.keyCode ? evt.keyCode : evt.charCode;
         // Call superscript.
         if ((code === 38) || (code === 94)) {
             command = 'superscript';
