@@ -275,10 +275,10 @@ body {
 
         // Load the YUI editor files.
         // path to get the editor yui files from.
-        $editoryuipath = 'yui/build/moodle-editor_ousupsub-manager/moodle-editor_ousupsub-manager.js';
-        $names = array('editor', 'manager', 'plugin', 'rangy');
+        $editoryuipath = 'yui/build/moodle-editor_ousupsub-%%PART%%/moodle-editor_ousupsub-%%PART%%.js';
+        $names = array('editor', 'plugin', 'rangy');
         foreach ($names as $name) {
-            $path = str_replace('manager', $name, $editoryuipath);
+            $path = str_replace('%%PART%%', $name, $editoryuipath);
             $contents = file_get_contents($path);
             if ($name == 'plugin') {
                 $toreplace = "_normalizeIcon: function(config) {

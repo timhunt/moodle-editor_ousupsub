@@ -2279,19 +2279,6 @@ EditorStyling.prototype = {
 };
 
 Y.Base.mix(Y.M.editor_ousupsub.Editor, [EditorStyling]);
-
-
-}, '@VERSION@', {
-    "requires": [
-        "node",
-        "event",
-        "event-custom",
-        "moodle-editor_ousupsub-manager",
-        "moodle-editor_ousupsub-rangy"
-    ]
-});
-YUI.add('moodle-editor_ousupsub-manager', function (Y, NAME) {
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -2310,7 +2297,8 @@ YUI.add('moodle-editor_ousupsub-manager', function (Y, NAME) {
 /**
  * The manager for the OUSupSub Editor.
  *
- * @module     moodle-editor_ousupsub-manager
+ * @module     moodle-editor_ousupsub-editor
+ * @submodule  manager
  * @package    editor_ousupsub
  * @copyright  2014 Andrew Nicols <andrew@nicols.co.uk>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -2318,7 +2306,7 @@ YUI.add('moodle-editor_ousupsub-manager', function (Y, NAME) {
  */
 
 /**
- * @module moodle-editor_ousupsub-manager
+ * @module moodle-editor_ousupsub-editor
  */
 
 /**
@@ -2328,8 +2316,7 @@ YUI.add('moodle-editor_ousupsub-manager', function (Y, NAME) {
  * @class editor_ousupsub
  */
 
-var NS = YUI.namespace('M'),
-    LOGNAME = 'moodle-editor_ousupsub-manager';
+var NS = YUI.namespace('M');
 
 NS.editor_ousupsub = NS.editor_ousupsub || {
     _instances: {},
@@ -2480,7 +2467,8 @@ NS.editor_ousupsub.importMethod(Y.M.editor_ousupsub.Editor.prototype, [
     'destroy'
 ]);
 
-}, '@VERSION@', {"requires": ["base", "moodle-editor_ousupsub-editor"]});
+
+}, '@VERSION@', {"requires": ["base", "node", "event", "event-custom", "moodle-editor_ousupsub-rangy"]});
 YUI.add('moodle-editor_ousupsub-plugin', function (Y, NAME) {
 
 // This file is part of Moodle - http://moodle.org/

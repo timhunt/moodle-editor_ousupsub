@@ -16,7 +16,8 @@
 /**
  * The manager for the OUSupSub Editor.
  *
- * @module     moodle-editor_ousupsub-manager
+ * @module     moodle-editor_ousupsub-editor
+ * @submodule  manager
  * @package    editor_ousupsub
  * @copyright  2014 Andrew Nicols <andrew@nicols.co.uk>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -24,7 +25,7 @@
  */
 
 /**
- * @module moodle-editor_ousupsub-manager
+ * @module moodle-editor_ousupsub-editor
  */
 
 /**
@@ -34,8 +35,7 @@
  * @class editor_ousupsub
  */
 
-var NS = YUI.namespace('M'),
-    LOGNAME = 'moodle-editor_ousupsub-manager';
+var NS = YUI.namespace('M');
 
 NS.editor_ousupsub = NS.editor_ousupsub || {
     _instances: {},
@@ -151,7 +151,7 @@ NS.editor_ousupsub = NS.editor_ousupsub || {
     addMethod: function(name, fn, context) {
         if (name && fn) {
             if (typeof this[name] !== 'undefined') {
-                Y.log('Overwriting existing method: ' + name, 'warn', 'moodle-editor_ousupsub-manager');
+                Y.log('Overwriting existing method: ' + name, 'warn', LOGNAME);
             }
 
             this[name] = function() {
@@ -174,7 +174,7 @@ NS.editor_ousupsub = NS.editor_ousupsub || {
                 return ret.length ? ret : this;
             };
         } else {
-            Y.log('Unable to add method: ' + name , 'warn', 'moodle-editor_ousupsub-manager');
+            Y.log('Unable to add method: ' + name , 'warn', LOGNAME);
         }
     }
 };

@@ -143,7 +143,7 @@ function run_test(editor, test) {
 function update_display(Y) {
     // Update table.
     var table = Y.one('#results');
-    var onlyDisplayFalse = false;
+    var showPasses = false;
     var numberPassed = 0, numberFailed = 0;
     var summary = '';
     var summaryNode = Y.one('#summary');
@@ -151,7 +151,7 @@ function update_display(Y) {
         test = testcases[i];
         test.matched ? ++numberPassed : ++numberFailed;
 
-        if (onlyDisplayFalse && test.matched) {
+        if (!showPasses && test.matched) {
             continue;
         }
 

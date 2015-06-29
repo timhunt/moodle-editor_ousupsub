@@ -9,18 +9,14 @@
                 "toolbar.js",
                 "toolbar-keyboardnav.js",
                 "selection.js",
-                "styling.js"
+                "styling.js",
+                "manager.js"
             ]
         },
         "moodle-editor_ousupsub-plugin": {
             "jsfiles": [
                 "editor-plugin.js",
                 "editor-plugin-buttons.js"
-            ]
-        },
-        "moodle-editor_ousupsub-manager": {
-            "jsfiles": [
-                "manager.js"
             ]
         }
     }

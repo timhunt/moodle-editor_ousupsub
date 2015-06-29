@@ -1,10 +1,10 @@
 {
     "moodle-editor_ousupsub-editor": {
         "requires": [
+            "base",
             "node",
             "event",
             "event-custom",
-            "moodle-editor_ousupsub-manager",
             "moodle-editor_ousupsub-rangy"
         ]
     },
@@ -14,12 +14,6 @@
             "base",
             "event",
             "event-custom"
-        ]
-    },
-    "moodle-editor_ousupsub-manager": {
-        "requires": [
-            "base",
-            "moodle-editor_ousupsub-editor"
         ]
     }
 }
