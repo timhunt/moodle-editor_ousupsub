@@ -53,4 +53,4 @@ Y.namespace('M.ousupsub_subscript').Button = Y.Base.create('button', Y.M.editor_
 });
 
 
-}, '@VERSION@', {"requires": ["moodle-editor_ousupsub-plugin"]});
+}, '@VERSION@', {"requires": ["moodle-editor_ousupsub-editor"]});

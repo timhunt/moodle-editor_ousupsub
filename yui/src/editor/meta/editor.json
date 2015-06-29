@@ -7,13 +7,5 @@
             "event-custom",
             "moodle-editor_ousupsub-rangy"
         ]
-    },
-    "moodle-editor_ousupsub-plugin": {
-        "requires": [
-            "node",
-            "base",
-            "event",
-            "event-custom"
-        ]
     }
 }

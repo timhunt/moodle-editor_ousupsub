@@ -16,7 +16,7 @@
 /**
  * ousupsub editor plugin.
  *
- * @module moodle-editor_ousupsub-plugin
+ * @module moodle-editor_ousupsub-editor
  * @submodule plugin-base
  * @package    editor_ousupsub
  * @copyright  2014 Andrew Nicols

@@ -14,7 +14,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @module moodle-editor_ousupsub-plugin
+ * @module moodle-editor_ousupsub-editor
  * @submodule buttons
  */
 
@@ -28,10 +28,7 @@
  */
 
 var DISABLED = 'disabled',
-    HIGHLIGHT = 'highlight',
-    CSS = {
-        EDITORWRAPPER: '.editor_ousupsub_content'
-    };
+    HIGHLIGHT = 'highlight';
 
 function EditorPluginButtons() {}
 
@@ -282,8 +279,7 @@ EditorPluginButtons.prototype = {
      */
     addBasicButton: function(config) {
         if (!config.exec) {
-            Y.log('No exec command specified. Cannot proceed.',
-                    'warn', 'moodle-editor_ousupsub-plugin');
+            Y.log('No exec command specified. Cannot proceed.', 'warn', LOGNAME);
             return null;
         }
 

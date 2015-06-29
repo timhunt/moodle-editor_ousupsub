@@ -32,6 +32,7 @@ var LOGNAME = 'moodle-editor_ousupsub-editor';
 var CSS = {
         CONTENT: 'editor_ousupsub_content',
         CONTENTWRAPPER: 'editor_ousupsub_content_wrap',
+        EDITORWRAPPER: '.editor_ousupsub_content',
         TOOLBAR: 'editor_ousupsub_toolbar',
         WRAPPER: 'editor_ousupsub',
         HIGHLIGHT: 'highlight'
