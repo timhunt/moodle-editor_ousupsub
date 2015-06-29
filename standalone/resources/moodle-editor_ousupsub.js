@@ -453,7 +453,7 @@ Y.extend(Editor, Y.Base, {
      * @chainable
      */
     updateOriginalDelayed: function() {
-        Y.soon(Y.bind(this.updateOriginal, this));
+        setTimeout(Y.bind(this.updateOriginal, this), 0);
 
         return this;
     },
@@ -1108,7 +1108,7 @@ EditorClean.prototype = {
      * @chainable
      */
     fallbackPasteCleanupDelayed: function() {
-        Y.soon(Y.bind(this.fallbackPasteCleanup, this));
+        setTimeout(Y.bind(this.fallbackPasteCleanup, this), 0);
 
         return this;
     },
@@ -1914,13 +1914,13 @@ EditorSelection.prototype = {
         }, this));
 
         this._registerEventHandle(this.editor.on(['keyup', 'focus'], function(e) {
-                Y.soon(Y.bind(this._hasSelectionChanged, this, e));
+                setTimeout(Y.bind(this._hasSelectionChanged, this, e), 0);
             }, this));
 
         // To capture both mouseup and touchend events, we need to track the gesturemoveend event in standAlone mode. Without
         // standAlone, it will only fire if we listened to a gesturemovestart too.
         this._registerEventHandle(this.editor.on('gesturemoveend', function(e) {
-                Y.soon(Y.bind(this._hasSelectionChanged, this, e));
+                setTimeout(Y.bind(this._hasSelectionChanged, this, e), 0);
             }, {
                 standAlone: true
             }, this));
@@ -2284,16 +2284,10 @@ Y.Base.mix(Y.M.editor_ousupsub.Editor, [EditorStyling]);
 }, '@VERSION@', {
     "requires": [
         "node",
-        "overlay",
-        "escape",
         "event",
-        "event-simulate",
         "event-custom",
-        "yui-throttle",
         "moodle-editor_ousupsub-manager",
-        "moodle-editor_ousupsub-rangy",
-        "handlebars",
-        "timers"
+        "moodle-editor_ousupsub-rangy"
     ]
 });
 YUI.add('moodle-editor_ousupsub-manager', function (Y, NAME) {
@@ -2783,9 +2777,9 @@ EditorPluginButtons.prototype = {
     _primaryKeyboardShortcut: null,
 
     /**
-     * An list of objects returned by Y.soon().
+     * An list of handles returned by setTimeout().
      *
-     * The keys will be the buttonName of the button, and the value the Y.soon() object.
+     * The keys will be the buttonName of the button, and the value the handles.
      *
      * @property _highlightQueue
      * @protected
@@ -2898,16 +2892,16 @@ EditorPluginButtons.prototype = {
             this._buttonHandlers.push(
                 host.on(['ousupsub:selectionchanged', 'change'], function(e) {
                     if (typeof this._highlightQueue[config.buttonName] !== 'undefined') {
-                        this._highlightQueue[config.buttonName].cancel();
+                        clearTimeout(this._highlightQueue[config.buttonName]);
                     }
                     // Async the highlighting.
-                    this._highlightQueue[config.buttonName] = Y.soon(Y.bind(function(e) {
+                    this._highlightQueue[config.buttonName] = setTimeout(Y.bind(function(e) {
                         if (host.selectionFilterMatches(config.tags, e.selectedNodes, tagMatchRequiresAll)) {
                             this.highlightButtons(config.buttonName);
                         } else {
                             this.unHighlightButtons(config.buttonName);
                         }
-                    }, this, e));
+                    }, this, e), 0);
                 }, this)
             );
         }
@@ -3396,7 +3390,7 @@ EditorPluginButtons.prototype = {
 Y.Base.mix(Y.M.editor_ousupsub.EditorPlugin, [EditorPluginButtons]);
 
 
-}, '@VERSION@', {"requires": ["node", "base", "escape", "event", "event-outside", "handlebars", "event-custom", "timers"]});
+}, '@VERSION@', {"requires": ["node", "base", "event", "event-custom"]});
 /**
  * @license Rangy, a cross-browser JavaScript range and selection library
  * http://code.google.com/p/rangy/

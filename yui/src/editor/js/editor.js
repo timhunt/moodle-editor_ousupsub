@@ -335,7 +335,7 @@ Y.extend(Editor, Y.Base, {
      * @chainable
      */
     updateOriginalDelayed: function() {
-        Y.soon(Y.bind(this.updateOriginal, this));
+        setTimeout(Y.bind(this.updateOriginal, this), 0);
 
         return this;
     },

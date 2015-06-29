@@ -337,7 +337,7 @@ Y.extend(Editor, Y.Base, {
      * @chainable
      */
     updateOriginalDelayed: function() {
-        Y.soon(Y.bind(this.updateOriginal, this));
+        setTimeout(Y.bind(this.updateOriginal, this), 0);
 
         return this;
     },
@@ -996,7 +996,7 @@ EditorClean.prototype = {
      * @chainable
      */
     fallbackPasteCleanupDelayed: function() {
-        Y.soon(Y.bind(this.fallbackPasteCleanup, this));
+        setTimeout(Y.bind(this.fallbackPasteCleanup, this), 0);
 
         return this;
     },
@@ -1804,13 +1804,13 @@ EditorSelection.prototype = {
         }, this));
 
         this._registerEventHandle(this.editor.on(['keyup', 'focus'], function(e) {
-                Y.soon(Y.bind(this._hasSelectionChanged, this, e));
+                setTimeout(Y.bind(this._hasSelectionChanged, this, e), 0);
             }, this));
 
         // To capture both mouseup and touchend events, we need to track the gesturemoveend event in standAlone mode. Without
         // standAlone, it will only fire if we listened to a gesturemovestart too.
         this._registerEventHandle(this.editor.on('gesturemoveend', function(e) {
-                Y.soon(Y.bind(this._hasSelectionChanged, this, e));
+                setTimeout(Y.bind(this._hasSelectionChanged, this, e), 0);
             }, {
                 standAlone: true
             }, this));
@@ -2174,14 +2174,9 @@ Y.Base.mix(Y.M.editor_ousupsub.Editor, [EditorStyling]);
 }, '@VERSION@', {
     "requires": [
         "node",
-        "overlay",
-        "escape",
         "event",
-        "event-simulate",
         "event-custom",
-        "yui-throttle",
         "moodle-editor_ousupsub-manager",
-        "moodle-editor_ousupsub-rangy",
-        "timers"
+        "moodle-editor_ousupsub-rangy"
     ]
 });

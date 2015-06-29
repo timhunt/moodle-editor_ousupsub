@@ -91,13 +91,13 @@ EditorSelection.prototype = {
         }, this));
 
         this._registerEventHandle(this.editor.on(['keyup', 'focus'], function(e) {
-                Y.soon(Y.bind(this._hasSelectionChanged, this, e));
+                setTimeout(Y.bind(this._hasSelectionChanged, this, e), 0);
             }, this));
 
         // To capture both mouseup and touchend events, we need to track the gesturemoveend event in standAlone mode. Without
         // standAlone, it will only fire if we listened to a gesturemovestart too.
         this._registerEventHandle(this.editor.on('gesturemoveend', function(e) {
-                Y.soon(Y.bind(this._hasSelectionChanged, this, e));
+                setTimeout(Y.bind(this._hasSelectionChanged, this, e), 0);
             }, {
                 standAlone: true
             }, this));

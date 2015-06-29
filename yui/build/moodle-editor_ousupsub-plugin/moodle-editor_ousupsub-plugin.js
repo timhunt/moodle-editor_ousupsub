@@ -294,9 +294,9 @@ EditorPluginButtons.prototype = {
     _primaryKeyboardShortcut: null,
 
     /**
-     * An list of objects returned by Y.soon().
+     * An list of handles returned by setTimeout().
      *
-     * The keys will be the buttonName of the button, and the value the Y.soon() object.
+     * The keys will be the buttonName of the button, and the value the handles.
      *
      * @property _highlightQueue
      * @protected
@@ -409,16 +409,16 @@ EditorPluginButtons.prototype = {
             this._buttonHandlers.push(
                 host.on(['ousupsub:selectionchanged', 'change'], function(e) {
                     if (typeof this._highlightQueue[config.buttonName] !== 'undefined') {
-                        this._highlightQueue[config.buttonName].cancel();
+                        clearTimeout(this._highlightQueue[config.buttonName]);
                     }
                     // Async the highlighting.
-                    this._highlightQueue[config.buttonName] = Y.soon(Y.bind(function(e) {
+                    this._highlightQueue[config.buttonName] = setTimeout(Y.bind(function(e) {
                         if (host.selectionFilterMatches(config.tags, e.selectedNodes, tagMatchRequiresAll)) {
                             this.highlightButtons(config.buttonName);
                         } else {
                             this.unHighlightButtons(config.buttonName);
                         }
-                    }, this, e));
+                    }, this, e), 0);
                 }, this)
             );
         }
@@ -905,4 +905,4 @@ EditorPluginButtons.prototype = {
 Y.Base.mix(Y.M.editor_ousupsub.EditorPlugin, [EditorPluginButtons]);
 
 
-}, '@VERSION@', {"requires": ["node", "base", "escape", "event", "event-outside", "event-custom", "timers"]});
+}, '@VERSION@', {"requires": ["node", "base", "event", "event-custom"]});

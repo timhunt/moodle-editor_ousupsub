@@ -449,18 +449,18 @@ M.util.get_string = function(identifier, component, a) {
         $names = array('attribute-base', 'attribute-complex', 'attribute-core', 'attribute-extras',
                 'attribute-observable', 'base-base', 'base-build', 'base-core', 'base-observable',
                 'base-pluginhost', 'classnamemanager', 'datatype-xml-parse', 'dom-base',
-                'dom-core', 'dom-screen', 'dom-style', 'escape', 'event-base', 'event-custom-base',
+                'dom-core', 'dom-screen', 'dom-style', 'event-base', 'event-custom-base',
                 'event-custom-complex', 'event-delegate', 'event-flick', 'event-focus', 'event-hover',
-                'event-key', 'event-mouseenter', 'event-mousewheel', 'event-move', 'event-outside',
+                'event-key', 'event-mouseenter', 'event-mousewheel', 'event-move',
                 'event-resize', 'event-simulate', 'event-synthetic', 'event-tap', 'event-touch',
                 'event-valuechange', 'io-base', 'io-form',
                 'io-upload-iframe', 'io-queue', 'io-xdr', 'node-base', 'node-core',
-                'node-event-delegate', 'node-pluginhost', 'node-screen', 'node-style', 'oop', 'overlay',
+                'node-event-delegate', 'node-pluginhost', 'node-screen', 'node-style', 'oop',
                 'pluginhost-base', 'pluginhost-config', 'querystring-stringify-simple', 'queue-promote',
-                'selector', 'selector-native', 'timers', 'transition', 'widget-base',
+                'selector', 'selector-native', 'widget-base',
                 'widget-htmlparser', 'widget-position', 'widget-position-align',
                 'widget-position-constrain', 'widget-skin', 'widget-stack', 'widget-stdmod',
-                'widget-uievents', 'yui', 'yui-throttle');
+                'widget-uievents', 'yui');
         foreach ($names as $name) {
             $folderpath = '/'.$name;
             self::create_folder($destination.$folderpath);
@@ -470,7 +470,7 @@ M.util.get_string = function(identifier, component, a) {
             }
         }
 
-        $cssnames = array('widget-base', 'widget-stack', 'overlay');
+        $cssnames = array('widget-base', 'widget-stack');
         foreach ($cssnames as $name) {
             $folderpath = '/'.$name.'/assets/skins/sam';
             self::create_folder($destination.$folderpath);

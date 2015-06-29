@@ -143,7 +143,7 @@ function run_test(editor, test) {
 function update_display(Y) {
     // Update table.
     var table = Y.one('#results');
-    var onlyDisplayFalse = true;
+    var onlyDisplayFalse = false;
     var numberPassed = 0, numberFailed = 0;
     var summary = '';
     var summaryNode = Y.one('#summary');

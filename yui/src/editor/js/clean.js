@@ -307,7 +307,7 @@ EditorClean.prototype = {
      * @chainable
      */
     fallbackPasteCleanupDelayed: function() {
-        Y.soon(Y.bind(this.fallbackPasteCleanup, this));
+        setTimeout(Y.bind(this.fallbackPasteCleanup, this), 0);
 
         return this;
     },

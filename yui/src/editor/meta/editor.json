@@ -2,26 +2,18 @@
     "moodle-editor_ousupsub-editor": {
         "requires": [
             "node",
-            "overlay",
-            "escape",
             "event",
-            "event-simulate",
             "event-custom",
-            "yui-throttle",
             "moodle-editor_ousupsub-manager",
-            "moodle-editor_ousupsub-rangy",
-            "timers"
+            "moodle-editor_ousupsub-rangy"
         ]
     },
     "moodle-editor_ousupsub-plugin": {
         "requires": [
             "node",
             "base",
-            "escape",
             "event",
-            "event-outside",
-            "event-custom",
-            "timers"
+            "event-custom"
         ]
     },
     "moodle-editor_ousupsub-manager": {
