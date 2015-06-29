@@ -10,7 +10,6 @@
             "yui-throttle",
             "moodle-editor_ousupsub-manager",
             "moodle-editor_ousupsub-rangy",
-            "handlebars",
             "timers"
         ]
     },
@@ -21,7 +20,6 @@
             "escape",
             "event",
             "event-outside",
-            "handlebars",
             "event-custom",
             "timers"
         ]
