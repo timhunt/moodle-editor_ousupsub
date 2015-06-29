@@ -156,8 +156,6 @@ Y.extend(Editor, Y.Base, {
     _eventHandles: null,
 
     initializer: function() {
-        var template;
-
         // Note - it is not safe to use a CSS selector like '#' + elementid because the id
         // may have colons in it - e.g.  quiz.
         this.textarea = Y.one(document.getElementById(this.get('elementid')));
@@ -175,19 +173,14 @@ Y.extend(Editor, Y.Base, {
         this._eventHandles = [];
 
         this._wrapper = Y.Node.create('<div class="' + CSS.WRAPPER + '" />');
-        template = Y.Handlebars.compile('<div id="{{elementid}}editable" ' +
+        this.editor = Y.Node.create('<div id="' + this.get('elementid') + 'editable" ' +
                 'contenteditable="true" ' +
                 'autocapitalize="none" ' +
                 'autocorrect="off" ' +
                 'role="textbox" ' +
                 'spellcheck="false" ' +
                 'aria-live="off" ' +
-                'class="{{CSS.CONTENT}}" ' +
-                '/>');
-        this.editor = Y.Node.create(template({
-            elementid: this.get('elementid'),
-            CSS: CSS
-        }));
+                'class="' + CSS.CONTENT + '" />');
 
         // Add a labelled-by attribute to the contenteditable.
         this.textareaLabel = Y.one('[for="' + this.get('elementid') + '"]');
@@ -950,9 +943,10 @@ EditorClean.prototype = {
                     this._normaliseTextarea();
                     return false;
                 } else {
-                    // Due to poor cross browser clipboard compatibility, the failure to find html doesn't 
-                    // mean it isn't there.
-                    // Wait for the clipboard event to finish then fallback clean the entire editor.
+                    // Due to poor cross browser clipboard compatibility, the
+                    // failure to find HTML doesn't mean it isn't there.
+                    // Wait for the clipboard event to finish then fallback
+                    // clean the entire editor.
                     this.fallbackPasteCleanupDelayed();
                     return true;
                 }
@@ -2188,7 +2182,6 @@ Y.Base.mix(Y.M.editor_ousupsub.Editor, [EditorStyling]);
         "yui-throttle",
         "moodle-editor_ousupsub-manager",
         "moodle-editor_ousupsub-rangy",
-        "handlebars",
         "timers"
     ]
 });

@@ -199,16 +199,6 @@ Y.namespace('M.editor_ousupsub').EditorPlugin = EditorPlugin;
  * @class EditorPluginButtons
  */
 
-var MENUTEMPLATE = '' +
-        '<button class="{{buttonClass}} ousupsub_hasmenu" ' +
-            'tabindex="-1" ' +
-            'type="button" ' +
-            'title="{{title}}">' +
-            '<img class="icon" aria-hidden="true" role="presentation" width="16" height="16" ' +
-                'style="background-color:{{config.menuColor}};" src="{{config.iconurl}}" />' +
-            '<img class="icon" aria-hidden="true" role="presentation" width="16" height="16" src="{{image_url "t/expanded" "moodle"}}"/>' +
-        '</button>';
-
 var DISABLED = 'disabled',
     HIGHLIGHT = 'highlight',
     CSS = {
@@ -289,15 +279,6 @@ EditorPluginButtons.prototype = {
      * @type array
      */
     _buttonHandlers: null,
-
-    /**
-     * Hide handlers which are cancelled when the menu is hidden.
-     *
-     * @property _menuHideHandlers
-     * @protected
-     * @type array
-     */
-    _menuHideHandlers: null,
 
     /**
      * A textual description of the primary keyboard shortcut for this
@@ -493,197 +474,6 @@ EditorPluginButtons.prototype = {
 
         // Return the newly created button.
         return this.addButton(config);
-    },
-
-    /**
-     * Add a menu for this plugin to the editor toolbar.
-     *
-     * @method addToolbarMenu
-     * @param {object} config The configuration for this button
-     * @param {string} [config.iconurl] The URL for the icon. If not specified, then the icon and component will be used instead.
-     * @param {string} [config.icon] The icon identifier.
-     * @param {string} [config.iconComponent='core'] The icon component.
-     * @param {string} [config.title=this.name] The string identifier in the plugin's language file.
-     * @param {string} [config.buttonName=this.name] The name of the button. This is used in the buttons object, and if
-     * specified, in the class for the button.
-     * @param {function} config.callback A callback function to call when the button is clicked.
-     * @param {object} [config.callbackArgs] Any arguments to pass to the callback.
-     * @param {array} config.entries List of menu entries with the string (entry.text) and the handlers (entry.handler).
-     * @param {number} [config.overlayWidth=14] The width of the menu. This will be suffixed with the 'em' unit.
-     * @param {string} [config.menuColor] menu icon background color
-     * @return {Node} The Node representing the newly created button.
-     */
-    addToolbarMenu: function(config) {
-        var group = this.get('group'),
-            pluginname = this.name,
-            buttonClass = 'ousupsub_' + pluginname + '_button',
-            button,
-            currentFocus;
-
-        if (!config.buttonName) {
-            // Set a default button name - this is used as an identifier in the button object.
-            config.buttonName = pluginname;
-        } else {
-            buttonClass = buttonClass + '_' + config.buttonName;
-        }
-        config.buttonClass = buttonClass;
-
-        // Normalize icon configuration.
-        config = this._normalizeIcon(config);
-
-        if (!config.title) {
-            config.title = 'pluginname';
-        }
-        var title = M.util.get_string(config.title, 'ousupsub_' + pluginname);
-
-        if (!config.menuColor) {
-            config.menuColor = 'transparent';
-        }
-
-        // Create the actual button.
-        var template = Y.Handlebars.compile(MENUTEMPLATE);
-        button = Y.Node.create(template({
-            buttonClass: buttonClass,
-            config: config,
-            title: title
-        }));
-
-        // Append it to the group.
-        group.append(button);
-
-        currentFocus = this.toolbar.getAttribute('aria-activedescendant');
-        if (!currentFocus) {
-            // Initially set the first button in the toolbar to be the default on keyboard focus.
-            button.setAttribute('tabindex', '0');
-            this.toolbar.setAttribute('aria-activedescendant', button.generateID());
-        }
-
-        // Add the standard click handler to the menu.
-        this._buttonHandlers.push(
-            this.toolbar.delegate('click', this._showToolbarMenu, '.' + buttonClass, this, config),
-            this.toolbar.delegate('key', this._showToolbarMenuAndFocus, '40, 32, enter', '.' + buttonClass, this, config)
-        );
-
-        // Add the button reference to the buttons array for later reference.
-        this.buttonNames.push(config.buttonName);
-        this.buttons[config.buttonName] = button;
-        this.buttonStates[config.buttonName] = this.ENABLED;
-
-        return button;
-    },
-
-    /**
-     * Display a toolbar menu.
-     *
-     * @method _showToolbarMenu
-     * @param {EventFacade} e
-     * @param {object} config The configuration for the whole toolbar.
-     * @param {Number} [config.overlayWidth=14] The width of the menu
-     * @private
-     */
-    _showToolbarMenu: function(e, config) {
-        // Prevent default primarily to prevent arrow press changes.
-        e.preventDefault();
-
-        if (!this.isEnabled()) {
-            // Exit early if the plugin is disabled.
-            return;
-        }
-
-        if (e.currentTarget.ancestor('button', true).hasAttribute(DISABLED)) {
-            // Exit early if the clicked button was disabled.
-            return;
-        }
-
-        var menuDialogue;
-
-        if (!this.menus[config.buttonClass]) {
-            if (!config.overlayWidth) {
-                config.overlayWidth = '14';
-            }
-
-            if (!config.innerOverlayWidth) {
-                config.innerOverlayWidth = parseInt(config.overlayWidth, 10) - 2 + 'em';
-            }
-            config.overlayWidth = parseInt(config.overlayWidth, 10) + 'em';
-
-            this.menus[config.buttonClass] = new Y.M.editor_ousupsub.Menu(config);
-
-            this.menus[config.buttonClass].get('contentBox').delegate('click',
-                    this._chooseMenuItem, '.ousupsub_menuentry a', this, config);
-        }
-
-        // Clear the focusAfterHide for any other menus which may be open.
-        Y.Array.each(this.get('host').openMenus, function(menu) {
-            menu.set('focusAfterHide', null);
-        });
-
-        // Ensure that we focus on this button next time.
-        var creatorButton = this.buttons[config.buttonName];
-        creatorButton.focus();
-        this.get('host')._setTabFocus(creatorButton);
-
-        // Get a reference to the menu dialogue.
-        menuDialogue = this.menus[config.buttonClass];
-
-        // Focus on the button by default after hiding this menu.
-        menuDialogue.set('focusAfterHide', creatorButton);
-
-        // Display the menu.
-        menuDialogue.show();
-
-        // Position it next to the button which opened it.
-        menuDialogue.align(this.buttons[config.buttonName], [Y.WidgetPositionAlign.TL, Y.WidgetPositionAlign.BL]);
-
-        this.get('host').openMenus = [menuDialogue];
-    },
-
-    /**
-     * Display a toolbar menu and focus upon the first item.
-     *
-     * @method _showToolbarMenuAndFocus
-     * @param {EventFacade} e
-     * @param {object} config The configuration for the whole toolbar.
-     * @param {Number} [config.overlayWidth=14] The width of the menu
-     * @private
-     */
-    _showToolbarMenuAndFocus: function(e, config) {
-        this._showToolbarMenu(e, config);
-
-        // Focus on the first element in the menu.
-        this.menus[config.buttonClass].get('boundingBox').one('a').focus();
-    },
-
-    /**
-     * Select a menu item and call the appropriate callbacks.
-     *
-     * @method _chooseMenuItem
-     * @param {EventFacade} e
-     * @param {object} config
-     * @param {M.core.dialogue} menuDialogue The Dialogue to hide.
-     * @private
-     */
-    _chooseMenuItem: function(e, config, menuDialogue) {
-        // Get the index from the clicked anchor.
-        var index = e.target.ancestor('a', true).getData('index'),
-
-            // And the normalized callback configuration.
-            buttonConfig = this._normalizeCallback(config.items[index], config.globalItemConfig);
-
-            menuDialogue = this.menus[config.buttonClass];
-
-        // Prevent the dialogue to be closed because of some browser weirdness.
-        menuDialogue.set('preventHideMenu', true);
-
-        // Call the callback for this button.
-        buttonConfig.callback(e, buttonConfig._callback, buttonConfig.callbackArgs);
-
-        // Cancel the hide menu prevention.
-        menuDialogue.set('preventHideMenu', false);
-
-        // Set the focus after hide so that focus is returned to the editor and changes are made correctly.
-        menuDialogue.set('focusAfterHide', this.get('host').editor);
-        menuDialogue.hide(e);
     },
 
     /**
@@ -1117,4 +907,4 @@ EditorPluginButtons.prototype = {
 Y.Base.mix(Y.M.editor_ousupsub.EditorPlugin, [EditorPluginButtons]);
 
 
-}, '@VERSION@', {"requires": ["node", "base", "escape", "event", "event-outside", "handlebars", "event-custom", "timers"]});
+}, '@VERSION@', {"requires": ["node", "base", "escape", "event", "event-outside", "event-custom", "timers"]});
