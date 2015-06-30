@@ -433,14 +433,14 @@ M.util.get_string = function(identifier, component, a) {
         $destination = self::create_path('root/resources/yui/yuiversion');
         $names = array('attribute-base', 'attribute-complex', 'attribute-core', 'attribute-extras',
                 'attribute-observable', 'base-base', 'base-build', 'base-core', 'base-observable',
-                'base-pluginhost', 'classnamemanager', 'datatype-xml-parse', 'dom-base',
+                'base-pluginhost', 'classnamemanager', 'dom-base',
                 'dom-core', 'dom-screen', 'dom-style', 'event-base', 'event-custom-base',
                 'event-custom-complex', 'event-delegate', 'event-flick', 'event-focus', 'event-hover',
                 'event-key', 'event-mouseenter', 'event-mousewheel', 'event-move',
                 'event-resize', 'event-simulate', 'event-synthetic', 'event-tap', 'event-touch',
                 'event-valuechange', 'node-base', 'node-core',
-                'node-event-delegate', 'node-pluginhost', 'node-screen', 'node-style', 'oop',
-                'pluginhost-base', 'pluginhost-config', 'querystring-stringify-simple', 'queue-promote',
+                'node-event-delegate', 'node-screen', 'node-style', 'oop',
+                'pluginhost-base', 'pluginhost-config', 'queue-promote',
                 'selector', 'selector-native', 'yui');
         foreach ($names as $name) {
             $folderpath = '/'.$name;
