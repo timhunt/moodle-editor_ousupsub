@@ -442,10 +442,7 @@ M.util.get_string = function(identifier, component, a) {
                 'io-upload-iframe', 'io-queue', 'io-xdr', 'node-base', 'node-core',
                 'node-event-delegate', 'node-pluginhost', 'node-screen', 'node-style', 'oop',
                 'pluginhost-base', 'pluginhost-config', 'querystring-stringify-simple', 'queue-promote',
-                'selector', 'selector-native', 'widget-base',
-                'widget-htmlparser', 'widget-position', 'widget-position-align',
-                'widget-position-constrain', 'widget-skin', 'widget-stack', 'widget-stdmod',
-                'widget-uievents', 'yui');
+                'selector', 'selector-native', 'yui');
         foreach ($names as $name) {
             $folderpath = '/'.$name;
             self::create_folder($destination.$folderpath);
