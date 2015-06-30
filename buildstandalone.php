@@ -438,8 +438,7 @@ M.util.get_string = function(identifier, component, a) {
                 'event-custom-complex', 'event-delegate', 'event-flick', 'event-focus', 'event-hover',
                 'event-key', 'event-mouseenter', 'event-mousewheel', 'event-move',
                 'event-resize', 'event-simulate', 'event-synthetic', 'event-tap', 'event-touch',
-                'event-valuechange', 'io-base', 'io-form',
-                'io-upload-iframe', 'io-queue', 'io-xdr', 'node-base', 'node-core',
+                'event-valuechange', 'node-base', 'node-core',
                 'node-event-delegate', 'node-pluginhost', 'node-screen', 'node-style', 'oop',
                 'pluginhost-base', 'pluginhost-config', 'querystring-stringify-simple', 'queue-promote',
                 'selector', 'selector-native', 'yui');
