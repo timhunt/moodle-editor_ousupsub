@@ -74,25 +74,27 @@ class ousupsub_texteditor extends texteditor {
      * @param array $options
      * @param null $fpoptions
      */
-    public function use_editor($elementid, array $options=null, $fpoptions=null) {
+    public function use_editor($elementid, array $options = null, $fpoptions = null) {
         global $PAGE;
 
-        $configstr = 'style1 = ';
+        if (empty($options['context'])) {
+            $options['context'] = context_system::instance();
+        }
         if (empty($options['supsub'])) {
             $options['supsub'] = 'both';
         }
 
         switch ($options['supsub']) {
             case 'both':
-                $configstr .= 'superscript, subscript';
+                $groups = array('style1' => array('superscript', 'subscript'));
                 break;
 
             case 'sup':
-                $configstr .= 'superscript';
+                $groups = array('style1' => array('superscript'));
                 break;
 
             case 'sub':
-                $configstr .= 'subscript';
+                $groups = array('style1' => array('subscript'));
                 break;
 
             default:
@@ -100,61 +102,27 @@ class ousupsub_texteditor extends texteditor {
                         "' for option 'supsub'. Must be one of 'both', 'sup' or 'sub'.");
         }
 
-        $grouplines = explode("\n", $configstr);
-
-        $groups = array();
-
-        foreach ($grouplines as $groupline) {
-            $line = explode('=', $groupline);
-            if (count($line) > 1) {
-                $group = trim(array_shift($line));
-                $plugins = array_map('trim', explode(',', array_shift($line)));
-                $groups[$group] = $plugins;
-            }
+        $groupplugins = array();
+        foreach ($groups['style1'] as $plugin) {
+            $groupplugins[] = array('name' => $plugin, 'params' => array());
         }
-
-        $modules = array('moodle-editor_ousupsub-editor');
-        $options['context'] = empty($options['context']) ? context_system::instance() : $options['context'];
-
-        $jsplugins = array();
-        foreach ($groups as $group => $plugins) {
-            $groupplugins = array();
-            foreach ($plugins as $plugin) {
-                // Do not die on missing plugin.
-                if (!core_component::get_component_directory('ousupsub_' . $plugin)) {
-                    continue;
-                }
-
-                $jsplugin = array();
-                $jsplugin['name'] = $plugin;
-                $jsplugin['params'] = array();
-                $modules[] = 'moodle-ousupsub_' . $plugin . '-button';
-
-                component_callback('ousupsub_' . $plugin, 'strings_for_js');
-                $extra = component_callback('ousupsub_' . $plugin, 'params_for_js', array($elementid, $options, $fpoptions));
-
-                if ($extra) {
-                    $jsplugin = array_merge($jsplugin, $extra);
-                }
-                // We always need the plugin name.
-                $PAGE->requires->string_for_js('pluginname', 'ousupsub_' . $plugin);
-                $groupplugins[] = $jsplugin;
-            }
-            $jsplugins[] = array('group' => $group, 'plugins' => $groupplugins);
-        }
+        $jsplugins = array(array('group' => 'style1', 'plugins' => $groupplugins));
 
         $PAGE->requires->strings_for_js(array(
                 'editor_command_keycode',
                 'editor_control_keycode',
-                'plugin_title_shortcut'
+                'plugin_title_shortcut',
+                'subscript',
+                'superscript'
             ), 'editor_ousupsub');
         $PAGE->requires->strings_for_js(array(
                 'warning',
                 'info'
             ), 'moodle');
-        $PAGE->requires->yui_module($modules,
-                                    'YUI.M.editor_ousupsub.createEditor',
-                                    array($this->get_init_params($elementid, $options, $fpoptions, $jsplugins)));
+
+        $PAGE->requires->yui_module(array('moodle-editor_ousupsub-editor'),
+                'YUI.M.editor_ousupsub.createEditor',
+                array($this->get_init_params($elementid, $options, $fpoptions, $jsplugins)));
 
     }
 

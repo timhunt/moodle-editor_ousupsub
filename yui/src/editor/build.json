@@ -12,6 +12,8 @@
                 "styling.js",
                 "editor-plugin.js",
                 "editor-plugin-buttons.js",
+                "subscript-button.js",
+                "superscript-button.js",
                 "manager.js"
             ]
         }

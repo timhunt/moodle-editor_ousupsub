@@ -180,7 +180,7 @@ EditorPluginButtons.prototype = {
         if (!config.title) {
             config.title = 'pluginname';
         }
-        var title = M.util.get_string(config.title, 'ousupsub_' + pluginname);
+        var title = M.util.get_string(pluginname, 'editor_ousupsub');
 
         // Create the actual button.
         button = Y.Node.create('<button type="button" class="' + buttonClass + '"' +

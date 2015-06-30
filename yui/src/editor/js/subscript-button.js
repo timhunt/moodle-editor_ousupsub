@@ -13,14 +13,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/*
- * @package    ousupsub_subscript
- * @copyright  2014 Rosiana Wijaya <rwijaya@moodle.com>
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
 /**
- * @module moodle-ousupsub_subscript-button
+ * @module moodle-editor_ousupsub-editor
  */
 
 /**

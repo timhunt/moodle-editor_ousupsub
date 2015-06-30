@@ -1,7 +1,0 @@
-{
-    "moodle-ousupsub_subscript-button": {
-        "requires": [
-            "moodle-editor_ousupsub-editor"
-        ]
-    }
-}

@@ -1,5 +1,3 @@
-YUI.add('moodle-ousupsub_superscript-button', function (Y, NAME) {
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -16,10 +14,17 @@ YUI.add('moodle-ousupsub_superscript-button', function (Y, NAME) {
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package    ousupsub_superscript
- * @copyright  2014 Rosiana Wijaya <rwijaya@moodle.com>
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @module moodle-editor_ousupsub-editor
  */
+
+/**
+ * ousupsub text editor subscript plugin.
+ *
+ * @namespace M.ousupsub_subscript
+ * @class button
+ * @extends M.editor_ousupsub.EditorPlugin
+ */
+
 Y.namespace('M.ousupsub_superscript').Button = Y.Base.create('button', Y.M.editor_ousupsub.EditorPlugin, [], {
     initializer: function() {
         this._config = {
@@ -37,8 +42,4 @@ Y.namespace('M.ousupsub_superscript').Button = Y.Base.create('button', Y.M.edito
         };
         this.addButton(this._config);
     }
-
 });
-
-
-}, '@VERSION@', {"requires": ["moodle-editor_ousupsub-editor"]});

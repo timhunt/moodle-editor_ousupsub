@@ -17,8 +17,8 @@
 /**
  * Builds a standalone demonstration version of the ousupsub editor
  *
- * This script is designed to run from the command line and is safe to re-run at any time when
- * the plugin is updated.
+ * This script is designed to run from the command line and is safe to re-run
+ * at any time when the plugin is updated.
  *
  * @package editor_ousupsub
  * @copyright 2015 The Open University
@@ -88,27 +88,21 @@ class ousupsub_texteditor_standalone_builder {
      * Create the language string.
      */
     public static function create_language_string() {
-        $components = array('moodle' => array("error", "morehelp", "changesmadereallygoaway"),
-                            'ousupsub_subscript' => array("pluginname"),
-                            'ousupsub_superscript' => array("pluginname"),
-                            'editor_ousupsub' => array("editor_command_keycode", "editor_control_keycode",
-                                    "plugin_title_shortcut", "plugin_title_shortcut"),
-                            'error' => array("serverconnection"));
+        $components = array(
+            'moodle' => array('error', 'morehelp'),
+            'editor_ousupsub' => array('editor_command_keycode', 'editor_control_keycode',
+                                        'plugin_title_shortcut', 'subscript', 'superscript'),
+        );
 
-        $output = '{';
+        $output = array();
         foreach ($components as $component => $keys) {
-            $output .= strlen($output) > 1 ? ',' : '';
-            $output .= '"' . $component .'":{';
-            $string = '';
+            $output[$component] = array();
             foreach ($keys as $key) {
-                $string .= strlen($string) ? ',' : '';
-                $string .= '"' . $key .'":"' . get_string($key, $component) . '"';
+                $output[$component][$key] = get_string($key, $component);
             }
-            $output .= $string . '}';
         }
-        $output .= '}';
         self::echo_result("Create language strings.");
-        return $output;
+        return json_encode($output);
     }
 
     /**
@@ -285,22 +279,13 @@ body {
         // Set standalone icon and ignore moodle iconurl.
         config.icon = 'editor_' + config.exec";
                 $contents = str_replace("_normalizeIcon: function(config) {", $toreplace, $contents);
+
+                // Plugin button icons.
+                $contents = str_replace("icon: 'e/superscript',", "", $contents);
+                $contents = str_replace("icon: 'e/subscript',", "", $contents);
             }
             $combinedcontents .= $contents;
         }
-
-        // Plugin button icons.
-        $buttonsuperscriptyuipath = 'plugins/superscript/yui/build/moodle-ousupsub_superscript-button/';
-        $buttonsuperscriptyuipath .= 'moodle-ousupsub_superscript-button.js';
-        $superscriptbuttoncontents = file_get_contents($buttonsuperscriptyuipath);
-        $superscriptbuttoncontents = str_replace("icon: 'e/superscript',", "", $superscriptbuttoncontents);
-        $combinedcontents .= $superscriptbuttoncontents;
-
-        $buttonsubscriptyuipath = 'plugins/subscript/yui/build/moodle-ousupsub_subscript-button/';
-        $buttonsubscriptyuipath .= 'moodle-ousupsub_subscript-button.js';
-        $subscriptbuttonscriptcontents = file_get_contents($buttonsubscriptyuipath);
-        $subscriptbuttonscriptcontents = str_replace("icon: 'e/subscript',", "", $subscriptbuttonscriptcontents);
-        $combinedcontents .= $subscriptbuttonscriptcontents;
 
         // Save combined file.
         $combinedpath = self::create_path('root/resources/ousupsubjs');
@@ -331,13 +316,13 @@ M.cfg = {"wwwroot":M.protocol + "//" + M.host + M.fileroot,"sesskey":"","loading
                 "themerev":-1,"slasharguments":1,"theme":"clean","jsrev":-1,"svgicons":true};
 
 function init_ousupsub(id, params) {
-    M.str = '.$lang.'
+    M.str = ' . $lang . '
     plugins = [];
     if (params.superscript) {
-        plugins[plugins,length] = {"name":"superscript","params":[]};
+        plugins.push({"name":"superscript","params":[]});
     }
     if (params.subscript) {
-        plugins[plugins.length] = {"name":"subscript","params":[]};
+        plugins.push({"name":"subscript","params":[]});
     }
     var YUI_config = {base: "resources/yui/3.17.2/"}
     YUI().use("node", function(Y) {

@@ -89,18 +89,30 @@ for (var x = 0; x < disallowed_characters.length; x++) {
 }
 
 function init_ousupsub(id, params) {
-    M.str = {"moodle":{"error":"Error","morehelp":"More help","changesmadereallygoaway":"You have made changes. Are you sure you want to navigate away and lose your changes?"},"ousupsub_subscript":{"pluginname":"Subscript"},"ousupsub_superscript":{"pluginname":"Superscript"},"editor_ousupsub":{"editor_command_keycode":"Cmd + {$a}","editor_control_keycode":"Ctrl + {$a}","plugin_title_shortcut":"{$a->title} [{$a->shortcut}]","plugin_title_shortcut":"{$a->title} [{$a->shortcut}]"},"error":{"serverconnection":"Error connecting to the server"}}
+    M.str = {
+            "moodle": {
+                "error": "Error",
+                "morehelp": "More help"
+            },
+            "editor_ousupsub": {
+                "editor_command_keycode":"Cmd + {$a}",
+                "editor_control_keycode":"Ctrl + {$a}",
+                "plugin_title_shortcut":"{$a->title} [{$a->shortcut}]",
+                "subscript":"Subscript",
+                "superscript":"Superscript"
+            },
+        }
+
     plugins = [];
     if (params.superscript) {
-        plugins[plugins,length] = {"name":"superscript","params":[]};
+        plugins.push({"name": "superscript", "params": []});
     }
     if (params.subscript) {
-        plugins[plugins.length] = {"name":"subscript","params":[]};
+        plugins.push({"name": "subscript", "params": []});
     }
 
     var YUI_config = {base: "resources/yui/3.17.2/"}
-    YUI().use("node", "moodle-editor_ousupsub-editor","moodle-ousupsub_subscript-button",
-                    "moodle-ousupsub_superscript-button",
+    YUI().use("node", "moodle-editor_ousupsub-editor",
             function(Y) {YUI.M.editor_ousupsub.createEditor(
             {"elementid":id,"content_css":"","contextid":0,"language":"en",
                 "directionality":"ltr","plugins":[{"group":"style1","plugins":plugins}],"pageHash":""});
@@ -183,8 +195,7 @@ function update_display(Y) {
     statusNode.set('innerHTML', 'Overall status = <span class="' + status + '">' + status + '</span>');
 }
 
-YUI().use("node", "moodle-editor_ousupsub-editor","moodle-ousupsub_subscript-button","moodle-ousupsub_superscript-button",
-                function(Y) {
+YUI().use("node", "moodle-editor_ousupsub-editor", function(Y) {
     run_tests();
     update_display(Y);
 });
