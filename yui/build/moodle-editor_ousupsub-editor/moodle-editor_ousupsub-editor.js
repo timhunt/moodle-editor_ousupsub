@@ -358,8 +358,7 @@ Y.extend(Editor, Y.Base, {
         var groupIndex,
             group,
             pluginIndex,
-            plugin,
-            pluginConfig;
+            plugin;
 
         for (groupIndex in plugins) {
             group = plugins[groupIndex];
@@ -369,20 +368,35 @@ Y.extend(Editor, Y.Base, {
             }
             for (pluginIndex in group.plugins) {
                 plugin = group.plugins[pluginIndex];
-
-                pluginConfig = Y.mix({
-                    name: plugin.name,
-                    group: group.group,
-                    editor: this.editor,
-                    toolbar: this.toolbar,
-                    host: this
-                }, plugin);
-
-                // Add a reference to the current editor.
-                if (typeof Y.M['ousupsub_' + plugin.name] === "undefined") {
-                    continue;
+                if (plugin.name === 'superscript') {
+                    this.plugins.superscript = new Y.M.editor_ousupsub.EditorPlugin({
+                        name: 'superscript',
+                        group: group.group,
+                        editor: this.editor,
+                        toolbar: this.toolbar,
+                        host: this,
+                        exec: 'superscript',
+                        tags: 'sup',
+                        // Key code (up arrow) for the keyboard shortcut which triggers this button:
+                        // Up arrow should be 38 but doesn't register and is handled elsewhere.
+                        keys: ['94'],
+                        icon: 'e/superscript'
+                    });
+                } else if (plugin.name === 'subscript') {
+                    this.plugins.subscript = new Y.M.editor_ousupsub.EditorPlugin({
+                        name: 'subscript',
+                        group: group.group,
+                        editor: this.editor,
+                        toolbar: this.toolbar,
+                        host: this,
+                        exec: 'subscript',
+                        tags: 'sub',
+                        // Key codes (underscore) for the keyboard shortcut which triggers this button:
+                        // Down arrow should be 40 but doesn't register.
+                        keys: ['95'],
+                        icon: 'e/subscript'
+                    });
                 }
-                this.plugins[plugin.name] = new Y.M['ousupsub_' + plugin.name].Button(pluginConfig);
             }
         }
 
@@ -1891,7 +1905,9 @@ function EditorPlugin() {
     EditorPlugin.superclass.constructor.apply(this, arguments);
 }
 
-var GROUPSELECTOR = '.ousupsub_group.',
+var DISABLED = 'disabled',
+    HIGHLIGHT = 'highlight',
+    GROUPSELECTOR = '.ousupsub_group.',
     GROUP = '_group';
 
 Y.extend(EditorPlugin, Y.Base, {
@@ -1902,6 +1918,14 @@ Y.extend(EditorPlugin, Y.Base, {
      * @type string
      */
     name: null,
+
+    /**
+     * The name of the command to execute when the button is clicked.
+     *
+     * @property exec
+     * @type string
+     */
+    exec: null,
 
     /**
      * A Node reference to the editor.
@@ -1927,136 +1951,6 @@ Y.extend(EditorPlugin, Y.Base, {
      */
     _eventHandles: null,
 
-    initializer: function(config) {
-        // Set the references to configuration parameters.
-        this.name = config.name;
-        this.toolbar = config.toolbar;
-        this.editor = config.editor;
-
-        // Set up the prototypal properties.
-        // These must be set up here becuase prototypal arrays and objects are copied across instances.
-        this.buttons = {};
-        this.buttonNames = [];
-        this.buttonStates = {};
-        this.menus = {};
-        this._primaryKeyboardShortcut = [];
-        this._buttonHandlers = [];
-        this._menuHideHandlers = [];
-        this._highlightQueue = {};
-        this._eventHandles = [];
-    },
-
-    destructor: function() {
-        // Detach all EventHandles.
-        new Y.EventHandle(this._eventHandles).detach();
-    },
-
-    /**
-     * Mark the content ediable content as having been changed.
-     *
-     * This is a convenience function and passes through to {{#crossLink "M.editor_ousupsub.EditorTextArea/updateOriginal"}}updateOriginal{{/crossLink}}.
-     *
-     * @method markUpdated
-     */
-    markUpdated: function() {
-        // Save selection after changes to the DOM. If you don't do this here,
-        // subsequent calls to restoreSelection() will fail expecting the
-        // previous DOM state.
-        this.get('host').saveSelection();
-
-        return this.get('host').updateOriginal();
-    },
-
-    /**
-     * Register an event handle for disposal in the destructor.
-     *
-     * @method registerEventHandle
-     * @param {EventHandle} The Event Handle as returned by Y.on, and Y.delegate.
-     */
-    registerEventHandle: function(handle) {
-        this._eventHandles.push(handle);
-    }
-}, {
-    NAME: 'editorPlugin',
-    ATTRS: {
-        /**
-         * The editor instance that this plugin was instantiated by.
-         *
-         * @attribute host
-         * @type M.editor_ousupsub.Editor
-         * @writeOnce
-         */
-        host: {
-            writeOnce: true
-        },
-
-        /**
-         * The toolbar group that this button belongs to.
-         *
-         * When setting, the name of the group should be specified.
-         *
-         * When retrieving, the Node for the toolbar group is returned. If
-         * the group doesn't exist yet, then it is created first.
-         *
-         * @attribute group
-         * @type Node
-         * @writeOnce
-         */
-        group: {
-            writeOnce: true,
-            getter: function(groupName) {
-                var group = this.toolbar.one(GROUPSELECTOR + groupName + GROUP);
-                if (!group) {
-                    group = Y.Node.create('<div class="ousupsub_group ' +
-                            groupName + GROUP + '"></div>');
-                    this.toolbar.append(group);
-                }
-
-                return group;
-            }
-        }
-    }
-});
-
-Y.namespace('M.editor_ousupsub').EditorPlugin = EditorPlugin;
-// This file is part of Moodle - http://moodle.org/
-//
-// Moodle is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// Moodle is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
-
-/**
- * @module moodle-editor_ousupsub-editor
- * @submodule buttons
- */
-
-/**
- * Button functions for an ousupsub Plugin.
- *
- * See {{#crossLink "M.editor_ousupsub.EditorPlugin"}}{{/crossLink}} for details.
- *
- * @namespace M.editor_ousupsub
- * @class EditorPluginButtons
- */
-
-var DISABLED = 'disabled',
-    HIGHLIGHT = 'highlight';
-
-function EditorPluginButtons() {}
-
-EditorPluginButtons.ATTRS = {
-};
-
-EditorPluginButtons.prototype = {
     /**
      * All of the buttons that belong to this plugin instance.
      *
@@ -2088,14 +1982,6 @@ EditorPluginButtons.prototype = {
      * @type object
      */
     buttonStates: null,
-
-    /**
-     * The menus belonging to this plugin instance.
-     *
-     * @property menus
-     * @type object
-     */
-    menus: null,
 
     /**
      * The state for a disabled button.
@@ -2150,6 +2036,57 @@ EditorPluginButtons.prototype = {
      * @default null
      */
     _highlightQueue: null,
+
+    initializer: function(config) {
+        // Set the references to configuration parameters.
+        this.name = config.name;
+        this.exec = config.exec;
+        this.toolbar = config.toolbar;
+        this.editor = config.editor;
+
+        // Set up the prototypal properties.
+        // These must be set up here because prototypal arrays and objects are copied across instances.
+        this.buttons = {};
+        this.buttonNames = [];
+        this.buttonStates = {};
+        this._primaryKeyboardShortcut = [];
+        this._buttonHandlers = [];
+        this._menuHideHandlers = [];
+        this._highlightQueue = {};
+        this._eventHandles = [];
+        this.addButton(config);
+    },
+
+    destructor: function() {
+        // Detach all EventHandles.
+        new Y.EventHandle(this._eventHandles).detach();
+    },
+
+    /**
+     * Mark the content ediable content as having been changed.
+     *
+     * This is a convenience function and passes through to {{#crossLink "M.editor_ousupsub.EditorTextArea/updateOriginal"}}updateOriginal{{/crossLink}}.
+     *
+     * @method markUpdated
+     */
+    markUpdated: function() {
+        // Save selection after changes to the DOM. If you don't do this here,
+        // subsequent calls to restoreSelection() will fail expecting the
+        // previous DOM state.
+        this.get('host').saveSelection();
+
+        return this.get('host').updateOriginal();
+    },
+
+    /**
+     * Register an event handle for disposal in the destructor.
+     *
+     * @method registerEventHandle
+     * @param {EventHandle} The Event Handle as returned by Y.on, and Y.delegate.
+     */
+    registerEventHandle: function(handle) {
+        this._eventHandles.push(handle);
+    },
 
     /**
      * Add a button for this plugin to the toolbar.
@@ -2220,7 +2157,7 @@ EditorPluginButtons.prototype = {
             this.toolbar.setAttribute('aria-activedescendant', button.generateID());
         }
         // Normalize the callback parameters.
-        config = this._normalizeCallback(config);
+        config.callback = Y.rbind(this._callbackWrapper, this, this._applyTextCommand);
 
         // Add the standard click handler to the button.
         this._buttonHandlers.push(
@@ -2275,50 +2212,6 @@ EditorPluginButtons.prototype = {
     },
 
     /**
-     * Add a basic button which ties into the execCommand.
-     *
-     * See {{#crossLink "M.editor_ousupsub.EditorPluginButtons/addButton:method"}}addButton{{/crossLink}} for full details of the optional parameters.
-     *
-     * @method addBasicButton
-     * @param {object} config The button configuration
-     * @param {string} config.exec The execCommand to call on the document.
-     * @param {string} [config.iconurl] The URL for the icon. If not specified, then the icon and component will be used instead.
-     * @param {string} [config.icon] The icon identifier.
-     * @param {string} [config.iconComponent='core'] The icon component.
-     * @param {string} [config.keys] The shortcut key that can call this plugin from the keyboard.
-     * @param {string} [config.tags] The tags that trigger this button to be highlighted.
-     * @param {boolean} [config.tagMatchRequiresAll=false] Working in combination with the tags parameter, highlight
-     * this button when any match is good enough.
-     *
-     * See {{#crossLink "M.editor_ousupsub.EditorSelection/selectionFilterMatches:method"}}{{/crossLink}} for more information.
-     * @param {string} [config.title=this.name] The string identifier in the plugin's language file.
-     * @param {string} [config.buttonName=this.name] The name of the button. This is used in the buttons object, and if
-     * specified, in the class for the button.
-     * @return {Node} The Node representing the newly created button.
-     */
-    addBasicButton: function(config) {
-        if (!config.exec) {
-            return null;
-        }
-
-        // The default icon - true for most core plugins.
-        if (!config.icon) {
-            config.icon = 'e/' + config.exec;
-        }
-
-        // The default callback.
-        config.callback = function() {
-            document.execCommand(config.exec, false, null);
-
-            // And mark the text area as updated.
-            this.markUpdated();
-        };
-
-        // Return the newly created button.
-        return this.addButton(config);
-    },
-
-    /**
      * Normalize and sanitize the configuration variables relating to callbacks.
      *
      * @method _normalizeCallback
@@ -2343,7 +2236,7 @@ EditorPluginButtons.prototype = {
         // We wrap the callback in function to prevent the default action, check whether the editor is
         // active and focus it, and then mark the field as updated.
         config._callback = config.callback || inheritFrom.callback;
-        config.callback = Y.rbind(this._callbackWrapper, this, config._callback, config.callbackArgs);
+        config.callback = Y.rbind(this._callbackWrapper, this, this._applyTextCommand, config.callbackArgs);
 
         config._callbackNormalized = true;
 
@@ -2711,7 +2604,7 @@ EditorPluginButtons.prototype = {
              mode = 1;
          }
 
-         this._getEditor()._applyTextCommand(this._config.exec, mode);
+         this._getEditor()._applyTextCommand(this.exec, mode);
      },
 
     /**
@@ -2739,99 +2632,50 @@ EditorPluginButtons.prototype = {
     _getEditorNode: function(host) {
         return this._getEditor(host).editor._node;
     }
-};
 
-Y.Base.mix(Y.M.editor_ousupsub.EditorPlugin, [EditorPluginButtons]);
-// This file is part of Moodle - http://moodle.org/
-//
-// Moodle is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// Moodle is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}, {
+    NAME: 'editorPlugin',
+    ATTRS: {
+        /**
+         * The editor instance that this plugin was instantiated by.
+         *
+         * @attribute host
+         * @type M.editor_ousupsub.Editor
+         * @writeOnce
+         */
+        host: {
+            writeOnce: true
+        },
 
-/**
- * @module moodle-editor_ousupsub-editor
- */
+        /**
+         * The toolbar group that this button belongs to.
+         *
+         * When setting, the name of the group should be specified.
+         *
+         * When retrieving, the Node for the toolbar group is returned. If
+         * the group doesn't exist yet, then it is created first.
+         *
+         * @attribute group
+         * @type Node
+         * @writeOnce
+         */
+        group: {
+            writeOnce: true,
+            getter: function(groupName) {
+                var group = this.toolbar.one(GROUPSELECTOR + groupName + GROUP);
+                if (!group) {
+                    group = Y.Node.create('<div class="ousupsub_group ' +
+                            groupName + GROUP + '"></div>');
+                    this.toolbar.append(group);
+                }
 
-/**
- * ousupsub text editor subscript plugin.
- *
- * @namespace M.ousupsub_subscript
- * @class button
- * @extends M.editor_ousupsub.EditorPlugin
- */
-
-Y.namespace('M.ousupsub_subscript').Button = Y.Base.create('button', Y.M.editor_ousupsub.EditorPlugin, [], {
-    initializer: function() {
-        this._config = {
-            exec: 'subscript',
-
-            // Watch the following tags and add/remove highlighting as appropriate:
-            tags: 'sub',
-
-            // Key codes (underscore) for the keyboard shortcut which triggers this button:
-            // Down arrow should be 40 but doesn't register.
-            keys: ['95'],
-
-            icon: 'e/subscript',
-            callback: this._applyTextCommand
-        };
-        this.addButton(this._config);
+                return group;
+            }
+        }
     }
 });
-// This file is part of Moodle - http://moodle.org/
-//
-// Moodle is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// Moodle is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * @module moodle-editor_ousupsub-editor
- */
-
-/**
- * ousupsub text editor subscript plugin.
- *
- * @namespace M.ousupsub_subscript
- * @class button
- * @extends M.editor_ousupsub.EditorPlugin
- */
-
-Y.namespace('M.ousupsub_superscript').Button = Y.Base.create('button', Y.M.editor_ousupsub.EditorPlugin, [], {
-    initializer: function() {
-        this._config = {
-            exec: 'superscript',
-
-            // Watch the following tags and add/remove highlighting as appropriate:
-            tags: 'sup',
-
-            // Key code (up arrow) for the keyboard shortcut which triggers this button:
-            // Up arrow should be 38 but doesn't register and is handled elsewhere.
-            keys: ['94'],
-
-            icon: 'e/superscript',
-            callback: this._applyTextCommand
-        };
-        this.addButton(this._config);
-    }
-});
+Y.namespace('M.editor_ousupsub').EditorPlugin = EditorPlugin;
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify

@@ -358,8 +358,7 @@ Y.extend(Editor, Y.Base, {
         var groupIndex,
             group,
             pluginIndex,
-            plugin,
-            pluginConfig;
+            plugin;
 
         for (groupIndex in plugins) {
             group = plugins[groupIndex];
@@ -369,21 +368,35 @@ Y.extend(Editor, Y.Base, {
             }
             for (pluginIndex in group.plugins) {
                 plugin = group.plugins[pluginIndex];
-
-                pluginConfig = Y.mix({
-                    name: plugin.name,
-                    group: group.group,
-                    editor: this.editor,
-                    toolbar: this.toolbar,
-                    host: this
-                }, plugin);
-
-                // Add a reference to the current editor.
-                if (typeof Y.M['ousupsub_' + plugin.name] === "undefined") {
-                    Y.log("Plugin '" + plugin.name + "' could not be found - skipping initialisation", "warn", LOGNAME);
-                    continue;
+                if (plugin.name === 'superscript') {
+                    this.plugins.superscript = new Y.M.editor_ousupsub.EditorPlugin({
+                        name: 'superscript',
+                        group: group.group,
+                        editor: this.editor,
+                        toolbar: this.toolbar,
+                        host: this,
+                        exec: 'superscript',
+                        tags: 'sup',
+                        // Key code (up arrow) for the keyboard shortcut which triggers this button:
+                        // Up arrow should be 38 but doesn't register and is handled elsewhere.
+                        keys: ['94'],
+                        icon: 'e/superscript'
+                    });
+                } else if (plugin.name === 'subscript') {
+                    this.plugins.subscript = new Y.M.editor_ousupsub.EditorPlugin({
+                        name: 'subscript',
+                        group: group.group,
+                        editor: this.editor,
+                        toolbar: this.toolbar,
+                        host: this,
+                        exec: 'subscript',
+                        tags: 'sub',
+                        // Key codes (underscore) for the keyboard shortcut which triggers this button:
+                        // Down arrow should be 40 but doesn't register.
+                        keys: ['95'],
+                        icon: 'e/subscript'
+                    });
                 }
-                this.plugins[plugin.name] = new Y.M['ousupsub_' + plugin.name].Button(pluginConfig);
             }
         }
 
