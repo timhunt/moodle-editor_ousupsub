@@ -196,9 +196,7 @@ EditorPluginButtons.prototype = {
         var currentfocus = this.toolbar.getAttribute('aria-activedescendant');
         if (!currentfocus) {
             // Initially set the first button in the toolbar to be the default on keyboard focus.
-            button.setAttribute('tabindex', '0');
             this.toolbar.setAttribute('aria-activedescendant', button.generateID());
-            this.get('host')._tabFocus = button;
         }
         // Normalize the callback parameters.
         config = this._normalizeCallback(config);
@@ -396,11 +394,6 @@ EditorPluginButtons.prototype = {
 
         // Save the selection.
         this.get('host').saveSelection();
-
-        // Ensure that we focus on this button next time.
-        if (creatorButton) {
-            this.get('host')._setTabFocus(creatorButton);
-        }
 
         // Build the arguments list, but remove the callback we're calling.
         var args = [e, callbackArgs];

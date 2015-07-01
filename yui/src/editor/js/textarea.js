@@ -117,10 +117,6 @@ EditorTextArea.prototype = {
                 'down:40,95',
                 '.' + CSS.CONTENT,
                 this));
-        this._registerEventHandle(this._wrapper.delegate('focus',
-                function(e) {
-                    this._setTabFocus(e.currentTarget);
-                }, '.' + CSS.CONTENT , this));
         this._registerEventHandle(this._wrapper.delegate('key',
                 this.textareaKeyboardNavigation,
                 'down:38,94',
@@ -133,7 +129,7 @@ EditorTextArea.prototype = {
     /**
      * Implement arrow key navigation for the buttons in the toolbar.
      *
-     * @method toolbarKeyboardNavigation
+     * @method textareaKeyboardNavigation
      * @param {EventFacade} e - the keyboard event.
      */
     textareaKeyboardNavigation: function(e) {

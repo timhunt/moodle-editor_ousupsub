@@ -123,6 +123,14 @@ Y.extend(Editor, Y.Base, {
     editor: null,
 
     /**
+     * A reference to the toolbar Node.
+     *
+     * @property toolbar
+     * @type Node
+     */
+    toolbar: null,
+
+    /**
      * A reference to the original text area.
      *
      * @property textarea
@@ -417,6 +425,44 @@ Y.extend(Editor, Y.Base, {
      */
     _registerEventHandle: function(handle) {
         this._eventHandles.push(handle);
+    },
+
+    /**
+     * Setup the toolbar on the editor.
+     *
+     * @method setupToolbar
+     * @chainable
+     */
+    setupToolbar: function() {
+        this.toolbar = Y.Node.create('<div class="' + CSS.TOOLBAR + '" role="toolbar" aria-live="off"/>');
+        this._wrapper.appendChild(this.toolbar);
+
+        if (this.textareaLabel) {
+            this.toolbar.setAttribute('aria-labelledby', this.textareaLabel.get("id"));
+        }
+
+        return this;
+    },
+
+    /**
+     * Disable CSS styling. Use HTML elements instead.
+     *
+     * @method disableCssStyling
+     */
+    disableCssStyling: function() {
+        try {
+            document.execCommand("styleWithCSS", 0, false);
+        } catch (e1) {
+            try {
+                document.execCommand("useCSS", 0, true);
+            } catch (e2) {
+                try {
+                    document.execCommand('styleWithCSS', false, false);
+                } catch (e3) {
+                    // We did our best.
+                }
+            }
+        }
     }
 
 }, {
