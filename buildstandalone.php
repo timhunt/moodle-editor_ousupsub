@@ -270,6 +270,7 @@ body {
         // Load the YUI editor files.
         // path to get the editor yui files from.
         $editoryuipath = 'yui/build/moodle-editor_ousupsub-%%PART%%/moodle-editor_ousupsub-%%PART%%-min.js';
+        //$editoryuipath = 'yui/build/moodle-editor_ousupsub-%%PART%%/moodle-editor_ousupsub-%%PART%%.js';
         $names = array('editor', 'rangy');
         foreach ($names as $name) {
             $path = str_replace('%%PART%%', $name, $editoryuipath);
@@ -389,17 +390,16 @@ M.util.get_string = function(identifier, component, a) {
                 'base-observable', 'base-pluginhost', 'dom-base',
                 'dom-core', 'dom-screen', 'dom-style', 'event-base', 'event-custom-base',
                 'event-custom-complex', 'event-delegate', 'event-focus', 'event-key',
-                'event-simulate', 'event-synthetic', 'event-tap', 'event-touch',
-                'event-valuechange', 'node-base', 'node-core',
+                'event-synthetic', 'event-tap', 'event-touch', 'node-base', 'node-core',
                 'node-event-delegate', 'node-screen', 'node-style', 'oop',
-                'pluginhost-base', 'pluginhost-config', 'queue-promote',
+                'pluginhost-base', 'pluginhost-config',
                 'selector', 'selector-native', 'yui');
         foreach ($names as $name) {
             $folderpath = '/'.$name;
             self::create_folder($destination.$folderpath);
             $modulepath = $folderpath.'/'.$name.self::$yuisuffix.'.js';
             if (copy($source.$modulepath, $destination.$modulepath)) {
-                self::echo_result("Copy YUI module ".$name."icon.");
+                self::echo_result("Copy YUI module " . $name . ".");
             }
         }
 
