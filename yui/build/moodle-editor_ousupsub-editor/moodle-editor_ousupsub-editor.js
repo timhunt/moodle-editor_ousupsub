@@ -476,117 +476,7 @@ Y.extend(Editor, Y.Base, {
                 }
             }
         }
-    }
-
-}, {
-    NS: 'editor_ousupsub',
-    ATTRS: {
-        /**
-         * The unique identifier for the form element representing the editor.
-         *
-         * @attribute elementid
-         * @type String
-         * @writeOnce
-         */
-        elementid: {
-            value: null,
-            writeOnce: true
-        },
-
-        /**
-         * The contextid of the form.
-         *
-         * @attribute contextid
-         * @type Integer
-         * @writeOnce
-         */
-        contextid: {
-            value: null,
-            writeOnce: true
-        },
-
-        /**
-         * Plugins with their configuration.
-         *
-         * The plugins structure is:
-         *
-         *     [
-         *         {
-         *             "group": "groupName",
-         *             "plugins": [
-         *                 "pluginName": {
-         *                     "configKey": "configValue"
-         *                 },
-         *                 "pluginName": {
-         *                     "configKey": "configValue"
-         *                 }
-         *             ]
-         *         },
-         *         {
-         *             "group": "groupName",
-         *             "plugins": [
-         *                 "pluginName": {
-         *                     "configKey": "configValue"
-         *                 }
-         *             ]
-         *         }
-         *     ]
-         *
-         * @attribute plugins
-         * @type Object
-         * @writeOnce
-         */
-        plugins: {
-            value: {},
-            writeOnce: true
-        }
-    }
-});
-
-// The Editor publishes custom events that can be subscribed to.
-Y.augment(Editor, Y.EventTarget);
-
-Y.namespace('M.editor_ousupsub').Editor = Editor;
-
-// Function for Moodle's initialisation.
-Y.namespace('M.editor_ousupsub.Editor').init = function(config) {
-    return YUI.M.editor_ousupsub.createEditor(config);
-};
-// This file is part of Moodle - http://moodle.org/
-//
-// Moodle is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// Moodle is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
-
-/**
- * @module moodle-editor_ousupsub-editor
- * @submodule textarea
- */
-
-/**
- * Textarea functions for the ousupsub editor.
- *
- * See {{#crossLink "M.editor_ousupsub.Editor"}}{{/crossLink}} for details.
- *
- * @namespace M.editor_ousupsub
- * @class EditorTextArea
- */
-
-function EditorTextArea() {}
-
-EditorTextArea.ATTRS = {
-};
-
-EditorTextArea.prototype = {
+    },
 
     /**
      * Return the appropriate empty content value for the current browser.
@@ -599,11 +489,7 @@ EditorTextArea.prototype = {
      * @private
      */
     _getEmptyContent: function() {
-        if (Y.UA.ie && Y.UA.ie < 10) {
-            return '';
-        } else {
-            return '';
-        }
+        return '';
     },
 
     /**
@@ -736,9 +622,81 @@ EditorTextArea.prototype = {
              }
          }, this);
      }
-};
 
-Y.Base.mix(Y.M.editor_ousupsub.Editor, [EditorTextArea]);
+}, {
+    NS: 'editor_ousupsub',
+    ATTRS: {
+        /**
+         * The unique identifier for the form element representing the editor.
+         *
+         * @attribute elementid
+         * @type String
+         * @writeOnce
+         */
+        elementid: {
+            value: null,
+            writeOnce: true
+        },
+
+        /**
+         * The contextid of the form.
+         *
+         * @attribute contextid
+         * @type Integer
+         * @writeOnce
+         */
+        contextid: {
+            value: null,
+            writeOnce: true
+        },
+
+        /**
+         * Plugins with their configuration.
+         *
+         * The plugins structure is:
+         *
+         *     [
+         *         {
+         *             "group": "groupName",
+         *             "plugins": [
+         *                 "pluginName": {
+         *                     "configKey": "configValue"
+         *                 },
+         *                 "pluginName": {
+         *                     "configKey": "configValue"
+         *                 }
+         *             ]
+         *         },
+         *         {
+         *             "group": "groupName",
+         *             "plugins": [
+         *                 "pluginName": {
+         *                     "configKey": "configValue"
+         *                 }
+         *             ]
+         *         }
+         *     ]
+         *
+         * @attribute plugins
+         * @type Object
+         * @writeOnce
+         */
+        plugins: {
+            value: {},
+            writeOnce: true
+        }
+    }
+});
+
+// The Editor publishes custom events that can be subscribed to.
+Y.augment(Editor, Y.EventTarget);
+
+Y.namespace('M.editor_ousupsub').Editor = Editor;
+
+// Function for Moodle's initialisation.
+Y.namespace('M.editor_ousupsub.Editor').init = function(config) {
+    return YUI.M.editor_ousupsub.createEditor(config);
+};
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify

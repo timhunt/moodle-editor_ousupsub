@@ -4,7 +4,6 @@
         "moodle-editor_ousupsub-editor": {
             "jsfiles": [
                 "editor.js",
-                "textarea.js",
                 "clean.js",
                 "selection.js",
                 "editor-plugin.js",
