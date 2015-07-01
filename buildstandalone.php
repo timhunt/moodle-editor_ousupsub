@@ -226,7 +226,7 @@ document.body.className += " jsenabled";
             if (!is_readable($source)) {
                 $source = $fallbacklocation . $name . '.svg';
             }
-            $destination = self::create_path('root/resources/core_editor_'.$name.'.svg');
+            $destination = self::create_path('root/resources/'.$name.'.svg');
             if (copy($source, $destination)) {
                 self::echo_result("Copy ousupsub ".$name." icon.");
             }
@@ -269,22 +269,11 @@ body {
 
         // Load the YUI editor files.
         // path to get the editor yui files from.
-        $editoryuipath = 'yui/build/moodle-editor_ousupsub-%%PART%%/moodle-editor_ousupsub-%%PART%%.js';
+        $editoryuipath = 'yui/build/moodle-editor_ousupsub-%%PART%%/moodle-editor_ousupsub-%%PART%%-min.js';
         $names = array('editor', 'rangy');
         foreach ($names as $name) {
             $path = str_replace('%%PART%%', $name, $editoryuipath);
-            $contents = file_get_contents($path);
-            if ($name == 'editor') {
-                $toreplace = "_normalizeIcon: function(config) {
-        // Set standalone icon and ignore moodle iconurl.
-        config.icon = 'editor_' + config.exec";
-                $contents = str_replace("_normalizeIcon: function(config) {", $toreplace, $contents);
-
-                // Plugin button icons.
-                $contents = str_replace("icon: 'e/superscript',", "", $contents);
-                $contents = str_replace("icon: 'e/subscript',", "", $contents);
-            }
-            $combinedcontents .= $contents;
+            $combinedcontents .= file_get_contents($path);
         }
 
         // Save combined file.
@@ -336,46 +325,10 @@ function init_ousupsub(id, params) {
         );
     });
 };
-/**
- * Various utility functions
- */
 M.util = M.util || {};
-
-/**
- * Returns url for images.
- * @param {String} imagename
- * @param {String} component
- * @return {String}
- */
 M.util.image_url = function(imagename, component) {
-
-    if (!component || component == \'\' || component == \'moodle\' || component == \'core\') {
-        component = \'core\';
-    }
-
-    var url = M.cfg.wwwroot + \'/resources/\';
-    var suffix = \'.svg\'
-    url += component + \'_\' + imagename;
-    if (!M.cfg.svgicons) {
-        url += \'.png\';
-    }
-
-    url += suffix;
-    return url;
+    return M.cfg.wwwroot + "/resources/" + imagename.replace("e/", "") + ".svg";
 };
-
-/**
- * Returns a string registered in advance for usage in JavaScript
- *
- * If you do not pass the third parameter, the function will just return
- * the corresponding value from the M.str object. If the third parameter is
- * provided, the function performs {$a} placeholder substitution in the
- * same way as PHP get_string() in Moodle does.
- *
- * @param {String} identifier string identifier
- * @param {String} component the component providing the string
- * @param {Object|String} a optional variable to populate placeholder with
- */
 M.util.get_string = function(identifier, component, a) {
     var stringvalue;
 
