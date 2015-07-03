@@ -233,9 +233,11 @@ body {
                 'attribute-observable', 'base-base', 'base-build', 'base-core',
                 'base-observable', 'base-pluginhost', 'dom-base',
                 'dom-core', 'dom-screen', 'dom-style', 'event-base', 'event-custom-base',
-                'event-custom-complex', 'event-delegate', 'event-focus', 'event-key',
-                'event-synthetic', 'event-tap', 'event-touch', 'node-base', 'node-core',
-                'node-event-delegate', 'node-screen', 'node-style', 'oop',
+                'event-custom-complex', 'event-delegate', 'event-flick', 'event-focus', 'event-hover', 'event-key',
+                'event-mousewheel', 'event-mouseenter', 'event-move', 'event-outside',
+                'event-resize', 'event-synthetic', 'event-tap', 'event-touch',
+                'event-valuechange', 'node-base', 'node-core',
+                'node-event-delegate', 'node-pluginhost', 'node-screen', 'node-style', 'oop',
                 'pluginhost-base', 'pluginhost-config',
                 'selector', 'selector-native', 'yui');
         foreach ($names as $name) {
