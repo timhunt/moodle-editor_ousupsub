@@ -17,9 +17,9 @@
 /**
  * Strings for component 'editor_ousupsub', language 'en'.
  *
- * @package    editor_ousupsub
- * @copyright  2013 Damyon Wiese  <damyon@moodle.com>
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   editor_ousupsub
+ * @copyright 2015 The Open University
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 $string['editor_command_keycode'] = 'Cmd + {$a}';

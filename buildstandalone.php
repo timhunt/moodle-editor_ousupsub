@@ -53,7 +53,7 @@ class ousupsub_texteditor_standalone_builder {
         'ousupsubjs' => 'moodle-editor_ousupsub.js',
         'stylecss' => 'styles.css',
         'readme' => 'readme.txt',
-        'readmestandalone' => 'readme_standalone.txt',
+        'readmestandalone' => 'standalone-src/readme.txt',
         'yuiversion' => '3.17.2',
         'wwwroot' => '../../..'
     );
@@ -125,88 +125,18 @@ class ousupsub_texteditor_standalone_builder {
      * Create the index page.
      */
     public static function create_index_page() {
-        $ousupsubjspath = self::create_path('ousupsub/ousupsubjs');
-        $stylespath = self::create_path('ousupsub/stylecss');
-        $yuijspath = self::create_path('ousupsub/yui/yuiversion/yui/yui'.self::$yuisuffix.'.js');
+        $replacements = array(
+            '%%ousupsubjspath%%' => self::create_path('ousupsub/ousupsubjs'),
+            '%%stylespath%%' => self::create_path('ousupsub/stylecss'),
+            '%%yuipath%%' => self::create_path('ousupsub/yui/yuiversion/yui/yui' .
+                    self::$yuisuffix . '.js'),
+        );
 
-        $data = '<!DOCTYPE html>
-<html class="yui3-js-enabled" dir="ltr" xml:lang="en" lang="en">
-    <head>
-    <title>OU SupSub demo</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<script type="text/javascript" src="'.$yuijspath.'"></script>
-<script type="text/javascript" src="'.$ousupsubjspath.'"></script>
+        $html = file_get_contents(self::create_path('standalone-src/index.html'));
+        $html = str_replace(array_keys($replacements), array_values($replacements), $html);
 
-<script id="firstthemesheet" type="text/css">/** Required in order to fix style inclusion problems in IE with YUI **/</script>
-
-<link rel="stylesheet" type="text/css" href="'.$stylespath.'">
-
-</head>
-
-<body class="dir-ltr lang-en jsenabled">
-
-<script type="text/javascript">
-//<![CDATA[
-document.body.className += " jsenabled";
-//]]>
-</script>
-
-<form autocomplete="off" action="" method="post" accept-charset="utf-8" id="mform1" class="mform"
-        onsubmit="try { var myValidator = validate_user_editadvanced_form; } catch(e) { return true; } return myValidator(this);">
-        <div class="fcontainer clearfix">
-            <div id="fitem_id_description_editor" class="fitem fitem_feditor ">
-                <div class="fitemtitle"><label for="id_description_editor">Both Superscript and Subscript allowed</label></div>
-                <div class="felement feditor">
-                    <div>
-                        <div class="editor_ousupsub"></div>
-                        <textarea id="id_description_editor" name="description_editor[text]"
-                            rows="2" cols="80" spellcheck="true" hidden="hidden"
-                            >Superscript and Subscript</textarea>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="fcontainer clearfix">
-            <div id="fitem_id_sup_editor" class="fitem fitem_feditor ">
-                <div class="fitemtitle"><label for="id_sup_editor">Superscript only allowed</label></div>
-                <div class="felement feditor">
-                    <div>
-                        <div class="editor_ousupsub"></div>
-                        <textarea id="id_sup_editor" name="sup_editor[text]"
-                            rows="2" cols="20" spellcheck="true" hidden="hidden"
-                            >Superscript only</textarea>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="fcontainer clearfix">
-            <div id="fitem_id_sub_editor" class="fitem fitem_feditor ">
-                <div class="fitemtitle"><label for="id_sub_editor">Subscript only allowed</label></div>
-                <div class="felement feditor">
-                    <div>
-                        <div class="editor_ousupsub"></div>
-                        <textarea id="id_sub_editor" name="sub_editor[text]"
-                            rows="2" cols="20" spellcheck="true" hidden="hidden"
-                            >Subscript only</textarea>
-                    </div>
-                </div>
-            </div>
-        </div>
-</form>
-
-<script type="text/javascript">
-//<![CDATA[
-        init_ousupsub("id_sup_editor", {"superscript":true});
-        init_ousupsub("id_sub_editor", {"subscript":true});
-        init_ousupsub("id_description_editor", {"subscript":true, "superscript":true});
-//]]>
-</script>
-    </body>
-</html>';
         $path = self::create_path('root/index');
-        if (file_put_contents($path, $data, 0)) {
+        if (file_put_contents($path, $html, 0)) {
                 self::echo_result("Create index file.");
         }
     }
@@ -248,12 +178,10 @@ body {
   color: #333;
   background-color: #fff;
 }';
-        $pathfrom = self::create_path('stylecss');
-        $contents .= file_get_contents($pathfrom);
+        $contents .= file_get_contents(self::create_path('stylecss'));
 
         // Path to save file to.
-        $pathto = self::create_path('root/ousupsub/stylecss');
-        if (file_put_contents($pathto, $contents, 0)) {
+        if (file_put_contents(self::create_path('root/ousupsub/stylecss'), $contents, 0)) {
             self::echo_result("Created styles.css.");
         }
     }
@@ -290,93 +218,9 @@ body {
      * Create the general javascript functions.
      */
     public static function create_javascript_static() {
-        $lang = self::create_language_string();
-        // The unconventional indenting is required to produce conventional
-        // indenting in the file produced.
-        $data = '// Miscellaneous core Javascript functions for Moodle.
-// Global M object is initilised in inline javascript.
-
-var M = {}; M.yui = {};
-M.pageloadstarttime = new Date();
-M.pathname = window.location.pathname;
-M.fileroot = M.pathname.substring(0, M.pathname.lastIndexOf("/"));
-M.protocol = window.location.protocol;
-M.host = window.location.host;
-M.cfg = {"wwwroot":M.protocol + "//" + M.host + M.fileroot,"sesskey":"","loadingicon":"l",
-                "themerev":-1,"slasharguments":1,"theme":"clean","jsrev":-1,"svgicons":true};
-
-function init_ousupsub(id, params) {
-    M.str = ' . $lang . '
-    plugins = [];
-    if (params.superscript) {
-        plugins.push({"name":"superscript","params":[]});
-    }
-    if (params.subscript) {
-        plugins.push({"name":"subscript","params":[]});
-    }
-    var YUI_config = {base: "ousupsub/yui/3.17.2/"}
-    YUI().use("node", function(Y) {
-        Y.use("moodle-editor_ousupsub-editor", "moodle-ousupsub_subscript-button", "moodle-ousupsub_superscript-button",
-            function(Y) {
-                YUI.M.editor_ousupsub.createEditor(
-                    {"elementid" : id, "content_css" : "", "contextid" : 0, "language" : "en",
-                     "directionality" : "ltr", "plugins" : [{"group" : "style1", "plugins" : plugins}],"pageHash" : ""});
-                window.Y = Y; // Required for Behat.
-            }
-        );
-    });
-};
-M.util = M.util || {};
-M.util.image_url = function(imagename, component) {
-    return M.cfg.wwwroot + "/ousupsub/" + imagename.replace("e/", "") + ".svg";
-};
-M.util.get_string = function(identifier, component, a) {
-    var stringvalue;
-
-    if (!M.str.hasOwnProperty(component) || !M.str[component].hasOwnProperty(identifier)) {
-        stringvalue = \'[[\' + identifier + \',\' + component + \']]\';
-        if (M.cfg.developerdebug) {
-            console.log(\'undefined string \' + stringvalue, \'warn\', \'M.util.get_string\');
-        }
-        return stringvalue;
-    }
-
-    stringvalue = M.str[component][identifier];
-
-    if (typeof a == \'undefined\') {
-        // no placeholder substitution requested
-        return stringvalue;
-    }
-
-    if (typeof a == \'number\' || typeof a == \'string\') {
-        // replace all occurrences of {$a} with the placeholder value
-        stringvalue = stringvalue.replace(/\{\$a\}/g, a);
-        return stringvalue;
-    }
-
-    if (typeof a == \'object\') {
-        // replace {$a->key} placeholders
-        for (var key in a) {
-            if (typeof a[key] != \'number\' && typeof a[key] != \'string\') {
-                if (M.cfg.developerdebug) {
-                    console.log(\'invalid value type for $a->\' + key, \'warn\', \'M.util.get_string\');
-                }
-                continue;
-            }
-            var search = \'{$a->\' + key + \'}\';
-            stringvalue = stringvalue.replace(search, a[key]);
-        }
-        return stringvalue;
-    }
-
-    if (M.cfg.developerdebug) {
-        console.log(\'incorrect placeholder type\', \'warn\', \'M.util.get_string\');
-    }
-    return stringvalue;
-};
-
-'; // Leave extra space to separate from other scripts it will be appended to.
-        return $data;
+        $js = file_get_contents(self::create_path('standalone-src/fake-moodle-env.js'));
+        $js = str_replace('%%langstrings%%', self::create_language_string(), $js);
+        return $js;
     }
 
     /**
