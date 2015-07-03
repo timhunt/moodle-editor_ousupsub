@@ -54,7 +54,7 @@ M.util.get_string = M.util.get_string || function(identifier, component, a) {
     return stringvalue;
 };
 
-function init_ousupsub(id, params) {
+function init_ousupsub(id, type) {
     var requiredStrings = {"moodle":{"error":"Error","morehelp":"More help"},"editor_ousupsub":{"editor_command_keycode":"Cmd + {$a}","editor_control_keycode":"Ctrl + {$a}","plugin_title_shortcut":"{$a->title} [{$a->shortcut}]","subscript":"Subscript","superscript":"Superscript"}};
     for (var component in requiredStrings) {
         M.str[component] = M.str[component] || {};
@@ -67,11 +67,11 @@ function init_ousupsub(id, params) {
     M.iconrooturl = thisscripturl.substring(0, thisscripturl.lastIndexOf("/"));
 
     plugins = [];
-    if (params.superscript) {
-        plugins.push({"name":"superscript","params":[]});
+    if (type === 'both' || type === 'superscript') {
+        plugins.push({"name": "superscript", "params": []});
     }
-    if (params.subscript) {
-        plugins.push({"name":"subscript","params":[]});
+    if (type === 'both' || type === 'subscript') {
+        plugins.push({"name": "subscript", "params": []});
     }
     YUI().use("node", function(Y) {
         Y.use("moodle-editor_ousupsub-editor",

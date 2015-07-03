@@ -128,8 +128,7 @@ class ousupsub_texteditor_standalone_builder {
         $replacements = array(
             '%%ousupsubjspath%%' => self::create_path('ousupsub/ousupsubjs'),
             '%%stylespath%%' => self::create_path('ousupsub/stylecss'),
-            '%%yuipath%%' => self::create_path('ousupsub/yui/yuiversion/yui/yui' .
-                    self::$yuisuffix . '.js'),
+            '%%yuipath%%' => self::create_path('ousupsub/yui/yuiversion/rollup.js'),
         );
 
         $html = file_get_contents(self::create_path('standalone-src/index.html'));
@@ -227,9 +226,10 @@ body {
      * Copy YUI js files.
      */
     public static function copy_yui_javascript_files() {
+        $rollup = '';
+
         $source = self::create_path('wwwroot/lib/yuilib/yuiversion');
-        $destination = self::create_path('root/ousupsub/yui/yuiversion');
-        $names = array('attribute-base', 'attribute-core', 'attribute-extras',
+        $names = array('yui', 'attribute-base', 'attribute-core', 'attribute-extras',
                 'attribute-observable', 'base-base', 'base-build', 'base-core',
                 'base-observable', 'base-pluginhost', 'dom-base',
                 'dom-core', 'dom-screen', 'dom-style', 'event-base', 'event-custom-base',
@@ -239,25 +239,15 @@ body {
                 'event-valuechange', 'node-base', 'node-core',
                 'node-event-delegate', 'node-pluginhost', 'node-screen', 'node-style', 'oop',
                 'pluginhost-base', 'pluginhost-config',
-                'selector', 'selector-native', 'yui');
+                'selector', 'selector-native');
         foreach ($names as $name) {
-            $folderpath = '/'.$name;
-            self::create_folder($destination.$folderpath);
-            $modulepath = $folderpath.'/'.$name.self::$yuisuffix.'.js';
-            if (copy($source.$modulepath, $destination.$modulepath)) {
-                self::echo_result("Copy YUI module " . $name . ".");
-            }
+            $rollup .= file_get_contents($source . '/' . $name . '/' . $name . self::$yuisuffix . '.js');
         }
 
-        $cssnames = array('widget-base', 'widget-stack');
-        foreach ($cssnames as $name) {
-            $folderpath = '/'.$name.'/assets/skins/sam';
-            self::create_folder($destination.$folderpath);
-            $cssmodulepath = $folderpath.'/'.$name.'.css';
-            if (copy($source.$cssmodulepath, $destination.$cssmodulepath)) {
-                self::echo_result("Copy YUI skin ".$name.".");
-            }
-        }
+        $destination = self::create_path('root/ousupsub/yui/yuiversion');
+        self::create_folder($destination);
+        file_put_contents($destination . '/rollup.js', $rollup);
+        self::echo_result("Create combined YUI file " . $name . ".");
     }
 
     /**
