@@ -111,7 +111,6 @@ function init_ousupsub(id, params) {
         plugins.push({"name": "subscript", "params": []});
     }
 
-    var YUI_config = {base: "resources/yui/3.17.2/"}
     YUI().use("node", "moodle-editor_ousupsub-editor",
             function(Y) {YUI.M.editor_ousupsub.createEditor(
             {"elementid":id,"content_css":"","contextid":0,"language":"en",

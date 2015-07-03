@@ -80,7 +80,7 @@ class ousupsub_texteditor_standalone_builder {
      * Create the root folder.
      */
     public static function create_standalone_folder() {
-        $path = self::create_path('root/resources');
+        $path = self::create_path('root/ousupsub');
         self::create_folder($path);
     }
 
@@ -125,9 +125,9 @@ class ousupsub_texteditor_standalone_builder {
      * Create the index page.
      */
     public static function create_index_page() {
-        $ousupsubjspath = self::create_path('resources/ousupsubjs');
-        $stylespath = self::create_path('resources/stylecss');
-        $yuijspath = self::create_path('resources/yui/yuiversion/yui/yui'.self::$yuisuffix.'.js');
+        $ousupsubjspath = self::create_path('ousupsub/ousupsubjs');
+        $stylespath = self::create_path('ousupsub/stylecss');
+        $yuijspath = self::create_path('ousupsub/yui/yuiversion/yui/yui'.self::$yuisuffix.'.js');
 
         $data = '<!DOCTYPE html>
 <html class="yui3-js-enabled" dir="ltr" xml:lang="en" lang="en">
@@ -226,7 +226,7 @@ document.body.className += " jsenabled";
             if (!is_readable($source)) {
                 $source = $fallbacklocation . $name . '.svg';
             }
-            $destination = self::create_path('root/resources/'.$name.'.svg');
+            $destination = self::create_path('root/ousupsub/'.$name.'.svg');
             if (copy($source, $destination)) {
                 self::echo_result("Copy ousupsub ".$name." icon.");
             }
@@ -252,7 +252,7 @@ body {
         $contents .= file_get_contents($pathfrom);
 
         // Path to save file to.
-        $pathto = self::create_path('root/resources/stylecss');
+        $pathto = self::create_path('root/ousupsub/stylecss');
         if (file_put_contents($pathto, $contents, 0)) {
             self::echo_result("Created styles.css.");
         }
@@ -278,7 +278,7 @@ body {
         }
 
         // Save combined file.
-        $combinedpath = self::create_path('root/resources/ousupsubjs');
+        $combinedpath = self::create_path('root/ousupsub/ousupsubjs');
         if (file_put_contents ( $combinedpath, $combinedcontents, 0)) {
             self::echo_result("Copied editor javascript files.");
         }
@@ -314,7 +314,7 @@ function init_ousupsub(id, params) {
     if (params.subscript) {
         plugins.push({"name":"subscript","params":[]});
     }
-    var YUI_config = {base: "resources/yui/3.17.2/"}
+    var YUI_config = {base: "ousupsub/yui/3.17.2/"}
     YUI().use("node", function(Y) {
         Y.use("moodle-editor_ousupsub-editor", "moodle-ousupsub_subscript-button", "moodle-ousupsub_superscript-button",
             function(Y) {
@@ -328,7 +328,7 @@ function init_ousupsub(id, params) {
 };
 M.util = M.util || {};
 M.util.image_url = function(imagename, component) {
-    return M.cfg.wwwroot + "/resources/" + imagename.replace("e/", "") + ".svg";
+    return M.cfg.wwwroot + "/ousupsub/" + imagename.replace("e/", "") + ".svg";
 };
 M.util.get_string = function(identifier, component, a) {
     var stringvalue;
@@ -384,7 +384,7 @@ M.util.get_string = function(identifier, component, a) {
      */
     public static function copy_yui_javascript_files() {
         $source = self::create_path('wwwroot/lib/yuilib/yuiversion');
-        $destination = self::create_path('root/resources/yui/yuiversion');
+        $destination = self::create_path('root/ousupsub/yui/yuiversion');
         $names = array('attribute-base', 'attribute-core', 'attribute-extras',
                 'attribute-observable', 'base-base', 'base-build', 'base-core',
                 'base-observable', 'base-pluginhost', 'dom-base',
@@ -429,7 +429,7 @@ M.util.get_string = function(identifier, component, a) {
     /**
      * Create a php folder path given keys from the $paths array.
      */
-    public static function create_path ($ids) {
+    public static function create_path($ids) {
         $keys = explode('/', $ids);
         $path = '';
         foreach ($keys as $key) {

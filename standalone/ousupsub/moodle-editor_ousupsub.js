@@ -19,7 +19,7 @@ function init_ousupsub(id, params) {
     if (params.subscript) {
         plugins.push({"name":"subscript","params":[]});
     }
-    var YUI_config = {base: "resources/yui/3.17.2/"}
+    var YUI_config = {base: "ousupsub/yui/3.17.2/"}
     YUI().use("node", function(Y) {
         Y.use("moodle-editor_ousupsub-editor", "moodle-ousupsub_subscript-button", "moodle-ousupsub_superscript-button",
             function(Y) {
@@ -33,7 +33,7 @@ function init_ousupsub(id, params) {
 };
 M.util = M.util || {};
 M.util.image_url = function(imagename, component) {
-    return M.cfg.wwwroot + "/resources/" + imagename.replace("e/", "") + ".svg";
+    return M.cfg.wwwroot + "/ousupsub/" + imagename.replace("e/", "") + ".svg";
 };
 M.util.get_string = function(identifier, component, a) {
     var stringvalue;
