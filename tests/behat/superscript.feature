@@ -10,16 +10,16 @@ Feature: ousupsub superscript button
     When I click on "Superscript" "button"
     Then I should see "<sup>Helicopter</sup>" in the "Input" ousupsub editor
 
-    # Apply superscript inside existing superscript 
+    # Apply superscript inside existing superscript
     When I select the range "'sup',2,'sup',5" in the "Input" ousupsub editor
     And I click on "Superscript" "button"
     Then I should see "<sup>He</sup>lic<sup>opter</sup>" in the "Input" ousupsub editor
 
-    # Revert superscript 
+    # Revert superscript
     And I click on "Superscript" "button"
     Then I should see "<sup>Helicopter</sup>" in the "Input" ousupsub editor
 
-    # Select existing superscript block 
+    # Select existing superscript block
     When I select the range "'sup',0,'sup',10" in the "Input" ousupsub editor
     And I click on "Superscript" "button"
     Then I should see "Helicopter" in the "Input" ousupsub editor

@@ -3,14 +3,8 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>OU SupSub demo</title>
-
-    <script type="text/javascript" src="%%yuipath%%"></script>
-    <!-- Note, this next script tag must have the ousupsubloader id. This is used to
-         get the path name of of the script, which is then used to construct other URLs. -->
-    <script type="text/javascript" id="ousupsubloader" src="%%ousupsubjspath%%"></script>
-
-    <script id="firstthemesheet" type="text/css">/** Required in order to fix style inclusion problems in IE with YUI **/</script>
-    <link rel="stylesheet" type="text/css" href="%%stylespath%%">
+    <script id="firstthemesheet" type="text/css"></script><!-- Required in order to fix style inclusion problems in IE with YUI. -->
+    <link rel="stylesheet" type="text/css" href="%%stylesurl%%">
 </head>
 
 <body class="dir-ltr lang-en">
@@ -66,11 +60,12 @@ document.body.className += " jsenabled";
         </div>
 </form>
 
+<script type="text/javascript" id="ousupsubloader" src="%%jsurl%%"></script>
 <script type="text/javascript">
 //<![CDATA[
-    init_ousupsub("id_sup_editor", "superscript");
-    init_ousupsub("id_sub_editor", "subscript");
-    init_ousupsub("id_description_editor", "both");
+    editor_ousupsub.createEditorSimple("id_sup_editor", "superscript");
+    editor_ousupsub.createEditorSimple("id_sub_editor", "subscript");
+    editor_ousupsub.createEditorSimple("id_description_editor", "both");
 //]]>
 </script>
 </body>

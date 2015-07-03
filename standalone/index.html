@@ -3,13 +3,7 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>OU SupSub demo</title>
-
-    <script type="text/javascript" src="ousupsub/yui/3.17.2/rollup.js"></script>
-    <!-- Note, this next script tag must have the ousupsubloader id. This is used to
-         get the path name of of the script, which is then used to construct other URLs. -->
-    <script type="text/javascript" id="ousupsubloader" src="ousupsub/moodle-editor_ousupsub.js"></script>
-
-    <script id="firstthemesheet" type="text/css">/** Required in order to fix style inclusion problems in IE with YUI **/</script>
+    <script id="firstthemesheet" type="text/css"></script><!-- Required in order to fix style inclusion problems in IE with YUI. -->
     <link rel="stylesheet" type="text/css" href="ousupsub/styles.css">
 </head>
 
@@ -66,11 +60,12 @@ document.body.className += " jsenabled";
         </div>
 </form>
 
+<script type="text/javascript" id="ousupsubloader" src="ousupsub/ousupsub.js"></script>
 <script type="text/javascript">
 //<![CDATA[
-    init_ousupsub("id_sup_editor", "superscript");
-    init_ousupsub("id_sub_editor", "subscript");
-    init_ousupsub("id_description_editor", "both");
+    editor_ousupsub.createEditorSimple("id_sup_editor", "superscript");
+    editor_ousupsub.createEditorSimple("id_sub_editor", "subscript");
+    editor_ousupsub.createEditorSimple("id_description_editor", "both");
 //]]>
 </script>
 </body>

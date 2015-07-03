@@ -46,10 +46,6 @@ var CSS = {
  * @constructor
  * @uses M.editor_ousupsub.EditorClean
  * @uses M.editor_ousupsub.EditorSelection
- * @uses M.editor_ousupsub.EditorStyling
- * @uses M.editor_ousupsub.EditorTextArea
- * @uses M.editor_ousupsub.EditorToolbar
- * @uses M.editor_ousupsub.EditorToolbarNav
  */
 
 function Editor() {
@@ -175,7 +171,7 @@ Y.extend(Editor, Y.Base, {
         }
 
         // Add the editor to the manager.
-        YUI.M.editor_ousupsub.addEditorReference(this.get('elementid'), this);
+        Y.M.editor_ousupsub.addEditorReference(this.get('elementid'), this);
 
         this._eventHandles = [];
 
@@ -273,7 +269,7 @@ Y.extend(Editor, Y.Base, {
         this._wrapper.remove(true);
 
         // Finally remove this reference from the manager.
-        YUI.M.editor_ousupsub.removeEditorReference(this.get('elementid'), this);
+        Y.M.editor_ousupsub.removeEditorReference(this.get('elementid'), this);
     },
 
     /**
@@ -692,10 +688,3 @@ Y.extend(Editor, Y.Base, {
 Y.augment(Editor, Y.EventTarget);
 
 Y.namespace('M.editor_ousupsub').Editor = Editor;
-
-// Function for Moodle's initialisation.
-Y.namespace('M.editor_ousupsub.Editor').init = function(config) {
-    Y.log("Y.M.editor_ousupsub.Editor.init has been deprecated since Moodle 2.8." +
-            "Please use YUI.M.editor_ousupsub.createEditor instead", "warn", LOGNAME);
-    return YUI.M.editor_ousupsub.createEditor(config);
-};

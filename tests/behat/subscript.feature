@@ -10,12 +10,12 @@ Feature: ousupsub subscript button
     When I click on "Subscript" "button"
     Then I should see "<sub>Helicopter</sub>" in the "Input" ousupsub editor
 
-    # Apply subscript inside existing subscript 
+    # Apply subscript inside existing subscript
     When I select the range "'sub',2,'sub',5" in the "Input" ousupsub editor
     And I click on "Subscript" "button"
     Then I should see "<sub>He</sub>lic<sub>opter</sub>" in the "Input" ousupsub editor
 
-    # Revert subscript 
+    # Revert subscript
     And I click on "Subscript" "button"
     Then I should see "<sub>Helicopter</sub>" in the "Input" ousupsub editor
 

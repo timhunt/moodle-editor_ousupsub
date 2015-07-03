@@ -81,9 +81,11 @@ $submitoptions['id'] = 'submitattoeditor';
 echo html_writer::tag('input', '', $submitoptions);
 ?>
 <script type="text/javascript">
-function emulateSubmit(id) {
-    YUI.M.editor_ousupsub.getEditor(id).updateFromTextArea();;
-}
+YUI().use("moodle-editor_ousupsub-editor", function(Y) {
+    window.emulateSubmit = function(id) {
+        Y.M.editor_ousupsub.getEditor(id).updateFromTextArea();
+    }
+});
 </script>
 <?php
 echo $OUTPUT->footer();

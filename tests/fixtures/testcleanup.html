@@ -22,6 +22,9 @@ M.cfg = {"wwwroot":M.protocol + "//" + M.host + M.fileroot,"sesskey":"","loading
 
 <script type="text/javascript" src="../../yui/build/moodle-editor_ousupsub-editor/moodle-editor_ousupsub-editor.js"></script>
 <script type="text/javascript" src="../../yui/build/moodle-editor_ousupsub-rangy/moodle-editor_ousupsub-rangy.js"></script>
+
+<script id="firstthemesheet" type="text/css"></script><!-- Required in order to fix style inclusion problems in IE with YUI. -->
+<link rel="stylesheet" type="text/css" href="../../styles.css">
 <style>
 
 #status .success {
@@ -67,19 +70,19 @@ M.cfg = {"wwwroot":M.protocol + "//" + M.host + M.fileroot,"sesskey":"","loading
 
 <h2>Description</h2>
 <p>
-This is a standalone page providing basic unit testing for the ousupsub editor. The summary 
+This is a standalone page providing basic unit testing for the ousupsub editor. The summary
 and results are displayed after the pre defined tests are processed.</p>
 
-<p>The tests focus on the editors ability to translate the given html into the correct response. 
-Generally only failures are displayed as there are over 100 tests to process.</p> 
+<p>The tests focus on the editors ability to translate the given html into the correct response.
+Generally only failures are displayed as there are over 100 tests to process.</p>
 
-<p>The results are disp in the table below in the four columns:</p> 
+<p>The results are disp in the table below in the four columns:</p>
 <ul>
     <li>Input: The html string to be tested</li>
     <li>Expected output: The html output we expect to see</li>
     <li>Actual output: The html output we actually get</li>
     <li>Mismatch?: Whether the expected and actual output actually match</li>
-</ul> 
+</ul>
 
 
 <h2>Results</h2>
@@ -103,13 +106,5 @@ Generally only failures are displayed as there are over 100 tests to process.</p
 </form>
 
 <script type="text/javascript" src="testcleanup.js"></script>
-<script type="text/javascript">
-//Miscellaneous core Javascript functions for Moodle
-//Global M object is initilised in inline javascript
-
-    
-
-</script>
-
 </body>
 </html>

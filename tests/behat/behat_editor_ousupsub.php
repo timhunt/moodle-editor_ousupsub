@@ -103,13 +103,35 @@ class behat_editor_ousupsub extends behat_base {
     }
 
     /**
-     * Select the given range in an ousupsub field.
+     * Set the contents of a stand-alone supsub field.
+     *
+     * @Given /^I set the "([^"]*)" stand-alone ousupsub editor to "([^"]*)"$/
+     * @throws ElementNotFoundException Thrown by behat_base::find
+     * @param string $label the field label.
+     * @param string $text the text to insert into the field.
+     */
+    public function i_set_the_standalone_ousupsub_editor_to($label, $text) {
+        if (!$this->running_javascript()) {
+            throw new coding_exception('Setting text requires javascript.');
+        }
+
+        // We delegate to behat_form_field class, which thinks this is an (Atto) editor.
+        $field = $this->find_field($label);
+
+        // Unfortunately, Atto uses Y to set the field value, which we don't have with
+        // our nicely encapsulated JavaScript, so do it manually.
+        $id = $field->getAttribute('id');
+        $js = 'editor_ousupsub.getEditor("' . $id . '").editor.setHTML("' . $text . '");';
+        $this->getSession()->executeScript($js);
+    }
+
+    /**
+     * Set the given range in a stand-alone ousupsub field.
      *
      * @Given /^I select the range "([^"]*)" in the "([^"]*)" ousupsub editor$/
      * @throws ElementNotFoundException Thrown by behat_base::find
      * @param string $text
      * @param string $field
-     * @return void
      */
     public function select_range_in_the_ousupsub_editor($range, $fieldlocator) {
         // NodeElement.keyPress simply doesn't work.
@@ -128,41 +150,50 @@ class behat_editor_ousupsub extends behat_base {
 
         // Get query values for the range.
         list($startquery, $startoffset, $endquery, $endoffset) = explode(",", $range);
-           $js = ' function RangySelectTextBehat () {
-    var id = \''.$editorid.'\', startquery = '.$startquery.', startoffset = '.$startoffset.',
-        endquery  = '.$endquery.', endoffset = '.$endoffset.';
-    var e = document.getElementById(id+"editable"),
-        r = rangy.createRange();
-
-    e.focus();
-    if(startquery || startoffset || endquery || endoffset) {
-        // Set defaults for testing.
-        startoffset = startoffset?startoffset:0;
-        endoffset = endoffset?endoffset:0;
-
-        // Find the text nodes from the Start/end queries or default to the editor node.
-        var startnode, endnode;
-        function getNode(editor, query, node) {
-            if(query !== "" && !isNaN(query)) {
-                node = editor.childNodes[query];
-            } else {
-                node = query?editor.querySelector(query): editor;
-                node = node.firstChild;
-            }
-            return node;
+        $js = '
+    function getNode(editor, query, node) {
+        if (query !== "" && !isNaN(query)) {
+            node = editor.childNodes[query];
+        } else {
+            node = query ? editor.querySelector(query) : editor;
+            node = node.firstChild;
         }
-        startnode = getNode(e, startquery, startoffset);
-        endnode = getNode(e, endquery, endoffset);
-        r.setStart(startnode, startoffset);
-        r.setEnd(endnode, endoffset);
+        return node;
     }
-    else {
-        r.selectNodeContents(e.firstChild);
+    function RangySelectTextBehat() {
+        var id = "'.$editorid.'", startquery = '.$startquery.', startoffset = '.$startoffset.',
+            endquery  = '.$endquery.', endoffset = '.$endoffset.';
+        var e = document.getElementById(id + "editable"),
+            r = rangy.createRange();
+
+        e.focus();
+        if(startquery || startoffset || endquery || endoffset) {
+            // Set defaults for testing.
+            startoffset = startoffset ? startoffset : 0;
+            endoffset = endoffset ? endoffset : 0;
+
+            // Find the text nodes from the Start/end queries or default to the editor node.
+            var startnode, endnode;
+            startnode = getNode(e, startquery, startoffset);
+            endnode = getNode(e, endquery, endoffset);
+            r.setStart(startnode, startoffset);
+            r.setEnd(endnode, endoffset);
+        } else {
+            r.selectNodeContents(e.firstChild);
+        }
+        var s = rangy.getSelection();
+        s.setSingleRange(r);
+        if (typeof editor_ousupsub !== "undefined") {
+            // For testing standalone.
+            editor_ousupsub.getEditor(id)._selections = [r];
+        } else {
+            // For testing in Moodle.
+            YUI().use("moodle-editor_ousupsub-editor", function(Y) {
+                Y.M.editor_ousupsub.getEditor(id)._selections = [r];
+            });
+        }
     }
-    var s = rangy.getSelection();
-    s.setSingleRange(r);
-    YUI.M.editor_ousupsub.getEditor(id)._selections = [r];
-}; RangySelectTextBehat ();';
+    RangySelectTextBehat();';
         $this->getSession()->executeScript($js);
     }
 }

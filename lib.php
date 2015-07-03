@@ -121,7 +121,7 @@ class ousupsub_texteditor extends texteditor {
             ), 'moodle');
 
         $PAGE->requires->yui_module(array('moodle-editor_ousupsub-editor'),
-                'YUI.M.editor_ousupsub.createEditor',
+                'Y.M.editor_ousupsub.createEditor',
                 array($this->get_init_params($elementid, $options, $fpoptions, $jsplugins)));
 
     }

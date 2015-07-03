@@ -50,7 +50,7 @@ class ousupsub_texteditor_standalone_builder {
     private static $paths = array(
         'root' => 'standalone',
         'index' => 'index.html',
-        'ousupsubjs' => 'moodle-editor_ousupsub.js',
+        'ousupsubjs' => 'ousupsub.js',
         'stylecss' => 'styles.css',
         'readme' => 'readme.txt',
         'readmestandalone' => 'standalone-src/readme.txt',
@@ -66,7 +66,7 @@ class ousupsub_texteditor_standalone_builder {
         self::create_index_page();
         self::copy_icons();
         self::create_css_file();
-        self::create_javascript_files();
+        self::create_javascript_file();
     }
 
     public static function delete_standalone () {
@@ -126,9 +126,8 @@ class ousupsub_texteditor_standalone_builder {
      */
     public static function create_index_page() {
         $replacements = array(
-            '%%ousupsubjspath%%' => self::create_path('ousupsub/ousupsubjs'),
-            '%%stylespath%%' => self::create_path('ousupsub/stylecss'),
-            '%%yuipath%%' => self::create_path('ousupsub/yui/yuiversion/rollup.js'),
+            '%%jsurl%%' => self::create_path('ousupsub/ousupsubjs'),
+            '%%stylesurl%%' => self::create_path('ousupsub/stylecss'),
         );
 
         $html = file_get_contents(self::create_path('standalone-src/index.html'));
@@ -188,45 +187,39 @@ body {
     /**
      * Copy the javascript files required by the editor.
      */
-    public static function create_javascript_files() {
+    public static function create_javascript_file() {
+        $replacements = array(
+            '%%yuilibraries%%' => self::create_yui_javascript(),
+            '%%ousupsubcode%%' => self::create_supsub_javascript(),
+            '%%langstrings%%' => self::create_language_string(),
+        );
 
-        // Read files into memory.
-        // Create the static file.
-        $combinedcontents = self::create_javascript_static();
+        $js = file_get_contents(self::create_path('standalone-src/standalone.js'));
+        $js = str_replace(array_keys($replacements), array_values($replacements), $js);
 
-        // Load the YUI editor files.
-        // path to get the editor yui files from.
-        $editoryuipath = 'yui/build/moodle-editor_ousupsub-%%PART%%/moodle-editor_ousupsub-%%PART%%-min.js';
-        //$editoryuipath = 'yui/build/moodle-editor_ousupsub-%%PART%%/moodle-editor_ousupsub-%%PART%%.js';
-        $names = array('editor', 'rangy');
-        foreach ($names as $name) {
-            $path = str_replace('%%PART%%', $name, $editoryuipath);
-            $combinedcontents .= file_get_contents($path);
+        if (file_put_contents(self::create_path('root/ousupsub/ousupsubjs'), $js, 0)) {
+            self::echo_result("Created editor javascript file.");
         }
-
-        // Save combined file.
-        $combinedpath = self::create_path('root/ousupsub/ousupsubjs');
-        if (file_put_contents ( $combinedpath, $combinedcontents, 0)) {
-            self::echo_result("Copied editor javascript files.");
-        }
-
-        self::copy_yui_javascript_files();
     }
 
     /**
-     * Create the general javascript functions.
+     * Get the javascript that makes up the editor.
      */
-    public static function create_javascript_static() {
-        $js = file_get_contents(self::create_path('standalone-src/fake-moodle-env.js'));
-        $js = str_replace('%%langstrings%%', self::create_language_string(), $js);
-        return $js;
+    public static function create_supsub_javascript() {
+        $supsubjs = '';
+        $editorcodepath = 'yui/build/moodle-editor_ousupsub-%%PART%%/moodle-editor_ousupsub-%%PART%%-min.js';
+        $names = array('rangy', 'editor');
+        foreach ($names as $name) {
+            $supsubjs .= file_get_contents(str_replace('%%PART%%', $name, $editorcodepath));
+        }
+        return $supsubjs;
     }
 
     /**
      * Copy YUI js files.
      */
-    public static function copy_yui_javascript_files() {
-        $rollup = '';
+    public static function create_yui_javascript() {
+        $yuijs = '';
 
         $source = self::create_path('wwwroot/lib/yuilib/yuiversion');
         $names = array('yui', 'attribute-base', 'attribute-core', 'attribute-extras',
@@ -241,13 +234,10 @@ body {
                 'pluginhost-base', 'pluginhost-config',
                 'selector', 'selector-native');
         foreach ($names as $name) {
-            $rollup .= file_get_contents($source . '/' . $name . '/' . $name . self::$yuisuffix . '.js');
+            $yuijs .= file_get_contents($source . '/' . $name . '/' . $name . self::$yuisuffix . '.js');
         }
 
-        $destination = self::create_path('root/ousupsub/yui/yuiversion');
-        self::create_folder($destination);
-        file_put_contents($destination . '/rollup.js', $rollup);
-        self::echo_result("Create combined YUI file " . $name . ".");
+        return $yuijs;
     }
 
     /**
