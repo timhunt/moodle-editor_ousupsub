@@ -175,7 +175,7 @@ Y.extend(Editor, Y.Base, {
 
         this._eventHandles = [];
 
-        this._wrapper = Y.Node.create('<div class="' + CSS.WRAPPER + '" />');
+        this._wrapper = Y.Node.create('<div class="' + CSS.WRAPPER + '"></div>');
         this.editor = Y.Node.create('<div id="' + this.get('elementid') + 'editable" ' +
                 'contenteditable="true" ' +
                 'autocapitalize="none" ' +
@@ -183,7 +183,7 @@ Y.extend(Editor, Y.Base, {
                 'role="textbox" ' +
                 'spellcheck="false" ' +
                 'aria-live="off" ' +
-                'class="' + CSS.CONTENT + '" />');
+                'class="' + CSS.CONTENT + '"></div>');
 
         // Add a labelled-by attribute to the contenteditable.
         this.textareaLabel = Y.one('[for="' + this.get('elementid') + '"]');
@@ -196,7 +196,7 @@ Y.extend(Editor, Y.Base, {
         this.setupToolbar();
 
         // Editable content wrapper.
-        var content = Y.Node.create('<div class="' + CSS.CONTENTWRAPPER + '" />');
+        var content = Y.Node.create('<div class="' + CSS.CONTENTWRAPPER + '"></div>');
         content.appendChild(this.editor);
         this._wrapper.appendChild(content);
 
@@ -443,7 +443,7 @@ Y.extend(Editor, Y.Base, {
      * @chainable
      */
     setupToolbar: function() {
-        this.toolbar = Y.Node.create('<div class="' + CSS.TOOLBAR + '" role="toolbar" aria-live="off"/>');
+        this.toolbar = Y.Node.create('<div class="' + CSS.TOOLBAR + '" role="toolbar" aria-live="off"></div>');
         this._wrapper.appendChild(this.toolbar);
 
         if (this.textareaLabel) {
@@ -2090,10 +2090,9 @@ Y.extend(EditorPlugin, Y.Base, {
         var title = M.util.get_string(pluginname, 'editor_ousupsub');
 
         // Create the actual button.
-        button = Y.Node.create('<button type="button" class="' + buttonClass + '"' +
-                'tabindex="-1">' +
+        button = Y.Node.create('<button type="button" class="' + buttonClass + '" tabindex="-1">' +
                     '<img class="icon" aria-hidden="true" role="presentation" width="16" height="16" src="' +
-                            config.iconurl + '"/>' +
+                            config.iconurl + '" />' +
                 '</button>');
         button.setAttribute('title', title);
 

@@ -207,7 +207,8 @@ body {
      */
     public static function create_supsub_javascript() {
         $supsubjs = '';
-        $editorcodepath = 'yui/build/moodle-editor_ousupsub-%%PART%%/moodle-editor_ousupsub-%%PART%%-min.js';
+        $editorcodepath = 'yui/build/moodle-editor_ousupsub-%%PART%%/moodle-editor_ousupsub-%%PART%%' .
+                self::$yuisuffix . '.js';
         $names = array('rangy', 'editor');
         foreach ($names as $name) {
             $supsubjs .= file_get_contents(str_replace('%%PART%%', $name, $editorcodepath));

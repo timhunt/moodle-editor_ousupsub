@@ -276,10 +276,9 @@ Y.extend(EditorPlugin, Y.Base, {
         var title = M.util.get_string(pluginname, 'editor_ousupsub');
 
         // Create the actual button.
-        button = Y.Node.create('<button type="button" class="' + buttonClass + '"' +
-                'tabindex="-1">' +
+        button = Y.Node.create('<button type="button" class="' + buttonClass + '" tabindex="-1">' +
                     '<img class="icon" aria-hidden="true" role="presentation" width="16" height="16" src="' +
-                            config.iconurl + '"/>' +
+                            config.iconurl + '" />' +
                 '</button>');
         button.setAttribute('title', title);
 
