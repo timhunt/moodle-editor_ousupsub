@@ -51,8 +51,9 @@ div.editor_ousupsub_toolbar button img.icon {
     width: auto;
     height: 16px;
 }
-div.editor_ousupsub_toolbar button:first-child img.icon {
-    vertical-align: top;
+div.editor_ousupsub_toolbar button.ousupsub_superscript_button_superscript img.icon {
+    position: relative;
+    top: -4px;
 }
 
 div.editor_ousupsub_toolbar button[disabled] {
