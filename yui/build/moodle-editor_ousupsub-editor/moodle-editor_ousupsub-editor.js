@@ -485,7 +485,7 @@ Y.extend(Editor, Y.Base, {
      * @chainable
      */
     setupUndoHandlers: function() {
-        // Listen for Arrow down, underscore, hat (^) and Up Arrow  keys.
+        // Listen for ctrl+z and ctrl+y keys.
         this._registerEventHandle(this._wrapper.delegate('key',
                 this._undoHandler,
                 'down:90+ctrl',
