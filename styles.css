@@ -39,6 +39,11 @@ div.editor_ousupsub_toolbar button {
     width: 35px;
     height: 25px;
  }
+ 
+div.editor_ousupsub_toolbar button.ousupsub_undo_button, div.editor_ousupsub_toolbar button.ousupsub_redo_button {
+    display: none;
+}
+
 body.dir-rtl div.editor_ousupsub_toolbar button {
     border-right: 0;
     border-left: 1px solid #bbb;
