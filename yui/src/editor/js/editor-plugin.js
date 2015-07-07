@@ -291,7 +291,10 @@ Y.extend(EditorPlugin, Y.Base, {
             this.toolbar.setAttribute('aria-activedescendant', button.generateID());
         }
         // Normalize the callback parameters.
-        config.callback = Y.rbind(this._callbackWrapper, this, this._applyTextCommand);
+        if (!config.callback) {
+            config.callback = this._applyTextCommand;
+        }
+        config.callback = Y.rbind(this._callbackWrapper, this, config.callback);
 
         // Add the standard click handler to the button.
         this._buttonHandlers.push(

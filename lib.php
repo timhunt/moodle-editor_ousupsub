@@ -113,7 +113,9 @@ class ousupsub_texteditor extends texteditor {
                 'editor_control_keycode',
                 'plugin_title_shortcut',
                 'subscript',
-                'superscript'
+                'superscript',
+                'redo',
+                'undo'
             ), 'editor_ousupsub');
         $PAGE->requires->strings_for_js(array(
                 'warning',

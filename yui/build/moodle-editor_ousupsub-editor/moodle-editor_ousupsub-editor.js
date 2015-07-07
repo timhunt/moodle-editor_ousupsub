@@ -170,6 +170,34 @@ Y.extend(Editor, Y.Base, {
      */
     _tabFocus: null,
 
+    /**
+     * The maximum saved number of undo steps.
+     *
+     * @property _maxUndos
+     * @type {Number} The maximum number of saved undos.
+     * @default 40
+     * @private
+     */
+    _maxUndos: 40,
+
+    /**
+     * History of edits.
+     *
+     * @property _undoStack
+     * @type {Array} The elements of the array are the html strings that make a snapshot
+     * @private
+     */
+    _undoStack: null,
+
+    /**
+     * History of edits.
+     *
+     * @property _redoStack
+     * @type {Array} The elements of the array are the html strings that make a snapshot
+     * @private
+     */
+    _redoStack: null,
+
     initializer: function() {
         // Note - it is not safe to use a CSS selector like '#' + elementid because the id
         // may have colons in it - e.g.  quiz.
@@ -406,8 +434,68 @@ Y.extend(Editor, Y.Base, {
             }
         }
 
+        // Initialise the undo and redo stacks.
+        this._undoStack = [];
+        this._redoStack = [];
+        
+        // Add undo button
+        this.plugins.undo = new Y.M.editor_ousupsub.EditorPlugin({
+            name: 'undo',
+            group: group.group,
+            editor: this.editor,
+            toolbar: this.toolbar,
+            host: this,
+            keys: ['90'],
+            callback: this._undoHandler,
+            icon: 'e/undo'
+        });
+
+        // Add redo button
+        this.plugins.redo = new Y.M.editor_ousupsub.EditorPlugin({
+            name: 'redo',
+            group: group.group,
+            editor: this.editor,
+            toolbar: this.toolbar,
+            host: this,
+            keys: ['89'],
+            callback: this._redoHandler,
+            icon: 'e/redo'
+        });
+
+        // Enable the undo once everything has loaded.
+        this.on('pluginsloaded', function() {
+            // Adds the current value to the stack.
+            this._addToUndo(this._getHTML());
+            this.on('ousupsub:selectionchanged', this._changeListener, this);
+        }, this);
+
+        this._updateButtonsStates();
+        this.setupUndoHandlers();
+
         // Some plugins need to perform actions once all plugins have loaded.
         this.fire('pluginsloaded');
+
+        return this;
+    },
+    
+    /**
+     * Set up the watchers for undo/redo.
+     *
+     * @method setupUndoHandlers
+     * @chainable
+     */
+    setupUndoHandlers: function() {
+        // Listen for Arrow down, underscore, hat (^) and Up Arrow  keys.
+        this._registerEventHandle(this._wrapper.delegate('key',
+                this._undoHandler,
+                'down:90+ctrl',
+                '.' + CSS.CONTENT,
+                this));
+        this._registerEventHandle(this._wrapper.delegate('key',
+                this._redoHandler,
+                'down:89+ctrl',
+                '.' + CSS.CONTENT,
+                this));
 
         return this;
     },
@@ -571,6 +659,34 @@ Y.extend(Editor, Y.Base, {
        }
 
        return button;
+    },
+
+    /**
+     * Check the tab focus.
+     *
+     * When we disable or hide a button, we should call this method to ensure that the
+     * focus is not currently set on an inaccessible button, otherwise tabbing to the toolbar
+     * would be impossible.
+     *
+     * @method checkTabFocus
+     * @chainable
+     */
+    checkTabFocus: function() {
+        if (this._tabFocus) {
+            if (this._tabFocus.hasAttribute('disabled') || this._tabFocus.hasAttribute('hidden')
+                    || this._tabFocus.ancestor('.ousupsub_group').hasAttribute('hidden')) {
+                // Find first available button.
+                button = this._findFirstFocusable(this.toolbar.all('button'), this._tabFocus, -1);
+                if (button) {
+                    if (this._tabFocus.compareTo(document.activeElement)) {
+                        // We should also move the focus, because the inaccessible button also has the focus.
+                        button.focus();
+                    }
+                    this._setTabFocus(button);
+                }
+            }
+        }
+        return this;
     },
 
     /**
@@ -761,6 +877,203 @@ Y.extend(Editor, Y.Base, {
                  evt.preventDefault();
              }
          }, this);
+     },
+
+     /**
+      * Adds an element to the redo stack.
+      *
+      * @method _addToRedo
+      * @private
+      * @param {String} html The HTML content to save.
+      */
+     _addToRedo: function(html) {
+         this._redoStack.push(html);
+     },
+
+     /**
+      * Adds an element to the undo stack.
+      *
+      * @method _addToUndo
+      * @private
+      * @param {String} html The HTML content to save.
+      * @param {Boolean} [clearRedo=false] Whether or not we should clear the redo stack.
+      */
+     _addToUndo: function(html, clearRedo) {
+         var last = this._undoStack[this._undoStack.length - 1];
+
+         if (typeof clearRedo === 'undefined') {
+             clearRedo = false;
+         }
+
+         if (last !== html) {
+             this._undoStack.push(html);
+             if (clearRedo) {
+                 this._redoStack = [];
+             }
+         }
+
+         while (this._undoStack.length > this._maxUndos) {
+             this._undoStack.shift();
+         }
+     },
+
+     /**
+      * Get the editor HTML.
+      *
+      * @method _getHTML
+      * @private
+      * @return {String} The HTML.
+      */
+     _getHTML: function() {
+         return this.getCleanHTML();
+     },
+
+     /**
+      * Get an element on the redo stack.
+      *
+      * @method _getRedo
+      * @private
+      * @return {String} The HTML to restore, or undefined.
+      */
+     _getRedo: function() {
+         return this._redoStack.pop();
+     },
+
+     /**
+      * Get an element on the undo stack.
+      *
+      * @method _getUndo
+      * @private
+      * @param {String} current The current HTML.
+      * @return {String} The HTML to restore.
+      */
+     _getUndo: function(current) {
+         if (this._undoStack.length === 1) {
+             return this._undoStack[0];
+         }
+
+         last = this._undoStack.pop();
+         if (last === current) {
+             // Oops, the latest undo step is the current content, we should unstack once more.
+             // There is no need to do that in a loop as the same stack should never contain duplicates.
+             last = this._undoStack.pop();
+         }
+
+         // We always need to keep the first element of the stack.
+         if (this._undoStack.length === 0) {
+             this._addToUndo(last);
+         }
+
+         return last;
+     },
+
+     /**
+      * Restore a value from a stack.
+      *
+      * @method _restoreValue
+      * @private
+      * @param {String} html The HTML to restore in the editor.
+      */
+     _restoreValue: function(html) {
+         this.editor.setHTML(html);
+         // We always add the restored value to the stack, otherwise an event could think that
+         // the content has changed and clear the redo stack.
+         this._addToUndo(html);
+     },
+
+     /**
+      * Update the states of the buttons.
+      *
+      * @method _updateButtonsStates
+      * @private
+      */
+     _updateButtonsStates: function() {
+         if (this._undoStack.length > 1) {
+             this.enablePlugins('undo');
+         } else {
+             this.disablePlugins('undo');
+         }
+
+         if (this._redoStack.length > 0) {
+             this.enablePlugins('redo');
+         } else {
+             this.disablePlugins('redo');
+         }
+     },
+
+     /**
+      * Handle a click on undo
+      *
+      * @method _undoHandler
+      * @param {Event} The click event
+      * @private
+      */
+     _undoHandler: function(e) {
+         e.preventDefault();
+         var html = this._getHTML(),
+             undo = this._getUndo(html);
+
+         // Edge case, but that could happen. We do nothing when the content equals the undo step.
+         if (html === undo) {
+             this._updateButtonsStates();
+             return;
+         }
+
+         // Restore the value.
+         this._restoreValue(undo);
+
+         // Add to the redo stack.
+         this._addToRedo(html);
+
+         // Update the button states.
+         this._updateButtonsStates();
+     },
+
+     /**
+      * Handle a click on redo
+      *
+      * @method _redoHandler
+      * @param {Event} The click event
+      * @private
+      */
+     _redoHandler: function(e) {
+         e.preventDefault();
+         var html = this._getHTML(),
+             redo = this._getRedo();
+
+         // Edge case, but that could happen. We do nothing when the content equals the redo step.
+         if (html === redo) {
+             this._updateButtonsStates();
+             return;
+         }
+         // Restore the value.
+         this._restoreValue(redo);
+
+         // Update the button states.
+         this._updateButtonsStates();
+     },
+
+     /**
+      * If we are significantly different from the last saved version, save a new version.
+      *
+      * @method _changeListener
+      * @param {EventFacade} The click event
+      * @private
+      */
+     _changeListener: function(e) {
+         if (e.event && e.event.type.indexOf('key') !== -1) {
+             // These are the 4 arrow keys.
+             if ((e.event.keyCode !== 39) &&
+                     (e.event.keyCode !== 37) &&
+                     (e.event.keyCode !== 40) &&
+                     (e.event.keyCode !== 38)) {
+                 // Skip this event type. We only want focus/mouse/arrow events.
+                 return;
+             }
+         }
+
+         this._addToUndo(this._getHTML(), true);
+         this._updateButtonsStates();
      }
 
 }, {
@@ -2249,7 +2562,10 @@ Y.extend(EditorPlugin, Y.Base, {
             this.toolbar.setAttribute('aria-activedescendant', button.generateID());
         }
         // Normalize the callback parameters.
-        config.callback = Y.rbind(this._callbackWrapper, this, this._applyTextCommand);
+        if (!config.callback) {
+            config.callback = this._applyTextCommand;
+        }
+        config.callback = Y.rbind(this._callbackWrapper, this, config.callback);
 
         // Add the standard click handler to the button.
         this._buttonHandlers.push(
