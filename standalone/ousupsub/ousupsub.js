@@ -378,7 +378,7 @@ e){o.selectionFilterMatches(t.tags,e.selectedNodes,f)?this.highlightButtons(t.bu
 
 
 M = {
-    str: {"moodle":{"error":"Error","morehelp":"More help"},"editor_ousupsub":{"editor_command_keycode":"Cmd + {$a}","editor_control_keycode":"Ctrl + {$a}","plugin_title_shortcut":"{$a->title} [{$a->shortcut}]","subscript":"Subscript","superscript":"Superscript"}},
+    str: {"moodle":{"error":"Error","morehelp":"More help"},"editor_ousupsub":{"editor_command_keycode":"Cmd + {$a}","editor_control_keycode":"Ctrl + {$a}","plugin_title_shortcut":"{$a->title} [{$a->shortcut}]","subscript":"Subscript","superscript":"Superscript","undo":"Undo","redo":"Redo"}},
     iconRootUrl: null, // Set in a minute.
     util: {
         image_url: function (imageName) {
