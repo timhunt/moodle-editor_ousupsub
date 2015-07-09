@@ -29,6 +29,8 @@ $PAGE->set_context(context_system::instance());
 $PAGE->set_url('/lib/editor/ousupsub/tests/fixtures/editortestpage.php');
 
 $type = optional_param('type', 'both', PARAM_ALPHA);
+require_login();
+require_capability('moodle/site:config', context_system::instance());
 
 if (!in_array($type, array('both', 'sub', 'sup'))) {
     throw new coding_exception("'type' in the URL must be 'both', 'sub', or 'sup'.");
@@ -43,21 +45,21 @@ $PAGE->set_heading('Test superscript/subscript editor');
 
 echo $OUTPUT->header();
 echo html_writer::tag('h2', 'New (Atto) supsub');
-echo html_writer::label('Input', 'supsub');
+echo html_writer::label('Input', 'supsub') . ' ';
 echo html_writer::tag('textarea', '', array('name' => 'supsub', 'id' => 'supsub', 'rows' => 2, 'cols' => 20));
 $neweditor->use_editor('supsub', array('supsub' => $type));
 $submitoptions = array('id' => 'submitsupsub', 'type' => 'submit', 'value' => 'submit supsub',
         'onClick' => 'emulateSubmit(this.id.substring(6, this.id.length));');
-echo html_writer::tag('input', '', $submitoptions);
+echo ' ', html_writer::tag('input', '', $submitoptions);
 
 echo html_writer::tag('h2', 'New (Atto) supsub rows 4, cols 40');
-echo html_writer::label('Input rows 4 cols 40', 'supsub2');
+echo html_writer::label('Input rows 4 cols 40', 'supsub2') . ' ';
 echo html_writer::tag('textarea', '', array('name' => 'supsub2', 'id' => 'supsub2', 'rows' => 4, 'cols' => 40));
 $neweditor->use_editor('supsub2', array('supsub' => $type));
 
 $submitoptions['id'] = 'submitsupsub2';
 $submitoptions['value'] = 'submit supsub2';
-echo html_writer::tag('input', '', $submitoptions);
+echo  ' ', html_writer::tag('input', '', $submitoptions);
 
 echo html_writer::tag('h2', 'Original (Tinymce) supsub');
 echo html_writer::label('Original Input', 'originalsupsub');

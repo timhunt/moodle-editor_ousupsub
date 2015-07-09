@@ -14,7 +14,8 @@ Feature: ousupsub subscript button
   @javascript
   Scenario: Applying Subscript and Superscript on text
     #And I am using the OU theme
-    Given I am on the integrated "both" editor test page
+    Given I log in as "admin"
+    And I am on the integrated "both" editor test page
     And I set the field "Input" to "<p>Superscript and Subscript</p>"
 
     # Apply subscript

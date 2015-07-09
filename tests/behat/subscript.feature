@@ -4,7 +4,8 @@ Feature: ousupsub subscript button
 
   @javascript
   Scenario: Subscript some text
-    Given I am on the integrated "sub" editor test page
+    Given I log in as "admin"
+    And I am on the integrated "sub" editor test page
     And I set the field "Input" to "Helicopter"
     And I select the text in the "Input" ousupsub editor
     When I click on "Subscript" "button"
