@@ -9,6 +9,9 @@ body {
     display: inline-block;
     vertical-align: -14px;
 }
+body.safari .editor_ousupsub {
+    vertical-align: 0;
+}
 body.ie .editor_ousupsub {
     vertical-align: 26px;
 }
