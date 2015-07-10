@@ -1,6 +1,8 @@
 This editor plugin is used by qtype_pmatch and qtype_varnumeric. This testcase
 uses qtype_pmatch to test the editor.
 
+The readme.txt explains general details such as Supported Browsers and Operating systems to test
+
 1. Go to the question bank in any course, and start creating a pmatch question.
 
 2. Choose the option Allow use of subscript: Yes, Allow use of superscript: No,
@@ -12,3 +14,42 @@ superscripts, and there are no JavaScript errors at any time.
 4. Repeat 2. & 3. using the Allow use of subscript: Yes, Allow use of superscript: Yes.
 
 5. Repeat 2. & 3. using the Allow use of subscript: No, Allow use of superscript: Yes.
+
+Fow now we will use the questions
+For main testing: Q12F3 pattern match (both)
+For basic testing specific to superscript: Q12F3 pattern match (superscript)
+For basic testing specific to subscript: H2O pattern match (subscript)
+
+Features
+Using the buttons the superscript and subscript style is toggled. repeatedly pressing the superscript button would
+apply and remove superscript to the selected area. The same is true for subscript.
+Superscript
+Subscript
+
+Keyboard
+Where keyboards are available the keyboard short cuts are:
+Superscript: CTRL/COMMAND + ^, Up arrow
+Subscript: CTRL/COMMAND + _, Down arrow
+
+Keyboard Mode
+Keyboard mode cycles through 3 states
+* Superscript
+* Normal
+* Subscript
+
+Pressing either of the superscript keys moves the editor up one place from its current state but not higher than
+superscript. Pressing either of the subscript keys moves the editor up one place from its current state but not
+lower than subscript.
+
+In this case the keys reflect the function of the arrow keys. 
+Press the Up arrow to go up towards superscript. Repeatedly pressing the up arrow when text is selected turn subscript
+text to normal text and normal text to superscript text. The same happens when entering the ^ character.
+
+Press the Down arrow to go down towards subscript. Repeatedly pressing the down arrow when text is selected will
+turn superscript text to normal text and normal text to subscript text. The same happens when entering the _ character.
+
+Undo/Redo
+The functionality of undo and redo is available through the standard
+desktop keys ctrl+z(undo) and ctrl+y (redo)
+
+Paste
