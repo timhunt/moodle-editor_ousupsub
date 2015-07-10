@@ -24,9 +24,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2015050600;
+$plugin->version   = 2015071000;
 $plugin->requires  = 2014050800;
 $plugin->cron      = 0;
 $plugin->component = 'editor_ousupsub';
-$plugin->maturity  = MATURITY_BETA;
-$plugin->release   = '0.5 for Moodle 2.8+';
