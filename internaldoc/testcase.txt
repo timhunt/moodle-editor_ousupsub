@@ -58,7 +58,7 @@ press the Down arrow. (Nothing should happen.)
 Press check
 -- Verify Matched answer 1. Question ends. is displayed
 
-SUP05 Keyboard _
+SUP05 verify Keyboard _ supscript not available
 Repeat SUP01
 Before pressing check
 press CTRL/COMMAND + ^. 
@@ -95,7 +95,7 @@ press the up arrow. (Nothing should happen.)
 Press check
 -- Verify Matched answer 1. Question ends. is displayed
 
-SUB05 Keyboard _ supercript
+SUB05 Verify Keyboard ^ (superscript) not available 
 Repeat SUB01
 Before pressing check
 press CTRL/COMMAND + ^. 
