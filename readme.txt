@@ -37,253 +37,31 @@ These requirements are summarised as:
 * Provide a standalone version of the same editor for offline situations such as ereaders
 * Editor can placed where required including inline with text
 
-Functionality
-
-General principles
-We assume the user is responsible for what they can see and fix but not for what they can’t see and what they can’t fix.
-
-In all cases, as far as possible, we have ensured that what the user sees is exactly what the tool will submit e.g.
-H2O should translate to H<sub>2</sub>O
-However it is possible to get erroneous tags such as an empty <sup></sup> which lead to incorrect answers such as
-H<sub>2</sub>O<sup></sup> which is wrong. Though a user would still see H2O and be unaware of the error. Therefore
-the editor corrects this to H<sub>2</sub>O
-
-Reporting of errors is handled by moodle or the html activity hosting the editor and not the editor tool itself.
-See the error handling section for more details
-
-TinyMCE Editor
-The original editor was based on the TinyMCE editor and was developed for desktop use primarily in Internet explorer
-and Firefox browsers with little support for mobile use.
-
-Atto Editor
-The new version of the editor is based on the Atto editor developed by Moodle. Only the superscript and subscript
-buttons remain and functionality that is no longer required has been removed to ease maintenance and reduce the
-file size of the tool.
-
-The editor is configurable in the following ways:
-- The buttons available: Superscript only, Subscript only or Superscript and Subscript.
-- The height and width can be configured by adjusting the rows (height) and cols (width) used in the textarea the
-editor replaces.
-
-Superscript only
-Superscript only mode provides an editor configured to only support the <sup> tag. This means the <sub>
-tag and the keyboard controls and button associated with it are not available and will not work.
-
-Subscript only
-Subscript only mode provides an editor configured to only support the <sub> tag. This means the <sup> tag and
-the keyboard controls and button associated with it are not available and will not work. The figure above
-demonstrates how this looks.
-
-Superscript and Subscript
-Where superscript and subscript are both enabled, keyboard shortcuts and buttons for each are available and will
-work. 
-
-Challenges:
-Combining superscript with subscript is the most complicated scenario and there are situations when applying
-superscript or subscript that unexpected results can occur. Particularly across browsers because each browser
-applies superscript and subscript differently.
-
-In general these problems are minimised and where there are issues there are generally straightforward solutions
-to achieve the desired result.
-
-Keyboard
-Where keyboards are available the keyboard short cuts are:
-Superscript: CTRL/COMMAND + ^, Up arrow
-Subscript: CTRL/COMMAND + _, Down arrow
-
-Applying superscript and subscript
-The process of triggering Subscript and superscript differ when using buttons or the keyboard because buttons are
-used primarily for sighted users and keyboard may be used for non sighted users.
-
-Button Mode
-Using the buttons the superscript and subscript style is toggled. repeatedly pressing the superscript button would
-apply and remove superscript to the selected area. The same is true for subscript.
-
-Keyboard Mode
-Keyboard mode cycles through 3 states
-* Superscript
-* Normal
-* Subscript
-
-Pressing either of the superscript keys moves the editor up one place from its current state but not higher than
-superscript. Pressing either of the subscript keys moves the editor up one place from its current state but not
-lower than subscript.
-
-In this case the keys reflect the function of the arrow keys. 
-Press the Up arrow to go up towards superscript. Repeatedly pressing the up arrow when text is selected turn subscript
-text to normal text and normal text to superscript text. The same happens when entering the ^ character.
-
-Press the Down arrow to go down towards subscript. Repeatedly pressing the down arrow when text is selected will
-turn superscript text to normal text and normal text to subscript text. The same happens when entering the _ character.
-
-Undo
-Undo is functionality that is known to be unreliable 
-http://www.google.com/url?q=http%3A%2F%2Fwww.quirksmode.org%2Fdom%2FexecCommand.html&sa=D&sntz=1&usg=AFQjCNEuZAUMRaP3BG5x0CWu5zZubsb_SA
-when using contenteditable elements as ATTO does and is the industry standard way to achieve Rich Text Editors.
-TinyMCE supported undo across all desktop browsers as does ATTO so ousupsub must support undo aswell.
-
-ATTO uses the undo plugin to support cross browser undo functionality so this plugin was imported to ousupsub and
-delivers the same reliable cross browser undo and redo functionality. The undo and redo buttons were hidden to keep
-the same style as the original supsub editor. The functionality of undo and redo is available through the standard
-desktop keys ctrl+z(undo) and ctrl+y (redo)
-
-Paste
-Characters pasted from word (or other text editors) must be filtered to remove html and other characters not supported
-in the supsub editor. 
-
-Aria:
-Screen reader
-So far we have not tested with a screen reader. The description of the keyboard shortcut is on the button in the
-title text. So how would a blind user know the keyboard shortcut if they can’t tab to it.
-
-TinyMCE
-The existing accessibility support within TinyMCE includes:
-The entire editor is labelled as “Rich text area”. Each editor uses the same phrase so distinguishing between is
-difficult.
-
-The superscript button title attribute describes its role e.g ‘Superscript’ or ‘Subscript’
-
-Challenges:
-The editor is contained in an iframe and therefore is not part of the natural flow of the page. Navigating in
-and out of an iframe can be a challenge.
-
-Atto
-The accessibility support within the Atto editor includes:
-access the toolbar using shift tab to get to the buttons
-an Aria label on the toolbar containing the description of the editor
-The superscript button title attribute describes its keyboard trigger Superscript [Ctrl + ^]
-The subscript button title attribute describes its keyboard trigger Subscript [Ctrl + _]
-an Aria label on the content/textarea containing the description of the editor
-
-On balance it appears the accessibility support with the ATTO editor is improved. The supsub editor supports the
-same features.
-
-Error Handling
-The editor only ensures only that:
-the allowed characters are entered 
-sup or sub are the only styles/tags used
-
-It does not check details of the text entered such as:
-minimum or maximum length of text
-whether certain characters are used
-
-Handling these situations and informing users are the responsibility of the feature using the editor and not the
-responsibility of the editor itself.
-
 Standalone version
-The standalone editor provides the new atto supsub editor in a form that can be used outside moodle in locations such as:
-* Openmark
-* embedded in mobile devices
-
-The standalone editor is available in lib/editor/ousupsub/standalone and includes:
-a demonstration page named index.html providing examples of how to configure and use the editor including the required
-html such as:
-a resources folder containing all the assets the editor requires
-
-The following is an example of the html required to implement a sup sub editor.
-<div class="fcontainer clearfix">
-            <div id="fitem_id_description_editor" class="fitem fitem_feditor ">
-                <div class="fitemtitle"><label for="id_description_editor">Both Superscript and Subscript allowed</label></div>
-                <div class="felement feditor">
-                    <div>
-                        <div class="editor_ousupsub"></div>
-                        <textarea id="id_description_editor" name="description_editor[text]"
-                            rows="2" cols="80" spellcheck="true" hidden="hidden"
-                            >Superscript and Subscript</textarea>
-                    </div>
-                </div>
-            </div>
-        </div>
-Resources
-The resources folder contains the resources required for the editor. This folder contains the core assets for
-the editor and must be copied to where it is required. To include the editor follow the examples given in the
-index.html demonstration page.
-
-More details are in standardalone-src/readme.txt that gets added to the /standalone folder
+More details are in readme_standalone.txt that gets added to the /standalone folder
 A standalone/offline version of the editor is also provided in the /standalone folder. This provides all the
 functionality of the editor in a package that works in an ereader or mobile app or on a desktop to demonstrate
 the functionality of the editor outside of moodle. There feature is currently in beta.
 
-Build script
-To automate the creation of the the standalone editor and ensure it is an exact copy of the moodle version a
-build script has been created which can be run everytime changes are made to the Moodle version. 
+The standalone version is kept up to date by running the buildstandalone.php in the same way you run a behat script
+The full command we use is php lib/editor/ousupsub/buildstandalone.php
 
-To run the build script open a terminal window, such as that used for git or behat, and enter 
-php lib/editor/ousupsub/buildstandalone.php
-
-This script deletes the existing contents of the standalone folder and recreates all the assets and folders
-including the index.html demonstration page and the readme. 
-
-This reduces the effort to maintain the standalone version to virtually zero while ensuring that every fix and
-improvement made to the editor is duplicated in the standalone editor ensuring they are essentially the same tool.
-
-The requirement was to use the existing assets of the supsub editor plugin while combining them where necessary
-to make the plugin easier to implement outside of moodle
+Running this script outputs a list of files and features that have been created. First it deletes the contents of the
+standalone folder and then it recreates the standalone files. This ensures the standalone version is as up to date with
+the plugin. This task is performed during development of the editor. If you are using it out of the box you shouldn't
+need to run this script.
 
 Testing
-No automated tests exist for the TinyMCE based editor. The new editor has several automated tests including:
-* Behaviour (Behat) tests
-* Javascript tests
+Automated testing is through behat and custom javascript unit tests. There is a behat test for the moodle plugin and an
+identical test for the standalone version
 
-Automated tests have the major advantage that they can be run regularly with little or no cost and provide
-benchmarks on which maintenance and development can be judged. 
+The javascript unit tests run in a browser. Load /tests/fixtures/testcleanup.html in a specific browser to see if the
+tests pass in that browser.
 
-When the feature is deployed all tests must pass and with each moodle upgrade and development period on the
-plugin the tests provide a clear measure of the reliability of existing functionality.
-
-The tests also provide a standardised and thorough description of what the plugin should do to aid manual human
-testing where required.
-
-Behat
-Behaviour testing attempts to test a tool in the same manner that it will be used in production. For the editor
-this means testing the application of superscript and subscript using the same methods a human would use including:
-* Entering text
-* Selecting a portion of the text
-* Pressing a button or a key
-* Reading the result
-
-Every use of the editor involves one or several of these interactions and it is imperative that as many combinations
-are reliably tested during the normal development and release of the editor.
-
-Behaviour testing does not replace manual testing by humans but does provide reliable and quick coverage of many,
-often tens or hundred or various scenarios across multiple browsers. 
-
-The behat tests cover various scenarios including:
-* Superscript only
-* Subscript only
-* Superscript and Subscript combined
-
-They do not yet cover
-keyboard events like cut and paste and undo
-
-There were very limited tests for the existing atto editor which did not support selecting text, triggering a 
-button and verifying the result. The tests for the atto sup sub editor do have this ability which enables more
-accurate and regular automated testing of the editor functionality
-
-Javascript
-Moodle does not currently have a solution for automated javascript tests. The editor tool is heavily reliant on
-Javascript creating a need for automated testing. 
-
-The editor has a bespoke javascript unit test at
- lib/editor/ousupsub/tests/fixtures/testcleanup.html
-
-The main purpose of the tests is to aid development and maintenance to check the overall health of the javascript
-functionality of the editor. It gives a good idea of the quality of the editors performance in any particular browser. 
-
-It complements but  does not replace automated behaviour tests or manual testing. It only tests html input and
-output and not interactions and therefore does not test for 
-* keyboard events such as undo, cut or paste
-* form submit events though it does trigger submit and ensure the html is correct when submitted.
-
-To run the tests open this file on any browser to determine whether the javascript based functionality runs
-correctly in that browser on that operating system. 
-
-The file can be run locally just like the editor so in desktop browser simply drag it to your browser to run the
-tests and view the results. 
-
-Manual Testing
-Scripts used for manual testing can be found in the moodle install at lib/editor/ousupsub/internaldoc/testcase.txt
-or on github at https://github.com/colchambers/moodle-editor_ousupsub/blob/master/internaldoc/testcase.txt
+The editor will work any where moodle editors work but it's designed to be used with specific OU question types
+The main places to test are:
+* pattern match questions (OU specific question type)
+* variable numeric  questions (OU specific question type)
 
 HTML Output
 To understand exactly what this editor will and will not do it's best to understand the html it will or will not allow.
@@ -313,34 +91,3 @@ The editor relies heavily on the rangy software library.
     Notes:
     * We have patched 1.2.3 with a backport fix from the next release of Rangy which addresses an incompatibility
       between Rangy and HTML5Shiv which is used in the bootstrapclean theme. See MDL-44798 for further information.
-
-Administration settings
-The plugin has minimal admin settings
-
-Manage Editors
-To manage the editor go to administration > Plugins > Text Editors > Manage Editors
-Unlike standard moodle editors the sup sub editors are not enabled by default. They are only used by specific
-modules on request and do not appear in the list of editor available for text input.
-
-Enable Editor
-To enable the editor go to administration > Plugins > Text Editors > Superscript/subscript editor settings
-
-By default the default tinymce editor is used. Checking the box enables the editor for all browsers except IE 8 and below.
-
-Technical Requirements
-Plugin details
-The plugin is named ousupsub and resides in moodle at lib/editor/ousupsub
-The github repository is https://github.com/colchambers/moodle-editor_ousupsub/
-
-Supported Browsers and Operating systems
-Browsers and the operating systems that are supported.
-Firefox: PC, Mac, Linux
-Chrome: PC, 
-IE 9+ PC, 
-IE 8 and below will use the existing tinymce editor.
-Default browser: iPhone, iPad, Android
-
-Supported plugins
-The sup sub editors are currently only used in these quiz question types:
-Varnumeric
-Pattern Match
