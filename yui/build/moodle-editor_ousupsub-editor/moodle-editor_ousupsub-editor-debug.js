@@ -439,7 +439,7 @@ Y.extend(Editor, Y.Base, {
         // Initialise the undo and redo stacks.
         this._undoStack = [];
         this._redoStack = [];
-        
+
         // Add undo button
         this.plugins.undo = new Y.M.editor_ousupsub.EditorPlugin({
             name: 'undo',
@@ -479,7 +479,7 @@ Y.extend(Editor, Y.Base, {
 
         return this;
     },
-    
+
     /**
      * Set up the watchers for undo/redo.
      *
@@ -500,6 +500,10 @@ Y.extend(Editor, Y.Base, {
                 this));
 
         return this;
+    },
+
+    pluginEnabled: function(plugin) {
+        return this.plugins[plugin] ? true : false;
     },
 
     enablePlugins: function(plugin) {
@@ -851,11 +855,15 @@ Y.extend(Editor, Y.Base, {
         var evt = window.event || e;
         var code = evt.keyCode ? evt.keyCode : evt.charCode;
         // Call superscript.
-        if ((code === 38) || (code === 94)) {
+        if (this.pluginEnabled('superscript') && ((code === 38) || (code === 94))) {
             command = 'superscript';
         // Call subscript.
-        } else if ((code === 40) || (code === 95)) {
+        } else if (this.pluginEnabled('subscript') && ((code === 40) || (code === 95))) {
             command = 'subscript';
+        }
+
+        if (!command) {
+            return;
         }
 
         this._applyTextCommand(command, mode);
