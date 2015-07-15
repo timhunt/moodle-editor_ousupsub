@@ -851,10 +851,10 @@ Y.extend(Editor, Y.Base, {
         var evt = window.event || e;
         var code = evt.keyCode ? evt.keyCode : evt.charCode;
         // Call superscript.
-        if (this.pluginEnabled('superscript') && ((code === 38) || (code === 94))) {
+        if ((code === 38) || (code === 94)) {
             command = 'superscript';
         // Call subscript.
-        } else if (this.pluginEnabled('subscript') && ((code === 40) || (code === 95))) {
+        } else if ((code === 40) || (code === 95)) {
             command = 'subscript';
         }
 
@@ -1557,6 +1557,10 @@ EditorClean.prototype = {
                 command = 'superscript';
             }  else if (tag === 'subscript' && command === 'superscript') {
                 command = 'subscript';
+            }
+            
+            if (!this.pluginEnabled(command)) {
+                return;
             }
         }
 

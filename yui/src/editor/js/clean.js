@@ -404,6 +404,10 @@ EditorClean.prototype = {
             }  else if (tag === 'subscript' && command === 'superscript') {
                 command = 'subscript';
             }
+            
+            if (!this.pluginEnabled(command)) {
+                return;
+            }
         }
 
         // Apply command.

@@ -196,4 +196,51 @@ class behat_editor_ousupsub extends behat_base {
     RangySelectTextBehat();';
         $this->getSession()->executeScript($js);
     }
+
+    /**
+     * Press a key(s) a stand-alone ousupsub field.
+     *
+     * @Given /^I press the key "([^"]*)" in the "([^"]*)" ousupsub editor$/
+     * @throws ElementNotFoundException Thrown by behat_base::find
+     * @param string $keys
+     * @param string $field
+     */
+    public function press_key_in_the_ousupsub_editor($keys, $fieldlocator) {
+        // NodeElement.keyPress simply doesn't work.
+        if (!$this->running_javascript()) {
+            throw new coding_exception('Selecting text requires javascript.');
+        }
+        // We delegate to behat_form_field class, it will
+        // guess the type properly.
+        $field = behat_field_manager::get_form_field_from_label($fieldlocator, $this);
+
+        if (!method_exists($field, 'get_value')) {
+            throw new coding_exception('Field does not support the get_value function.');
+        }
+
+        $editorid = $this->find_field($fieldlocator)->getAttribute('id');
+
+        // Get query values for the range.
+        $js = '
+    function TriggerKeyPressBehat() {
+    // http://www.wfimc.org/public/js/yui/3.4.1/docs/event/simulate.html
+    YUI().use(\'node-event-simulate\', function(Y) {
+        var id = "'.$editorid.'";
+        var node = Y.one("#" + id + "editable");
+
+        node.focus();
+        var keyEvent = "keypress";
+        if (Y.UA.webkit || Y.UA.ie) {
+            keyEvent = "keydown";
+        }
+        // Key code (up arrow) for the keyboard shortcut which triggers this button:
+        var keys =  ['.$keys.'];
+        for(var i=0; i<keys.length;i++) {
+            node.simulate(keyEvent, { charCode: keys[i] });
+        }
+    });
+    }
+    TriggerKeyPressBehat();';
+        $this->getSession()->executeScript($js);
+    }
 }
