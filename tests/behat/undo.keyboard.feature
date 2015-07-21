@@ -30,3 +30,7 @@ Feature: ousupsub superscript button
 
     When I press the redo key in the "Input" ousupsub editor
     Then I should see "<sub>Helicopter</sub>" in the "Input" ousupsub editor
+
+    # Pressing redo too much should not have an effect
+    When I press the redo key in the "Input" ousupsub editor
+    Then I should see "<sub>Helicopter</sub>" in the "Input" ousupsub editor

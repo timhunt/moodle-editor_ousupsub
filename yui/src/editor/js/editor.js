@@ -1052,7 +1052,7 @@ Y.extend(Editor, Y.Base, {
              redo = this._getRedo();
 
          // Edge case, but that could happen. We do nothing when the content equals the redo step.
-         if (html === redo) {
+         if (redo === undefined || html === redo) {
              this._updateButtonsStates();
              return;
          }
