@@ -6,7 +6,6 @@ Feature: ousupsub superscript button
   Scenario: Verify Undo and redo by adding and formatting some text
     Given I log in as "admin"
     And I am on the integrated "both" editor test page
-    #And I set the field "Input" to "Helicopter"
     # Set the initial text
     And I enter the text "Helicopter" in the "Input" ousupsub editor
     Then I should see "Helicopter" in the "Input" ousupsub editor
