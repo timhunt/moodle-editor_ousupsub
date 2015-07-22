@@ -299,6 +299,62 @@ class behat_editor_ousupsub extends behat_base {
     }
 
     /**
+     * Paste text in a stand-alone ousupsub field.
+     *
+     * @Given /^I paste the text "([^"]*)" in the "([^"]*)" ousupsub editor$/
+     * @throws ElementNotFoundException Thrown by behat_base::find
+     * @param string $text
+     * @param string $field
+     */
+    public function paste_text_in_the_ousupsub_editor($text, $fieldlocator) {
+        // NodeElement.keyPress simply doesn't work.
+        if (!$this->running_javascript()) {
+            throw new coding_exception('Pasting text requires javascript.');
+        }
+        // We delegate to behat_form_field class, it will
+        // guess the type properly.
+        $field = behat_field_manager::get_form_field_from_label($fieldlocator, $this);
+
+        $editorid = $this->find_field($fieldlocator)->getAttribute('id');
+
+        // Trigger the key press through javascript.
+        // The clibpoardData object is not created correctly in chrome. Pass our own.
+        $js = '
+    function ClipboardData() {}
+ClipboardData.prototype = {
+    data: null,
+    types: [],
+
+    getData: function() {
+        return this.data;
+    },
+
+    setData: function(mimeType, data) {
+        this.types.push(mimeType);
+        this.data = data;
+    }
+}
+
+function PasteTextBehat (id, text) {
+    // Would use ClipboardEvent but in chrome it instantiates with a null clipboardData object
+    // that you cannot override.
+    var target = document.getElementById(id + "editable");
+    var evt = document.createEvent("TextEvent");
+    evt.initEvent ("paste", true, true, window, text, 0, "en-US");
+    evt.clipboardData = new ClipboardData();
+    evt.clipboardData.setData("text/html", text);
+    target.focus();
+    target.dispatchEvent(evt);
+    // Update the textarea text from the contenteditable div we just changed.
+    UpdateTextArea(id);
+}
+    PasteTextBehat("'.$editorid.'", "'.$text.'");';
+        $js = $this->get_js_update_textarea() . $js;
+        $this->getSession()->executeScript($js);
+
+    }
+
+    /**
      * Press the superscript key in a stand-alone ousupsub field.
      *
      * @Given /^I press the superscript key in the "([^"]*)" ousupsub editor$/
