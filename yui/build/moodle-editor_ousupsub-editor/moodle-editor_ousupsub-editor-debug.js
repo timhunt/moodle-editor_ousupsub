@@ -2576,7 +2576,10 @@ Y.extend(EditorPlugin, Y.Base, {
         var currentfocus = this.toolbar.getAttribute('aria-activedescendant');
         if (!currentfocus) {
             // Initially set the first button in the toolbar to be the default on keyboard focus.
+         // Initially set the first button in the toolbar to be the default on keyboard focus.
+            button.setAttribute('tabindex', '0');
             this.toolbar.setAttribute('aria-activedescendant', button.generateID());
+            this.get('host')._tabFocus = button;
         }
         // Normalize the callback parameters.
         if (!config.callback) {
