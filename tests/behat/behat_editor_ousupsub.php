@@ -245,8 +245,8 @@ class behat_editor_ousupsub extends behat_base {
             }
             event[keys[i]] = true;
         }
-        for(var i=0; i<keys.length;i++) {
-            event.charCode = keys[i];
+        for(var i=0; i<trimmedKeys.length;i++) {
+            event.charCode = trimmedKeys[i];
             node.simulate(keyEvent, event);
         }
     });
@@ -355,6 +355,41 @@ function PasteTextBehat (id, text) {
     }
 
     /**
+     * Select the first button in a stand-alone ousupsub field.
+     *
+     * @Given /^I select and click the first button in the "([^"]*)" ousupsub editor$/
+     * @throws ElementNotFoundException Thrown by behat_base::find
+     * @param string $text
+     * @param string $field
+     */
+    public function select_and_click_first_button_in_the_ousupsub_editor($fieldlocator) {
+        // NodeElement.keyPress simply doesn't work.
+        if (!$this->running_javascript()) {
+            throw new coding_exception('Pasting text requires javascript.');
+        }
+        // We delegate to behat_form_field class, it will
+        // guess the type properly.
+        $field = behat_field_manager::get_form_field_from_label($fieldlocator, $this);
+
+        $editorid = $this->find_field($fieldlocator)->getAttribute('id');
+
+        // Trigger the key press through javascript.
+        // The clibpoardData object is not created correctly in chrome. Pass our own.
+        $js = '
+function SelectAndClickFirstButtonBehat (id) {
+    var editor = GetEditor(id);
+    var button = editor.toolbar.all(\'button[tabindex="0"]\').item(0)
+    button.focus();
+    editor._tabFocus = button;
+    document.activeElement.click();
+}
+    SelectAndClickFirstButtonBehat("'.$editorid.'");';
+        $js = $this->get_js_get_editor() . $js;
+        $this->getSession()->executeScript($js);
+
+    }
+
+    /**
      * Press the superscript key in a stand-alone ousupsub field.
      *
      * @Given /^I press the superscript key in the "([^"]*)" ousupsub editor$/
@@ -404,27 +439,45 @@ function PasteTextBehat (id, text) {
      * @param {String} id
      */
     protected function get_js_update_textarea() {
-        $js = '
+        $js = $this->get_js_get_editor();
+        $js .= '
 function UpdateTextArea (id) {
+    var editor = GetEditor(id);
+    editor.updateOriginal();
+    editor.fire("ousupsub:selectionchanged");
+    if ("createEvent" in document) {
+        var evt = document.createEvent("HTMLEvents");
+        evt.initEvent("change", false, true);
+        editor._getEditorNode().dispatchEvent(evt);
+    }
+    else {
+        editor._getEditorNode().fireEvent("onchange");
+    }
+}';
+        return $js;
+    }
+
+    /**
+     * Returns a javascript helper method to update the textarea text from the contenteditable div
+     * and trigger required key and html events for the editor.
+     *
+     * @method UpdateTextArea
+     * @param {String} id
+     */
+    protected function get_js_get_editor() {
+        $js = '
+function GetEditor (id) {
+    var editor;
     if (typeof editor_ousupsub !== "undefined") {
         // For testing standalone.
-        editor_ousupsub.getEditor(id).updateOriginal();
+        editor = editor_ousupsub.getEditor(id);
     } else {
         // For testing in Moodle.
         YUI().use("moodle-editor_ousupsub-editor", function(Y) {
-            var editor = Y.M.editor_ousupsub.getEditor(id);
-            editor.updateOriginal();
-            editor.fire("ousupsub:selectionchanged");
-            if ("createEvent" in document) {
-                var evt = document.createEvent("HTMLEvents");
-                evt.initEvent("change", false, true);
-                editor._getEditorNode().dispatchEvent(evt);
-            }
-            else {
-                editor._getEditorNode().fireEvent("onchange");
-            }
+            editor = Y.M.editor_ousupsub.getEditor(id);
         });
     }
+    return editor;
 }';
         return $js;
     }
