@@ -794,6 +794,17 @@ Y.extend(Editor, Y.Base, {
             newValue = this._getEmptyContent();
         }
 
+        // Remove specific unicode characters.
+        var values = [];
+        for ( var i = 0; i < newValue.length; i++ ) {
+            if (newValue.charCodeAt(i) == "65279") {
+                continue;
+            }
+            values.push(newValue.charAt(i));
+        }
+        newValue = values.join('');
+        newValue = newValue.trim();
+
         // Only call this when there has been an actual change to reduce processing.
         if (oldValue !== newValue) {
             // Insert the cleaned content.
