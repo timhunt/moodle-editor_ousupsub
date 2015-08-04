@@ -9,10 +9,9 @@ Feature: ousupsub superscript button
     # Set the initial text
     And I set the field "Input" to "Helicopter"
     Then I should see "Helicopter" in the "Input" ousupsub editor
-    
+
     Then I select the text in the "Input" ousupsub editor
-    
+
     # Verify toolbar superscript button can be selected by tab index 
     And I select and click the first button in the "Input" ousupsub editor
     Then I should see "<sup>Helicopter</sup>" in the "Input" ousupsub editor
-
