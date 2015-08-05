@@ -91,7 +91,8 @@ class ousupsub_texteditor_standalone_builder {
         $components = array(
             'moodle' => array('error', 'morehelp'),
             'editor_ousupsub' => array('editor_command_keycode', 'editor_control_keycode',
-                                        'plugin_title_shortcut', 'subscript', 'superscript', 'undo', 'redo'),
+                                        'editor_shift_keycode', 'plugin_title_shortcut',
+                                        'subscript', 'superscript', 'undo', 'redo'),
         );
 
         $output = array();

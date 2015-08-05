@@ -98,6 +98,7 @@ YUI().use("moodle-editor_ousupsub-editor", function(Y) {
                 "editor_ousupsub": {
                     "editor_command_keycode":"Cmd + {$a}",
                     "editor_control_keycode":"Ctrl + {$a}",
+                    "editor_shift_keycode":"Shift + {$a}",
                     "plugin_title_shortcut":"{$a->title} [{$a->shortcut}]",
                     "subscript":"Subscript",
                     "superscript":"Superscript"

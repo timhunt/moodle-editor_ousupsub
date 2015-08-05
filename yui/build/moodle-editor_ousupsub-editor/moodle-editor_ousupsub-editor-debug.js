@@ -417,7 +417,8 @@ Y.extend(Editor, Y.Base, {
                         // Key code (up arrow) for the keyboard shortcut which triggers this button:
                         // Up arrow should be 38 but doesn't register and is handled elsewhere.
                         keys: ['94'],
-                        icon: 'e/superscript'
+                        icon: 'e/superscript',
+                        keyDescription: "Shift + ^ or Up arrow"
                     });
                 } else if (plugin.name === 'subscript') {
                     this.plugins.subscript = new Y.M.editor_ousupsub.EditorPlugin({
@@ -431,7 +432,8 @@ Y.extend(Editor, Y.Base, {
                         // Key codes (underscore) for the keyboard shortcut which triggers this button:
                         // Down arrow should be 40 but doesn't register.
                         keys: ['95'],
-                        icon: 'e/subscript'
+                        icon: 'e/subscript',
+                        keyDescription: "Shift + _ or Down arrow"
                     });
                 }
             }
@@ -2643,6 +2645,7 @@ Y.extend(EditorPlugin, Y.Base, {
 
         // Handle button click via shortcut key.
         if (config.keys) {
+            
             if (typeof config.keyDescription !== 'undefined') {
                 // A keyboard shortcut description was specified - use it.
                 this._primaryKeyboardShortcut[buttonClass] = config.keyDescription;

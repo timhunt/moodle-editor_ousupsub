@@ -6,7 +6,9 @@ Feature: ousupsub subscript button
   Scenario: Apply Subscript some text
     Given I log in as "admin"
     And I am on the integrated "sub" editor test page
-    And I set the field "Input" to "Helicopter"
+    Then ".[contains(@title, 'Shift + _ or Down arrow')]" "xpath_element" should exist in the "button.ousupsub_subscript_button_subscript" "css_element"
+
+    When I set the field "Input" to "Helicopter"
     And I select the text in the "Input" ousupsub editor
 
     # Verify button 95(Down arrow) applies subscript

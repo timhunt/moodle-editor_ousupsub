@@ -111,6 +111,7 @@ class ousupsub_texteditor extends texteditor {
         $PAGE->requires->strings_for_js(array(
                 'editor_command_keycode',
                 'editor_control_keycode',
+                'editor_shift_keycode',
                 'plugin_title_shortcut',
                 'subscript',
                 'superscript',

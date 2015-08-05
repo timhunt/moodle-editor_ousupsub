@@ -24,6 +24,7 @@
 
 $string['editor_command_keycode'] = 'Cmd + {$a}';
 $string['editor_control_keycode'] = 'Ctrl + {$a}';
+$string['editor_shift_keycode'] = 'Shift + {$a}';
 $string['plugin_title_shortcut'] = '{$a->title} [{$a->shortcut}]';
 $string['pluginname'] = 'Superscript/subscript editor';
 $string['settings'] = 'Superscript/subscript editor settings';

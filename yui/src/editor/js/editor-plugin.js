@@ -306,6 +306,7 @@ Y.extend(EditorPlugin, Y.Base, {
 
         // Handle button click via shortcut key.
         if (config.keys) {
+            
             if (typeof config.keyDescription !== 'undefined') {
                 // A keyboard shortcut description was specified - use it.
                 this._primaryKeyboardShortcut[buttonClass] = config.keyDescription;
