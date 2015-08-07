@@ -454,6 +454,8 @@ EditorClean.prototype = {
         selection = rangy.getSelection();
         // If it's a collapsed selection the cursor is in the editor but no selection has been made.
         if (selection.isCollapsed) {
+            var selection = window.rangy.saveSelection();
+
             // Insert tag at cursor focus point.
             tag = command === 'superscript' ? 'sup' : 'sub';
             // ﻿&#65279; is is the Unicode Character 'ZERO WIDTH NO-BREAK SPACE' (U+FEFF). Used
@@ -464,6 +466,8 @@ EditorClean.prototype = {
             var range = rangy.createRange();
             range.selectNode(node._node.childNodes[0]);
             this.setSelection([range]);
+            // Restore the selection (cursor position).
+            window.rangy.restoreSelection(selection);
         }
         this._normaliseTextarea();
 
