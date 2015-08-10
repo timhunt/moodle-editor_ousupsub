@@ -1266,7 +1266,7 @@ EditorClean.prototype = {
         this.editor.set('innerHTML', this._cleanHTMLSimple(this.editor.get('innerHTML')));
 
         // Restore the selection, and collapse to end.
-        window.rangy.restoreSelection(selection);
+        window.rangy.restoreSelection(selection, true);
         return this;
     },
 
@@ -1505,7 +1505,7 @@ EditorClean.prototype = {
         this.updateOriginal();
 
         // Restore the selection (cursor position).
-        window.rangy.restoreSelection(selection);
+        window.rangy.restoreSelection(selection, true);
 
         return this;
     },
@@ -1627,7 +1627,6 @@ EditorClean.prototype = {
         selection = rangy.getSelection();
         // If it's a collapsed selection the cursor is in the editor but no selection has been made.
         if (selection.isCollapsed) {
-            var selection = window.rangy.saveSelection();
 
             // Insert tag at cursor focus point.
             tag = command === 'superscript' ? 'sup' : 'sub';
@@ -1640,7 +1639,7 @@ EditorClean.prototype = {
             range.selectNode(node._node.childNodes[0]);
             this.setSelection([range]);
             // Restore the selection (cursor position).
-            window.rangy.restoreSelection(selection);
+            window.rangy.getSelection().collapseToEnd();
         }
         this._normaliseTextarea();
 
@@ -1705,7 +1704,7 @@ EditorClean.prototype = {
         this._removeNodesByName(editor_node, 'span');
 
         // Restore the selection (cursor position).
-        window.rangy.restoreSelection(selection);
+        window.rangy.restoreSelection(selection, true);
 
         // Normalise the editor html.
         editor_node.normalize();
