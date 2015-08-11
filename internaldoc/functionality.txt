@@ -119,18 +119,18 @@ desktop keys ctrl+z(undo) and ctrl+y (redo)
 Paste
 =====
 Characters pasted from word (or other text editors) must be filtered to remove html and other characters not supported
-in the supsub editor. 
+in the supsub editor.
 
 Aria/Accessiblity
 =================
-The editor is designed to be accessible including via 
+The editor is designed to be accessible including via
 * the keyboard
 * screenreaders
 * mobile devices
 
 Screen reader
 -------------
-So far we have not tested with a screen reader. We have used the existing accessiblity suport provided within the
+So far we have not tested with a screen reader. We have used the existing accessiblity support provided within the
 ATTO editor
 
 TinyMCE
@@ -160,12 +160,12 @@ same features.
 Error Handling
 ==============
 The editor only ensures only that:
-the allowed characters are entered 
-sup or sub are the only styles/tags used
+* the allowed characters are entered 
+* sup or sub are the only styles/tags used
 
 It does not check details of the text entered such as:
-minimum or maximum length of text
-whether certain characters are used
+* minimum or maximum length of text
+* whether certain characters are used
 
 Handling these situations and informing users are the responsibility of the feature using the editor and not the
 responsibility of the editor itself.
