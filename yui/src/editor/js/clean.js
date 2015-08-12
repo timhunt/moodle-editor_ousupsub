@@ -466,7 +466,9 @@ EditorClean.prototype = {
             range.selectNode(node._node.childNodes[0]);
             this.setSelection([range]);
             // Restore the selection (cursor position).
-            window.rangy.getSelection().collapseToEnd();
+            if (selection.rangeCount) {
+                selection.collapseToEnd();
+            }
         }
         this._normaliseTextarea();
 
