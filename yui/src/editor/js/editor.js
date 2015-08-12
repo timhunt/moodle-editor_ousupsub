@@ -363,7 +363,6 @@ Y.extend(Editor, Y.Base, {
      */
     setupAutomaticPolling: function() {
         this._registerEventHandle(this.editor.on(['keyup', 'cut'], this.updateOriginal, this));
-        this._registerEventHandle(this.editor.on(['keyup'], this.cleanEditorHTMLSimple, this));
         this._registerEventHandle(this.editor.on('paste', this.pasteCleanup, this));
 
         // Call this.updateOriginal after dropped content has been processed.
@@ -795,15 +794,7 @@ Y.extend(Editor, Y.Base, {
             newValue = this._getEmptyContent();
         }
 
-        // Remove specific unicode characters.
-        var values = [];
-        for ( var i = 0; i < newValue.length; i++ ) {
-            if (newValue.charCodeAt(i) == "65279") {
-                continue;
-            }
-            values.push(newValue.charAt(i));
-        }
-        newValue = values.join('');
+        newValue = this._removeUnicodeCharacters(newValue);
         newValue = newValue.trim();
 
         // Only call this when there has been an actual change to reduce processing.

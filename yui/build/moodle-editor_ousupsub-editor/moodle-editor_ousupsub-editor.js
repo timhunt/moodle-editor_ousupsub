@@ -363,7 +363,6 @@ Y.extend(Editor, Y.Base, {
      */
     setupAutomaticPolling: function() {
         this._registerEventHandle(this.editor.on(['keyup', 'cut'], this.updateOriginal, this));
-        this._registerEventHandle(this.editor.on(['keyup'], this.cleanEditorHTMLSimple, this));
         this._registerEventHandle(this.editor.on('paste', this.pasteCleanup, this));
 
         // Call this.updateOriginal after dropped content has been processed.
@@ -793,15 +792,7 @@ Y.extend(Editor, Y.Base, {
             newValue = this._getEmptyContent();
         }
 
-        // Remove specific unicode characters.
-        var values = [];
-        for ( var i = 0; i < newValue.length; i++ ) {
-            if (newValue.charCodeAt(i) == "65279") {
-                continue;
-            }
-            values.push(newValue.charAt(i));
-        }
-        newValue = values.join('');
+        newValue = this._removeUnicodeCharacters(newValue);
         newValue = newValue.trim();
 
         // Only call this when there has been an actual change to reduce processing.
@@ -1279,7 +1270,7 @@ EditorClean.prototype = {
 
         var rules = [
             //Remove empty spans, but not ones from Rangy.
-            {regex: /<span(?![^>]*?rangySelectionBoundary[^>]*?)[^>]*>(.+)<\/span>/gi, replace: "$1"}
+            {regex: /<span(?![^>]*?rangySelectionBoundary[^>]*?)[^>]*>(.+)<\/span>/gi, replace: "$1"},
         ];
 
         return this._filterContentWithRules(content, rules);
@@ -1372,6 +1363,57 @@ EditorClean.prototype = {
     },
 
     /**
+     * Clean the HTML content of the editor.
+     *
+     * @method cleanEditorHTML
+     * @chainable
+     */
+    cleanEditorHTML: function() {
+        this.editor.set('innerHTML', this._cleanHTML(this.editor.get('innerHTML')));
+        return this;
+    },
+
+    /**
+     * Clean the HTML content of the editor by removing empty sup and sub tags.
+     *
+     * @method cleanEditorHTMLEmptySupAndSubTags
+     * @chainable
+     */
+    cleanEditorHTMLEmptySupAndSubTags: function() {
+        // Using saveSelection as it produces a more consistent experience.
+        var selection = window.rangy.saveSelection();
+
+        var newValue = this.editor.get('innerHTML')
+        newValue = this._cleanEditorHTMLEmptySupAndSubTags(newValue)
+        newValue = this._removeUnicodeCharacters(newValue);
+        // Update the content.
+        this.editor.set('innerHTML', newValue);
+
+        // Restore the selection, and collapse to end.
+        window.rangy.restoreSelection(selection, true);
+        return this;
+    },
+
+    /**
+     * Clean the specified HTML content and remove any content which could cause issues.
+     *
+     * @method _cleanHTML
+     * @private
+     * @param {String} content The content to clean
+     * @return {String} The cleaned HTML
+     */
+    _cleanEditorHTMLEmptySupAndSubTags: function(content) {
+        // Removing limited things that can break the page or a disallowed, like unclosed comments, style blocks, etc.
+
+        var rules = [
+          //Remove empty sup tags.
+            {regex: /<su[bp][^>]*>(&#65279;|\s)*<\/su[bp]>/gi, replace: ""},
+        ];
+
+        return this._filterContentWithRules(content, rules);
+    },
+
+    /**
      * Take the supplied content and run on the supplied regex rules.
      *
      * @method _filterContentWithRules
@@ -1386,6 +1428,7 @@ EditorClean.prototype = {
             content = content.replace(rules[i].regex, rules[i].replace);
         }
 
+        console.log('content = ' + content);
         return content;
     },
 
@@ -1623,6 +1666,8 @@ EditorClean.prototype = {
         // If it's a collapsed selection the cursor is in the editor but no selection has been made.
         if (selection.isCollapsed) {
 
+            // Remove empty sup and sub tags.
+            this.cleanEditorHTMLEmptySupAndSubTags();
             // Insert tag at cursor focus point.
             tag = command === 'superscript' ? 'sup' : 'sub';
             // ﻿&#65279; is is the Unicode Character 'ZERO WIDTH NO-BREAK SPACE' (U+FEFF). Used
@@ -1639,6 +1684,7 @@ EditorClean.prototype = {
             }
         }
         this._normaliseTextarea();
+        this.cleanEditorHTMLSimple();
 
         // And mark the text area as updated.
         // Save selection after changes to the DOM. If you don't do this here,
@@ -1938,6 +1984,24 @@ EditorClean.prototype = {
     */
    _getEditorNode: function(host) {
        return this._getEditor(host).editor._node;
+   },
+
+   /**
+    * Remove specific unicode characters from the given string.
+    *
+    * @method _removeUnicodeCharacters
+    * @private
+    * @return string.
+    */
+   _removeUnicodeCharacters: function(text) {
+       var values = [];
+       for ( var i = 0; i < text.length; i++ ) {
+           if (text.charCodeAt(i) == "65279") {
+               continue;
+           }
+           values.push(text.charAt(i));
+       }
+       return values.join('');
    }
 };
 
@@ -2676,6 +2740,7 @@ Y.extend(EditorPlugin, Y.Base, {
             }
             this._buttonHandlers.push(
                 host.on(['ousupsub:selectionchanged', 'change'], function(e) {
+                    this.get('host').cleanEditorHTMLSimple();
                     if (typeof this._highlightQueue[config.buttonName] !== 'undefined') {
                         clearTimeout(this._highlightQueue[config.buttonName]);
                     }

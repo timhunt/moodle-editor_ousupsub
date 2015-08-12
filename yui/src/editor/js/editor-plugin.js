@@ -333,6 +333,7 @@ Y.extend(EditorPlugin, Y.Base, {
             }
             this._buttonHandlers.push(
                 host.on(['ousupsub:selectionchanged', 'change'], function(e) {
+                    this.get('host').cleanEditorHTMLSimple();
                     if (typeof this._highlightQueue[config.buttonName] !== 'undefined') {
                         clearTimeout(this._highlightQueue[config.buttonName]);
                     }
