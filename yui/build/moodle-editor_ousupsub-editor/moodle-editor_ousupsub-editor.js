@@ -441,7 +441,7 @@ Y.extend(Editor, Y.Base, {
         this._undoStack = [];
         this._redoStack = [];
 
-        // Add undo button
+        // Add undo plugin
         this.plugins.undo = new Y.M.editor_ousupsub.EditorPlugin({
             name: 'undo',
             group: group.group,
@@ -449,11 +449,10 @@ Y.extend(Editor, Y.Base, {
             toolbar: this.toolbar,
             host: this,
             keys: ['90'],
-            callback: this._undoHandler,
-            icon: 'e/undo'
+            callback: this._undoHandler
         });
 
-        // Add redo button
+        // Add redo plugin
         this.plugins.redo = new Y.M.editor_ousupsub.EditorPlugin({
             name: 'redo',
             group: group.group,
@@ -461,8 +460,7 @@ Y.extend(Editor, Y.Base, {
             toolbar: this.toolbar,
             host: this,
             keys: ['89'],
-            callback: this._redoHandler,
-            icon: 'e/redo'
+            callback: this._redoHandler
         });
 
         // Enable the undo once everything has loaded.
@@ -2619,10 +2617,13 @@ Y.extend(EditorPlugin, Y.Base, {
         var title = M.util.get_string(pluginname, 'editor_ousupsub');
 
         // Create the actual button.
+        var icon = '';
+        if (config.iconurl) {
+            icon = '<img class="icon" aria-hidden="true" role="presentation" width="16" height="16" src="' +
+            config.iconurl + '" />';
+        }
         button = Y.Node.create('<button type="button" class="' + buttonClass + '" tabindex="-1">' +
-                    '<img class="icon" aria-hidden="true" role="presentation" width="16" height="16" src="' +
-                            config.iconurl + '" />' +
-                '</button>');
+                    icon + '</button>');
         button.setAttribute('title', title);
 
         // Append it to the group.
@@ -2739,7 +2740,7 @@ Y.extend(EditorPlugin, Y.Base, {
      * @private
      */
     _normalizeIcon: function(config) {
-        if (!config.iconurl) {
+        if (config.icon && !config.iconurl) {
             // The default icon component.
             if (!config.iconComponent) {
                 config.iconComponent = 'core';
