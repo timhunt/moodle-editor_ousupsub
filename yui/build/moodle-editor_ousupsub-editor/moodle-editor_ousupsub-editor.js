@@ -823,15 +823,17 @@ Y.extend(Editor, Y.Base, {
      * @chainable
      */
     setupTextareaNavigation: function() {
-        // Listen for Arrow down, underscore, hat (^) and Up Arrow  keys.
+        // Listen for Up and down Arrow keys.
         this._registerEventHandle(this._wrapper.delegate('key',
                 this.textareaKeyboardNavigation,
-                'down:40,95',
+                'down:38,40',
                 '.' + CSS.CONTENT,
                 this));
+
+        // Listen for hat (^), underscore.
         this._registerEventHandle(this._wrapper.delegate('key',
                 this.textareaKeyboardNavigation,
-                'down:38,94',
+                'press:94, 95',
                 '.' + CSS.CONTENT,
                 this));
 
@@ -3086,7 +3088,8 @@ Y.extend(EditorPlugin, Y.Base, {
          var mode = 0;
 
          if(e && e.type === 'key') {
-             mode = 1;
+             // handled by this._getEditor().textareaKeyboardNavigation(e);
+             return;
          }
 
          this._getEditor()._applyTextCommand(this.exec, mode);

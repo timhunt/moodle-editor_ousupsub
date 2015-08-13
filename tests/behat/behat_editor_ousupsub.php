@@ -37,7 +37,7 @@ use Behat\Mink\Exception\ExpectationException as ExpectationException;
 class behat_editor_ousupsub extends behat_base {
 
     /**
-     * Opens the stand-alone test page.
+     * Opens an ousupsubtest page.
      *
      * @Given /^I am on the integrated "(sup|sub|both)" editor test page$/
      */
@@ -200,7 +200,7 @@ class behat_editor_ousupsub extends behat_base {
     }
 
     /**
-     * Press key(s) in a stand-alone ousupsub field.
+     * Press key(s) in an ousupsub field.
      *
      * @Given /^I press the key "([^"]*)" in the "([^"]*)" ousupsub editor$/
      * @throws ElementNotFoundException Thrown by behat_base::find
@@ -239,6 +239,11 @@ class behat_editor_ousupsub extends behat_base {
         // Handle modifiers like shift, ctrl and alt.
         var trimmedKeys = [];
         for(var i=0; i<keys.length;i++) {
+            // Look for key (press|down|up) event switch
+            if(keys[i].indexOf && keys[i].indexOf("key") > -1) {
+                keyEvent = keys[i];
+                continue;
+            }
             if(!keys[i].indexOf || !keys[i].indexOf("Key")) {
                 trimmedKeys.push(keys[i]);
                 continue;
@@ -390,25 +395,43 @@ function SelectAndClickFirstButtonBehat (id) {
     }
 
     /**
-     * Press the superscript key in a stand-alone ousupsub field.
+     * Press the superscript key in an ousupsub field.
      *
      * @Given /^I press the superscript key in the "([^"]*)" ousupsub editor$/
      */
     public function i_press_superscript_key_in_the_ousupsub_edito($fieldlocator) {
-        return array(new Given('I press the key "94" in the "Input" ousupsub editor'));
+        return array(new Given('I press the key "\'keypress\', 94" in the "Input" ousupsub editor'));
     }
 
     /**
-     * Press the subscript key in a stand-alone ousupsub field.
+     * Press the subscript key in an ousupsub field.
      *
      * @Given /^I press the subscript key in the "([^"]*)" ousupsub editor$/
      */
     public function i_press_subscript_key_in_the_ousupsub_edito($fieldlocator) {
-        return array(new Given('I press the key "95" in the "Input" ousupsub editor'));
+        return array(new Given('I press the key "\'keypress\', 95" in the "Input" ousupsub editor'));
     }
 
     /**
-     * Press the undo key in a stand-alone ousupsub field.
+     * Press the up arrow key in an ousupsub field.
+     *
+     * @Given /^I press the up arrow key in the "([^"]*)" ousupsub editor$/
+     */
+    public function i_press_up_arrow_key_in_the_ousupsub_edito($fieldlocator) {
+        return array(new Given('I press the key "38" in the "Input" ousupsub editor'));
+    }
+
+    /**
+     * Press the down arrow key in a stand-alone ousupsub field.
+     *
+     * @Given /^I press the down arrow key in the "([^"]*)" ousupsub editor$/
+     */
+    public function i_press_down_arrow_key_in_the_ousupsub_edito($fieldlocator) {
+        return array(new Given('I press the key "40" in the "Input" ousupsub editor'));
+    }
+
+    /**
+     * Press the undo key in an ousupsub field.
      *
      * @Given /^I press the undo key in the "([^"]*)" ousupsub editor$/
      */
@@ -420,7 +443,7 @@ function SelectAndClickFirstButtonBehat (id) {
     }
 
     /**
-     * Press the redo key in a stand-alone ousupsub field.
+     * Press the redo key in an ousupsub field.
      *
      * @Given /^I press the redo key in the "([^"]*)" ousupsub editor$/
      */

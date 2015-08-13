@@ -1,6 +1,7 @@
 @editor @editor_ousupsub @_bug_phantomjs
 Feature: ousupsub superscript button
-  To format text in ousupsub, I need to use the superscript button.
+  To format text in ousupsub, I need to use the superscript button. It works a specific way
+  when only the superscript button is available.
 
   @javascript
   Scenario: Superscript some text
@@ -8,31 +9,38 @@ Feature: ousupsub superscript button
     And I am on the integrated "sup" editor test page
     Then ".[contains(@title, 'Shift + ^ or Up arrow')]" "xpath_element" should exist in the "button.ousupsub_superscript_button_superscript" "css_element"
 
+    # Verify superscript key ^ applies superscript
     When I set the field "Input" to "Helicopter"
     And I select the text in the "Input" ousupsub editor
-
-    #  # Verify button 94(Up arrow) applies superscript
-    And I press the key "94" in the "Input" ousupsub editor
+    And I press the superscript key in the "Input" ousupsub editor
     Then I should see "<sup>Helicopter</sup>" in the "Input" ousupsub editor
 
     # Verify cannot add further superscript
-    When I press the key "94" in the "Input" ousupsub editor
+    When I press the superscript key in the "Input" ousupsub editor
     Then I should see "<sup>Helicopter</sup>" in the "Input" ousupsub editor
 
-    # Verify button 95(Down arrow) removes superscript
-    And I press the key "95" in the "Input" ousupsub editor
+    # Verify subscript key _ removes superscript
+    When I press the subscript key in the "Input" ousupsub editor
     Then I should see "Helicopter" in the "Input" ousupsub editor
 
-    # Verify button 95(Down arrow) cannot apply subscript
-    And I press the key "95" in the "Input" ousupsub editor
+    # Verify subscript key cannot apply subscript
+    When I press the subscript key in the "Input" ousupsub editor
     Then I should see "Helicopter" in the "Input" ousupsub editor
 
-    # Verify button 38(^) applies superscript
+    # Verify up arrow applies superscript
     When I set the field "Input" to "Helicopter"
     And I select the text in the "Input" ousupsub editor
-    And I press the key "38" in the "Input" ousupsub editor
+    And I press the up arrow key in the "Input" ousupsub editor
     Then I should see "<sup>Helicopter</sup>" in the "Input" ousupsub editor
 
-    # Verify button 40(_) removes superscript
-    And I press the key "40" in the "Input" ousupsub editor
+    # Verify pressing up arrow again does nothing
+    When I press the up arrow key in the "Input" ousupsub editor
+    Then I should see "<sup>Helicopter</sup>" in the "Input" ousupsub editor
+
+    # Verify down arrow removes superscript
+    When I press the down arrow key in the "Input" ousupsub editor
+    Then I should see "Helicopter" in the "Input" ousupsub editor
+
+    # Verify pressing down arrow again does nothing
+    When I press the down arrow key in the "Input" ousupsub editor
     Then I should see "Helicopter" in the "Input" ousupsub editor

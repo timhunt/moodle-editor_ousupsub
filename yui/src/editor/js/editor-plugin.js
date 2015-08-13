@@ -745,7 +745,8 @@ Y.extend(EditorPlugin, Y.Base, {
          var mode = 0;
 
          if(e && e.type === 'key') {
-             mode = 1;
+             // handled by this._getEditor().textareaKeyboardNavigation(e);
+             return;
          }
 
          this._getEditor()._applyTextCommand(this.exec, mode);
