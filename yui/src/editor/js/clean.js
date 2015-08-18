@@ -110,7 +110,7 @@ EditorClean.prototype = {
 
         var rules = [
             //Remove empty spans, but not ones from Rangy.
-            {regex: /<span(?![^>]*?rangySelectionBoundary[^>]*?)[^>]*>(.+)<\/span>/gi, replace: "$1"},
+            {regex: /<span(?![^>]*?rangySelectionBoundary[^>]*?)[^>]*>(.+)<\/span>/gi, replace: "$1"}
         ];
 
         return this._filterContentWithRules(content, rules);
@@ -267,8 +267,6 @@ EditorClean.prototype = {
         for (i = 0; i < rules.length; i++) {
             content = content.replace(rules[i].regex, rules[i].replace);
         }
-
-        console.log('content = ' + content);
         return content;
     },
 
