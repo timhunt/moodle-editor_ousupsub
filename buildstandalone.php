@@ -236,7 +236,11 @@ body {
                 'pluginhost-base', 'pluginhost-config',
                 'selector', 'selector-native');
         foreach ($names as $name) {
-            $yuijs .= file_get_contents($source . '/' . $name . '/' . $name . self::$yuisuffix . '.js');
+            $newjs = file_get_contents($source . '/' . $name . '/' . $name . self::$yuisuffix . '.js');
+            // We don't acutally load anything from this URL, but the presence of the
+            // non-https URL causes a suprious error in IE8, so we change it.
+            // Note, the https version of this URL does not actually work.
+            $yuijs .= str_replace('http://yui.yahooapis.com/', 'https://yui.yahooapis.com/', $newjs);
         }
 
         return $yuijs;
