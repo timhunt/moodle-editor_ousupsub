@@ -363,6 +363,7 @@ Y.extend(Editor, Y.Base, {
      */
     setupAutomaticPolling: function() {
         this._registerEventHandle(this.editor.on(['keyup', 'cut'], this.updateOriginal, this));
+        this._registerEventHandle(this.editor.on(['keypress', 'delete'], this.cleanEditorHTMLSimple, this));
         this._registerEventHandle(this.editor.on('paste', this.pasteCleanup, this));
 
         // Call this.updateOriginal after dropped content has been processed.
@@ -2714,7 +2715,6 @@ Y.extend(EditorPlugin, Y.Base, {
 
         // Handle button click via shortcut key.
         if (config.keys) {
-            
             if (typeof config.keyDescription !== 'undefined') {
                 // A keyboard shortcut description was specified - use it.
                 this._primaryKeyboardShortcut[buttonClass] = config.keyDescription;
@@ -2738,7 +2738,6 @@ Y.extend(EditorPlugin, Y.Base, {
             }
             this._buttonHandlers.push(
                 host.on(['ousupsub:selectionchanged', 'change'], function(e) {
-                    this.get('host').cleanEditorHTMLSimple();
                     if (typeof this._highlightQueue[config.buttonName] !== 'undefined') {
                         clearTimeout(this._highlightQueue[config.buttonName]);
                     }
