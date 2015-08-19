@@ -683,7 +683,7 @@ Y.extend(Editor, Y.Base, {
             if (this._tabFocus.hasAttribute('disabled') || this._tabFocus.hasAttribute('hidden')
                     || this._tabFocus.ancestor('.ousupsub_group').hasAttribute('hidden')) {
                 // Find first available button.
-                button = this._findFirstFocusable(this.toolbar.all('button'), this._tabFocus, -1);
+                var button = this._findFirstFocusable(this.toolbar.all('button'), this._tabFocus, -1);
                 if (button) {
                     if (this._tabFocus.compareTo(document.activeElement)) {
                         // We should also move the focus, because the inaccessible button also has the focus.
@@ -968,7 +968,7 @@ Y.extend(Editor, Y.Base, {
              return this._undoStack[0];
          }
 
-         last = this._undoStack.pop();
+         var last = this._undoStack.pop();
          if (last === current) {
              // Oops, the latest undo step is the current content, we should unstack once more.
              // There is no need to do that in a loop as the same stack should never contain duplicates.

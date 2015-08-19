@@ -681,7 +681,7 @@ Y.extend(Editor, Y.Base, {
             if (this._tabFocus.hasAttribute('disabled') || this._tabFocus.hasAttribute('hidden')
                     || this._tabFocus.ancestor('.ousupsub_group').hasAttribute('hidden')) {
                 // Find first available button.
-                button = this._findFirstFocusable(this.toolbar.all('button'), this._tabFocus, -1);
+                var button = this._findFirstFocusable(this.toolbar.all('button'), this._tabFocus, -1);
                 if (button) {
                     if (this._tabFocus.compareTo(document.activeElement)) {
                         // We should also move the focus, because the inaccessible button also has the focus.
@@ -966,7 +966,7 @@ Y.extend(Editor, Y.Base, {
              return this._undoStack[0];
          }
 
-         last = this._undoStack.pop();
+         var last = this._undoStack.pop();
          if (last === current) {
              // Oops, the latest undo step is the current content, we should unstack once more.
              // There is no need to do that in a loop as the same stack should never contain duplicates.
@@ -1364,17 +1364,6 @@ EditorClean.prototype = {
     },
 
     /**
-     * Clean the HTML content of the editor.
-     *
-     * @method cleanEditorHTML
-     * @chainable
-     */
-    cleanEditorHTML: function() {
-        this.editor.set('innerHTML', this._cleanHTML(this.editor.get('innerHTML')));
-        return this;
-    },
-
-    /**
      * Clean the HTML content of the editor by removing empty sup and sub tags.
      *
      * @method cleanEditorHTMLEmptySupAndSubTags
@@ -1384,8 +1373,8 @@ EditorClean.prototype = {
         // Using saveSelection as it produces a more consistent experience.
         var selection = window.rangy.saveSelection();
 
-        var newValue = this.editor.get('innerHTML')
-        newValue = this._cleanEditorHTMLEmptySupAndSubTags(newValue)
+        var newValue = this.editor.get('innerHTML');
+        newValue = this._cleanEditorHTMLEmptySupAndSubTags(newValue);
         newValue = this._removeUnicodeCharacters(newValue);
         // Update the content.
         this.editor.set('innerHTML', newValue);
@@ -1408,7 +1397,7 @@ EditorClean.prototype = {
 
         var rules = [
           //Remove empty sup tags.
-            {regex: /<su[bp][^>]*>(&#65279;|\s)*<\/su[bp]>/gi, replace: ""},
+            {regex: /<su[bp][^>]*>(&#65279;|\s)*<\/su[bp]>/gi, replace: ""}
         ];
 
         return this._filterContentWithRules(content, rules);
@@ -1661,7 +1650,7 @@ EditorClean.prototype = {
         document.execCommand(command, false, null);
 
         // If nothing is selected add a relevant tag.
-        selection = rangy.getSelection();
+        selection = window.rangy.getSelection();
         // If it's a collapsed selection the cursor is in the editor but no selection has been made.
         if (selection.isCollapsed) {
 
@@ -1674,7 +1663,7 @@ EditorClean.prototype = {
             // errors but I couldn't find a better solution.
             // http://stackoverflow.com/questions/9691771/why-is-65279-appearing-in-my-html.
             var node = this.insertContentAtFocusPoint('<' + tag + '>﻿&#65279;</' + tag + '>');
-            var range = rangy.createRange();
+            var range = window.rangy.createRange();
             range.selectNode(node._node.childNodes[0]);
             this.setSelection([range]);
             // Restore the selection (cursor position).
@@ -1702,7 +1691,7 @@ EditorClean.prototype = {
      */
     getCursorTag: function() {
         var tag = 'text';
-        var selection = rangy.getSelection();
+        var selection = window.rangy.getSelection();
         var nodeName = selection.focusNode.nodeName.toLowerCase();
         var parentNodeName = selection.focusNode.parentNode.nodeName.toLowerCase();
 
@@ -1762,7 +1751,7 @@ EditorClean.prototype = {
      * @return string.
      */
     _normaliseTagInTextarea: function(name) {
-        var nodes = [], container = this._getEditorNode(), parentNode, removeParent = false;
+        var nodes = [], container = this._getEditorNode(), parentNode, removeParent = false, node;
 
         // Remove nested nodes.
         /*
@@ -1828,8 +1817,7 @@ EditorClean.prototype = {
         }
 
         for (i = 0; i < nodes.length; i++) {
-            node = nodes[i];
-            to.appendChild(node);
+            to.appendChild(nodes[i]);
         }
         this._removeNode(from);
     },
@@ -1846,7 +1834,7 @@ EditorClean.prototype = {
         var nodes = [], node, nodesToAppend = [];
         nodes = this._copyArray(container_node.childNodes, nodes);
 
-        var j;
+        var i,j;
         for (i = 0; i < nodes.length; i++) {
             node = nodes[i];
             nodesToAppend = [];
@@ -2119,8 +2107,8 @@ EditorSelection.prototype = {
      * @return {boolean}
      */
     isActive: function() {
-        var range = rangy.createRange(),
-            selection = rangy.getSelection();
+        var range = window.rangy.createRange(),
+            selection = window.rangy.getSelection();
 
         if (!selection.rangeCount) {
             // If there was no range count, then there is no selection.
@@ -2146,7 +2134,7 @@ EditorSelection.prototype = {
      * @return {[rangy.Range]}
      */
     getSelectionFromNode: function(node) {
-        var range = rangy.createRange();
+        var range = window.rangy.createRange();
         range.selectNode(node.getDOMNode());
         return [range];
     },
@@ -2189,7 +2177,7 @@ EditorSelection.prototype = {
      * @return {array} An array of rangy ranges.
      */
     getSelection: function() {
-        return rangy.getSelection().getAllRanges();
+        return window.rangy.getSelection().getAllRanges();
     },
 
     /**
@@ -2200,7 +2188,7 @@ EditorSelection.prototype = {
      * @return {boolean}
      */
     selectionContainsNode: function(node) {
-        return rangy.getSelection().containsNode(node.getDOMNode(), true);
+        return window.rangy.getSelection().containsNode(node.getDOMNode(), true);
     },
 
     /**
@@ -2273,13 +2261,13 @@ EditorSelection.prototype = {
             node,
             i;
 
-        selection = rangy.getSelection();
+        selection = window.rangy.getSelection();
 
         if (selection.rangeCount) {
             range = selection.getRangeAt(0);
         } else {
             // Empty range.
-            range = rangy.createRange();
+            range = window.rangy.createRange();
         }
 
         if (range.collapsed) {
@@ -2316,7 +2304,7 @@ EditorSelection.prototype = {
      * @return {Boolean}
      */
     _hasSelectionChanged: function(e) {
-        var selection = rangy.getSelection(),
+        var selection = window.rangy.getSelection(),
             range,
             changed = false;
 
@@ -2324,7 +2312,7 @@ EditorSelection.prototype = {
             range = selection.getRangeAt(0);
         } else {
             // Empty range.
-            range = rangy.createRange();
+            range = window.rangy.createRange();
         }
 
         if (this._lastSelection) {
@@ -2362,7 +2350,7 @@ EditorSelection.prototype = {
      * @return {Element|boolean} The DOM Node for this parent, or false if no seletion was made.
      */
     getSelectionParentNode: function() {
-        var selection = rangy.getSelection();
+        var selection = window.rangy.getSelection();
         if (selection.rangeCount) {
             return selection.getRangeAt(0).commonAncestorContainer;
         }
@@ -2376,7 +2364,7 @@ EditorSelection.prototype = {
      * @param {array} ranges A list of rangy.range objects in the selection.
      */
     setSelection: function(ranges) {
-        var selection = rangy.getSelection();
+        var selection = window.rangy.getSelection();
         selection.setRanges(ranges);
     },
 
@@ -2388,7 +2376,7 @@ EditorSelection.prototype = {
      * @return {Node} The YUI Node object added to the DOM.
      */
     insertContentAtFocusPoint: function(html) {
-        var selection = rangy.getSelection(),
+        var selection = window.rangy.getSelection(),
             range,
             node = Y.Node.create(html);
         if (selection.rangeCount) {
@@ -2606,7 +2594,8 @@ Y.extend(EditorPlugin, Y.Base, {
     /**
      * Mark the content ediable content as having been changed.
      *
-     * This is a convenience function and passes through to {{#crossLink "M.editor_ousupsub.EditorTextArea/updateOriginal"}}updateOriginal{{/crossLink}}.
+     * This is a convenience function and passes through to
+     * {{#crossLink "M.editor_ousupsub.EditorTextArea/updateOriginal"}}updateOriginal{{/crossLink}}.
      *
      * @method markUpdated
      */

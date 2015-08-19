@@ -112,8 +112,8 @@ EditorSelection.prototype = {
      * @return {boolean}
      */
     isActive: function() {
-        var range = rangy.createRange(),
-            selection = rangy.getSelection();
+        var range = window.rangy.createRange(),
+            selection = window.rangy.getSelection();
 
         if (!selection.rangeCount) {
             // If there was no range count, then there is no selection.
@@ -139,7 +139,7 @@ EditorSelection.prototype = {
      * @return {[rangy.Range]}
      */
     getSelectionFromNode: function(node) {
-        var range = rangy.createRange();
+        var range = window.rangy.createRange();
         range.selectNode(node.getDOMNode());
         return [range];
     },
@@ -182,7 +182,7 @@ EditorSelection.prototype = {
      * @return {array} An array of rangy ranges.
      */
     getSelection: function() {
-        return rangy.getSelection().getAllRanges();
+        return window.rangy.getSelection().getAllRanges();
     },
 
     /**
@@ -193,7 +193,7 @@ EditorSelection.prototype = {
      * @return {boolean}
      */
     selectionContainsNode: function(node) {
-        return rangy.getSelection().containsNode(node.getDOMNode(), true);
+        return window.rangy.getSelection().containsNode(node.getDOMNode(), true);
     },
 
     /**
@@ -266,13 +266,13 @@ EditorSelection.prototype = {
             node,
             i;
 
-        selection = rangy.getSelection();
+        selection = window.rangy.getSelection();
 
         if (selection.rangeCount) {
             range = selection.getRangeAt(0);
         } else {
             // Empty range.
-            range = rangy.createRange();
+            range = window.rangy.createRange();
         }
 
         if (range.collapsed) {
@@ -309,7 +309,7 @@ EditorSelection.prototype = {
      * @return {Boolean}
      */
     _hasSelectionChanged: function(e) {
-        var selection = rangy.getSelection(),
+        var selection = window.rangy.getSelection(),
             range,
             changed = false;
 
@@ -317,7 +317,7 @@ EditorSelection.prototype = {
             range = selection.getRangeAt(0);
         } else {
             // Empty range.
-            range = rangy.createRange();
+            range = window.rangy.createRange();
         }
 
         if (this._lastSelection) {
@@ -355,7 +355,7 @@ EditorSelection.prototype = {
      * @return {Element|boolean} The DOM Node for this parent, or false if no seletion was made.
      */
     getSelectionParentNode: function() {
-        var selection = rangy.getSelection();
+        var selection = window.rangy.getSelection();
         if (selection.rangeCount) {
             return selection.getRangeAt(0).commonAncestorContainer;
         }
@@ -369,7 +369,7 @@ EditorSelection.prototype = {
      * @param {array} ranges A list of rangy.range objects in the selection.
      */
     setSelection: function(ranges) {
-        var selection = rangy.getSelection();
+        var selection = window.rangy.getSelection();
         selection.setRanges(ranges);
     },
 
@@ -381,7 +381,7 @@ EditorSelection.prototype = {
      * @return {Node} The YUI Node object added to the DOM.
      */
     insertContentAtFocusPoint: function(html) {
-        var selection = rangy.getSelection(),
+        var selection = window.rangy.getSelection(),
             range,
             node = Y.Node.create(html);
         if (selection.rangeCount) {

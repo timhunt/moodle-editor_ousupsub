@@ -203,17 +203,6 @@ EditorClean.prototype = {
     },
 
     /**
-     * Clean the HTML content of the editor.
-     *
-     * @method cleanEditorHTML
-     * @chainable
-     */
-    cleanEditorHTML: function() {
-        this.editor.set('innerHTML', this._cleanHTML(this.editor.get('innerHTML')));
-        return this;
-    },
-
-    /**
      * Clean the HTML content of the editor by removing empty sup and sub tags.
      *
      * @method cleanEditorHTMLEmptySupAndSubTags
@@ -223,8 +212,8 @@ EditorClean.prototype = {
         // Using saveSelection as it produces a more consistent experience.
         var selection = window.rangy.saveSelection();
 
-        var newValue = this.editor.get('innerHTML')
-        newValue = this._cleanEditorHTMLEmptySupAndSubTags(newValue)
+        var newValue = this.editor.get('innerHTML');
+        newValue = this._cleanEditorHTMLEmptySupAndSubTags(newValue);
         newValue = this._removeUnicodeCharacters(newValue);
         // Update the content.
         this.editor.set('innerHTML', newValue);
@@ -247,7 +236,7 @@ EditorClean.prototype = {
 
         var rules = [
           //Remove empty sup tags.
-            {regex: /<su[bp][^>]*>(&#65279;|\s)*<\/su[bp]>/gi, replace: ""},
+            {regex: /<su[bp][^>]*>(&#65279;|\s)*<\/su[bp]>/gi, replace: ""}
         ];
 
         return this._filterContentWithRules(content, rules);
@@ -501,7 +490,7 @@ EditorClean.prototype = {
         document.execCommand(command, false, null);
 
         // If nothing is selected add a relevant tag.
-        selection = rangy.getSelection();
+        selection = window.rangy.getSelection();
         // If it's a collapsed selection the cursor is in the editor but no selection has been made.
         if (selection.isCollapsed) {
 
@@ -514,7 +503,7 @@ EditorClean.prototype = {
             // errors but I couldn't find a better solution.
             // http://stackoverflow.com/questions/9691771/why-is-65279-appearing-in-my-html.
             var node = this.insertContentAtFocusPoint('<' + tag + '>﻿&#65279;</' + tag + '>');
-            var range = rangy.createRange();
+            var range = window.rangy.createRange();
             range.selectNode(node._node.childNodes[0]);
             this.setSelection([range]);
             // Restore the selection (cursor position).
@@ -542,7 +531,7 @@ EditorClean.prototype = {
      */
     getCursorTag: function() {
         var tag = 'text';
-        var selection = rangy.getSelection();
+        var selection = window.rangy.getSelection();
         var nodeName = selection.focusNode.nodeName.toLowerCase();
         var parentNodeName = selection.focusNode.parentNode.nodeName.toLowerCase();
 
@@ -602,7 +591,7 @@ EditorClean.prototype = {
      * @return string.
      */
     _normaliseTagInTextarea: function(name) {
-        var nodes = [], container = this._getEditorNode(), parentNode, removeParent = false;
+        var nodes = [], container = this._getEditorNode(), parentNode, removeParent = false, node;
 
         // Remove nested nodes.
         /*
@@ -668,8 +657,7 @@ EditorClean.prototype = {
         }
 
         for (i = 0; i < nodes.length; i++) {
-            node = nodes[i];
-            to.appendChild(node);
+            to.appendChild(nodes[i]);
         }
         this._removeNode(from);
     },
@@ -686,7 +674,7 @@ EditorClean.prototype = {
         var nodes = [], node, nodesToAppend = [];
         nodes = this._copyArray(container_node.childNodes, nodes);
 
-        var j;
+        var i,j;
         for (i = 0; i < nodes.length; i++) {
             node = nodes[i];
             nodesToAppend = [];
