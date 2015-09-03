@@ -132,11 +132,12 @@ class behat_editor_ousupsub extends behat_base {
         $js .= $this->get_js_get_raw_editor_html();
         $js .= '
     return GetRawEditorHTML("'.$editorid.'");';
-        $returnedText = $this->getSession()->evaluateScript($js);
+        $response = $this->getSession()->evaluateScript($js);
 
-        if ($returnedText !== $text) {
+        if ($response !== $text) {
             throw new ExpectationException("The field '" . $fieldlocator .
-                    "' does not contain the text '" . $text . "' in its raw html. It contains '" . $returnedText . "'.", $this->getSession());
+                    "' does not contain the text '" . $text . "' in its raw html. It contains '" . $response . "'.",
+                    $this->getSession());
         }
     }
 
@@ -150,9 +151,9 @@ class behat_editor_ousupsub extends behat_base {
      * @return void
      */
     public function should_see_character_in_the_raw_html_ousupsub_editor($character, $fieldlocator) {
-        $returnedText = $this->_is_character_in_the_raw_html_ousupsub_editor($character, $fieldlocator);
+        $response = $this->_is_character_in_the_raw_html_ousupsub_editor($character, $fieldlocator);
 
-        if ($returnedText !== true) {
+        if ($response !== true) {
             throw new ExpectationException("The field '" . $fieldlocator .
                     "' does not contain the character '" . $character . "' in its raw html.", $this->getSession());
         }
@@ -168,9 +169,9 @@ class behat_editor_ousupsub extends behat_base {
      * @return void
      */
     public function should_not_see_character_in_the_raw_html_ousupsub_editor($character, $fieldlocator) {
-        $returnedText = $this->_is_character_in_the_raw_html_ousupsub_editor($character, $fieldlocator);
+        $response = $this->_is_character_in_the_raw_html_ousupsub_editor($character, $fieldlocator);
 
-        if ($returnedText == true) {
+        if ($response == true) {
             throw new ExpectationException("The field '" . $fieldlocator .
                     "' contains the character '" . $character . "' in its raw html.", $this->getSession());
         }
@@ -659,7 +660,7 @@ function SelectAndClickFirstButtonBehat (id) {
                 break;
             case 'right arrow': $keycode = 39;
                 break;
-            default: // Down
+            default: // Down.
                 $keycode = 40;
                 break;
         }
