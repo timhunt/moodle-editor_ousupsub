@@ -105,113 +105,6 @@ class behat_editor_ousupsub extends behat_base {
     }
 
     /**
-     * Check the raw html in an ousupsub field matches the given text.
-     *
-     * @Given /^I should see "([^"]*)" in the raw html of the "([^"]*)" ousupsub editor$/
-     * @throws ElementNotFoundException Thrown by behat_base::find
-     * @param string $text
-     * @param string $field
-     * @return void
-     */
-    public function should_see_in_the_raw_html_ousupsub_editor($text, $fieldlocator) {
-        if (!$this->running_javascript()) {
-            throw new coding_exception('Selecting text requires javascript.');
-        }
-        // We delegate to behat_form_field class, it will
-        // guess the type properly.
-        $field = behat_field_manager::get_form_field_from_label($fieldlocator, $this);
-
-        if (!method_exists($field, 'get_value')) {
-            throw new coding_exception('Field does not support the get_value function.');
-        }
-
-        $editorid = $this->find_field($fieldlocator)->getAttribute('id');
-
-        // Get the value through javascript.
-        $js = $this->get_js_update_textarea();
-        $js .= $this->get_js_get_raw_editor_html();
-        $js .= '
-    return GetRawEditorHTML("'.$editorid.'");';
-        $response = $this->getSession()->evaluateScript($js);
-
-        if ($response !== $text) {
-            throw new ExpectationException("The field '" . $fieldlocator .
-                    "' does not contain the text '" . $text . "' in its raw html. It contains '" . $response . "'.",
-                    $this->getSession());
-        }
-    }
-
-    /**
-     * Verify the given character occurs in the raw html in the given ousupsub field.
-     *
-     * @Given /^I should see character "([^"]*)" in the raw html of the "([^"]*)" ousupsub editor$/
-     * @throws ElementNotFoundException Thrown by behat_base::find
-     * @param string $text
-     * @param string $field
-     * @return void
-     */
-    public function should_see_character_in_the_raw_html_ousupsub_editor($character, $fieldlocator) {
-        $response = $this->_is_character_in_the_raw_html_ousupsub_editor($character, $fieldlocator);
-
-        if ($response !== true) {
-            throw new ExpectationException("The field '" . $fieldlocator .
-                    "' does not contain the character '" . $character . "' in its raw html.", $this->getSession());
-        }
-    }
-
-    /**
-     * Verify the given character does not occur in the raw html in the given ousupsub field.
-     *
-     * @Given /^I should not see character "([^"]*)" in the raw html of the "([^"]*)" ousupsub editor$/
-     * @throws ElementNotFoundException Thrown by behat_base::find
-     * @param string $text
-     * @param string $field
-     * @return void
-     */
-    public function should_not_see_character_in_the_raw_html_ousupsub_editor($character, $fieldlocator) {
-        $response = $this->_is_character_in_the_raw_html_ousupsub_editor($character, $fieldlocator);
-
-        if ($response == true) {
-            throw new ExpectationException("The field '" . $fieldlocator .
-                    "' contains the character '" . $character . "' in its raw html.", $this->getSession());
-        }
-    }
-
-    /**
-     * Is the given character in the the raw html in an ousupsub field.
-     *
-     * @Given /^I should see character "([^"]*)" in the raw html of the "([^"]*)" ousupsub editor$/
-     * @throws ElementNotFoundException Thrown by behat_base::find
-     * @param string $text
-     * @param string $field
-     * @return void
-     */
-    protected function _is_character_in_the_raw_html_ousupsub_editor($character, $fieldlocator) {
-        if (!$this->running_javascript()) {
-            throw new coding_exception('Selecting text requires javascript.');
-        }
-        // We delegate to behat_form_field class, it will
-        // guess the type properly.
-        $field = behat_field_manager::get_form_field_from_label($fieldlocator, $this);
-
-        if (!method_exists($field, 'get_value')) {
-            throw new coding_exception('Field does not support the get_value function.');
-        }
-
-        $editorid = $this->find_field($fieldlocator)->getAttribute('id');
-
-        // Trigger the key press through javascript.
-        // The clibpoardData object is not created correctly in chrome. Pass our own.
-        $js = $this->get_js_update_textarea();
-        $js .= $this->get_js_get_raw_editor_html();
-        $js .= $this->get_js_character_codes_by_index();
-        $js .= $this->get_js_has_character();
-        $js .= '
-    return HasCharacter("'.$editorid.'", "'.$character.'");';
-        return $this->getSession()->evaluateScript($js);
-    }
-
-    /**
      * Set the contents of a stand-alone supsub field.
      *
      * @Given /^I set the "([^"]*)" stand-alone ousupsub editor to "([^"]*)"$/
@@ -239,7 +132,7 @@ class behat_editor_ousupsub extends behat_base {
      *
      * @Given /^I select the range "([^"]*)" in the "([^"]*)" ousupsub editor$/
      * @throws ElementNotFoundException Thrown by behat_base::find
-     * @param string $range
+     * @param string $text
      * @param string $field
      */
     public function select_range_in_the_ousupsub_editor($range, $fieldlocator) {
@@ -307,70 +200,6 @@ class behat_editor_ousupsub extends behat_base {
     }
 
     /**
-     * Set the cursor caret position in an ousupsub field.
-     *
-     * @Given /^I set the caret position to "([^"]*)" in the "([^"]*)" ousupsub editor$/
-     * @throws ElementNotFoundException Thrown by behat_base::find
-     * @param string $range
-     * @param string $field
-     */
-    public function set_caret_position_in_the_ousupsub_editor($range, $fieldlocator) {
-        // NodeElement.keyPress simply doesn't work.
-        if (!$this->running_javascript()) {
-            throw new coding_exception('Selecting text requires javascript.');
-        }
-        // We delegate to behat_form_field class, it will
-        // guess the type properly.
-        $field = behat_field_manager::get_form_field_from_label($fieldlocator, $this);
-
-        if (!method_exists($field, 'get_value')) {
-            throw new coding_exception('Field does not support the get_value function.');
-        }
-
-        $editorid = $this->find_field($fieldlocator)->getAttribute('id');
-
-        // Get query values for the range.
-        list($startquery, $startoffset) = explode(",", $range);
-        $js = '
-    function getNode(editor, query, node) {
-        if (query !== "" && !isNaN(query)) {
-            node = editor.childNodes[query];
-        } else {
-            node = query ? editor.querySelector(query) : editor;
-            node = node.firstChild;
-        }
-        return node;
-    }
-    function SetCaretPositionBehat () {
-        var id = "'.$editorid.'", startquery = '.$startquery.', startoffset = '.$startoffset.';
-        var e = document.getElementById(id + "editable"),
-            r = rangy.createRange();
-
-        e.focus();
-        if (startquery || startoffset) {
-            // Set defaults for testing.
-            startoffset = startoffset?startoffset:0;
-
-            // Find the text nodes from the Start/end queries or default to the editor node.
-            var startnode = getNode(e, startquery, startoffset);
-            r.setStart(startnode, startoffset);
-            r.setEnd(startnode, startoffset);
-        }
-        else {
-            r.selectNodeContents(e.firstChild);
-        }
-        if (!startoffset) {
-            r.collapse(true);
-        }
-        var s = rangy.getSelection().setSingleRange(r);
-        GetEditor(id)._selections = [r];
-}
-    SetCaretPositionBehat();';
-        $js = $this->get_js_get_editor() . $js;
-        $this->getSession()->executeScript($js);
-    }
-
-    /**
      * Press key(s) in an ousupsub field.
      *
      * @Given /^I press the key "([^"]*)" in the "([^"]*)" ousupsub editor$/
@@ -431,41 +260,6 @@ class behat_editor_ousupsub extends behat_base {
     UpdateTextArea(id);
 }
     TriggerKeyPressBehat("'.$editorid.'", ['.$keys.']);';
-        $js = $this->get_js_update_textarea() . $js;
-        $this->getSession()->executeScript($js);
-    }
-
-    /**
-     * Trigger document.execCommand on an ousupsub field.
-     *
-     * @Given /^I trigger the execcommand "([^"]*)" in the "([^"]*)" ousupsub editor$/
-     * @throws ElementNotFoundException Thrown by behat_base::find
-     * @param string $keys
-     * @param string $field
-     */
-    public function trigger_execcommand_in_the_ousupsub_editor($command, $fieldlocator) {
-        // NodeElement.keyPress simply doesn't work.
-        if (!$this->running_javascript()) {
-            throw new coding_exception('Editing contents requires javascript.');
-        }
-        // We delegate to behat_form_field class, it will
-        // guess the type properly.
-        $field = behat_field_manager::get_form_field_from_label($fieldlocator, $this);
-
-        if (!method_exists($field, 'get_value')) {
-            throw new coding_exception('Field does not support the get_value function.');
-        }
-
-        $editorid = $this->find_field($fieldlocator)->getAttribute('id');
-
-        // Trigger the key press through javascript.
-        $js = '
-    function TriggerCommandBehat(id, command) {
-    document.execCommand(command, false, null);
-    // Update the textarea text from the contenteditable div we just changed.
-    UpdateTextArea(id);
-}
-    TriggerCommandBehat("'.$editorid.'", "'.$command.'");';
         $js = $this->get_js_update_textarea() . $js;
         $this->getSession()->executeScript($js);
     }
@@ -637,38 +431,6 @@ function SelectAndClickFirstButtonBehat (id) {
     }
 
     /**
-     * Press the named key in an ousupsub field.
-     *
-     * @Given /^I press the "([^"]*)" key in the "([^"]*)" ousupsub editor$/
-     */
-    public function i_press_key_in_the_ousupsub_edito($key, $fieldlocator) {
-        $keycode = 0;
-        $steps = array();
-        switch ($key) {
-            case 'backspace':
-                $steps[] = new Given('I trigger the execcommand "delete" in the "Input" ousupsub editor');
-                $keycode = "'keypress', 8";
-                break;
-            case 'delete':
-                return array(new Given('I trigger the execcommand "forwardDelete" in the "Input" ousupsub editor'));
-                break;
-            case 'up arrow': $keycode = 38;
-                break;
-            case 'down arrow': $keycode = 40;
-                break;
-            case 'left arrow': $keycode = 37;
-                break;
-            case 'right arrow': $keycode = 39;
-                break;
-            default: // Down.
-                $keycode = 40;
-                break;
-        }
-        $steps[] = new Given('I press the key "' . $keycode . '" in the "Input" ousupsub editor');
-        return $steps;
-    }
-
-    /**
      * Press the undo key in an ousupsub field.
      *
      * @Given /^I press the undo key in the "([^"]*)" ousupsub editor$/
@@ -739,69 +501,6 @@ function GetEditor (id) {
         });
     }
     return editor;
-}';
-        return $js;
-    }
-
-    /**
-     *
-     * Returns a javascript helper method to return the text in the editor as an array of
-     * unicode characters and their index locations.
-     *
-     * @method GetRawEditorHTML
-     * @param {String} id
-     */
-    protected function get_js_get_raw_editor_html() {
-        $js = '
-function GetRawEditorHTML(id) {
-    UpdateTextArea(id);
-    var editorClone = GetEditor(id).editor.cloneNode(true)
-    // Remove all YUI IDs.
-    Y.each(editorClone.all(\'[id^="yui"]\'), function(node) {
-        node.removeAttribute("id");
-    });
-    return editorClone.get("innerHTML");
-}';
-        return $js;
-    }
-
-    /**
-     *
-     * Returns a javascript helper method to Return an array of unicode characters and
-     * their index locations in the given string.
-     *
-     * @method GetCharacterCodesByIndex
-     * @param {String} text
-     */
-    protected function get_js_character_codes_by_index() {
-        $js = '
-function GetCharacterCodesByIndex(text) {
-    var characters = [];
-    for ( var i = 0; i < text.length; i++ ) {
-        var code = text.charCodeAt(i);
-        if (!characters[code]) {
-            characters[code] = [];
-        }
-        characters[text.charCodeAt(i)].push(i);
-    }
-    return characters;
-}';
-        return $js;
-    }
-
-    /**
-     *
-     * Returns a javascript helper method to determine whether the given character occurs
-     * in the html of the given editor?.
-     *
-     * @method HasCharacter
-     * @param {String} id
-     */
-    protected function get_js_has_character() {
-        $js = '
-function HasCharacter(id, character) {
-    var characters = GetCharacterCodesByIndex(GetRawEditorHTML(id));
-    return characters[character] ? true : false;
 }';
         return $js;
     }

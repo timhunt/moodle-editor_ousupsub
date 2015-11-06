@@ -28,3 +28,5 @@ $plugin->version   = 2015071000;
 $plugin->requires  = 2014050800;
 $plugin->cron      = 0;
 $plugin->component = 'editor_ousupsub';
+
+$plugin->outestssufficient = true;

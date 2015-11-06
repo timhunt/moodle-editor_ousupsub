@@ -817,7 +817,7 @@ Y.extend(Editor, Y.Base, {
      * @chainable
      */
     setupTextareaNavigation: function() {
-        // Listen for up and down arrow keys.
+        // Listen for Up and down Arrow keys.
         this._registerEventHandle(this._wrapper.delegate('key',
                 this.textareaKeyboardNavigation,
                 'down:38,40',
@@ -828,13 +828,6 @@ Y.extend(Editor, Y.Base, {
         this._registerEventHandle(this._wrapper.delegate('key',
                 this.textareaKeyboardNavigation,
                 'press:94, 95',
-                '.' + CSS.CONTENT,
-                this));
-
-        // Listen for left and right arrow keys.
-        this._registerEventHandle(this._wrapper.delegate('key',
-                this.cleanEditorHTMLEmptySupAndSubTags,
-                'down:37,39',
                 '.' + CSS.CONTENT,
                 this));
 

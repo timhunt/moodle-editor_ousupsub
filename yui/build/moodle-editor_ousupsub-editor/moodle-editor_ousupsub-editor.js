@@ -815,7 +815,7 @@ Y.extend(Editor, Y.Base, {
      * @chainable
      */
     setupTextareaNavigation: function() {
-        // Listen for up and down arrow keys.
+        // Listen for Up and down Arrow keys.
         this._registerEventHandle(this._wrapper.delegate('key',
                 this.textareaKeyboardNavigation,
                 'down:38,40',
@@ -826,13 +826,6 @@ Y.extend(Editor, Y.Base, {
         this._registerEventHandle(this._wrapper.delegate('key',
                 this.textareaKeyboardNavigation,
                 'press:94, 95',
-                '.' + CSS.CONTENT,
-                this));
-
-        // Listen for left and right arrow keys.
-        this._registerEventHandle(this._wrapper.delegate('key',
-                this.cleanEditorHTMLEmptySupAndSubTags,
-                'down:37,39',
                 '.' + CSS.CONTENT,
                 this));
 
@@ -1361,7 +1354,7 @@ EditorClean.prototype = {
             // Remove empty spans, but not ones from Rangy.
             {regex: /<span(?![^>]*?rangySelectionBoundary[^>]*?)[^>]*>(&nbsp;|\s)*<\/span>/gi, replace: ""},
             {regex: /<span(?![^>]*?rangySelectionBoundary[^>]*?)[^>]*>[\s\S]*?([\s\S]*?)<\/span>/gi, replace: "$1"},
-
+            
             // Remove empty sup and sub tags that appear after pasting text.
             {regex: /<sup[^>]*>(&nbsp;|\s)*<\/sup>/gi, replace: ""},
             {regex: /<sub[^>]*>(&nbsp;|\s)*<\/sub>/gi, replace: ""}
@@ -1703,8 +1696,8 @@ EditorClean.prototype = {
         var parentNodeName = selection.focusNode.parentNode.nodeName.toLowerCase();
 
         var childNodeName = '';
-        if (selection.focusNode.childNodes && selection.focusNode.childNodes[selection.focusOffset - 1]) {
-            childNodeName = selection.focusNode.childNodes[selection.focusOffset - 1].nodeName.toLowerCase();
+        if (selection.focusNode.childNodes && selection.focusNode.childNodes[selection.focusOffset-1]) {
+            childNodeName = selection.focusNode.childNodes[selection.focusOffset-1].nodeName.toLowerCase();
         }
         if (nodeName === 'sup' || parentNodeName === 'sup' || childNodeName === 'sup') {
             tag = 'superscript';
@@ -1989,7 +1982,7 @@ EditorClean.prototype = {
     */
    _removeUnicodeCharacters: function(text) {
        var values = [];
-       for (var i = 0; i < text.length; i++) {
+       for ( var i = 0; i < text.length; i++ ) {
            if (text.charCodeAt(i) == "65279") {
                continue;
            }
