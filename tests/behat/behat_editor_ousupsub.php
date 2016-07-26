@@ -24,8 +24,6 @@
  */
 
 // NOTE: no MOODLE_INTERNAL test here, this file may be required by behat before including /config.php.
-use Behat\Behat\Context\Step\Given as Given;
-use Behat\Behat\Context\Step\Then;
 use Behat\Mink\Exception\ExpectationException as ExpectationException;
 
 /**
@@ -400,7 +398,8 @@ function SelectAndClickFirstButtonBehat (id) {
      * @Given /^I press the superscript key in the "([^"]*)" ousupsub editor$/
      */
     public function i_press_superscript_key_in_the_ousupsub_edito($fieldlocator) {
-        return array(new Given('I press the key "\'keypress\', 94" in the "Input" ousupsub editor'));
+        $this->execute('behat_editor_ousupsub::press_key_in_the_ousupsub_editor',
+                array('\'keypress\', 94', 'Input'));
     }
 
     /**
@@ -409,7 +408,8 @@ function SelectAndClickFirstButtonBehat (id) {
      * @Given /^I press the subscript key in the "([^"]*)" ousupsub editor$/
      */
     public function i_press_subscript_key_in_the_ousupsub_edito($fieldlocator) {
-        return array(new Given('I press the key "\'keypress\', 95" in the "Input" ousupsub editor'));
+        $this->execute('behat_editor_ousupsub::press_key_in_the_ousupsub_editor',
+                array('\'keypress\', 95', 'Input'));
     }
 
     /**
@@ -418,7 +418,8 @@ function SelectAndClickFirstButtonBehat (id) {
      * @Given /^I press the up arrow key in the "([^"]*)" ousupsub editor$/
      */
     public function i_press_up_arrow_key_in_the_ousupsub_edito($fieldlocator) {
-        return array(new Given('I press the key "38" in the "Input" ousupsub editor'));
+        $this->execute('behat_editor_ousupsub::press_key_in_the_ousupsub_editor',
+                array('38', 'Input'));
     }
 
     /**
@@ -427,7 +428,8 @@ function SelectAndClickFirstButtonBehat (id) {
      * @Given /^I press the down arrow key in the "([^"]*)" ousupsub editor$/
      */
     public function i_press_down_arrow_key_in_the_ousupsub_edito($fieldlocator) {
-        return array(new Given('I press the key "40" in the "Input" ousupsub editor'));
+        $this->execute('behat_editor_ousupsub::press_key_in_the_ousupsub_editor',
+                array('40', 'Input'));
     }
 
     /**
@@ -436,10 +438,8 @@ function SelectAndClickFirstButtonBehat (id) {
      * @Given /^I press the undo key in the "([^"]*)" ousupsub editor$/
      */
     public function i_press_undo_key_in_the_ousupsub_edito($fieldlocator) {
-        $steps = array(
-            new Given('I press the key "\'ctrlKey\', 90" in the "Input" ousupsub editor'),
-        );
-        return $steps;
+        $this->execute('behat_editor_ousupsub::press_key_in_the_ousupsub_editor',
+                array('\'ctrlKey\', 90', 'Input'));
     }
 
     /**
@@ -448,10 +448,8 @@ function SelectAndClickFirstButtonBehat (id) {
      * @Given /^I press the redo key in the "([^"]*)" ousupsub editor$/
      */
     public function i_press_redo_key_in_the_ousupsub_edito($fieldlocator) {
-        $steps = array(
-            new Given('I press the key "\'ctrlKey\', 89" in the "Input" ousupsub editor'),
-        );
-        return $steps;
+        $this->execute('behat_editor_ousupsub::press_key_in_the_ousupsub_editor',
+                array('\'ctrlKey\', 89', 'Input'));
     }
 
     /**
