@@ -50,7 +50,8 @@ YUI().use("moodle-editor_ousupsub-editor", function(Y) {
                      {input: "1<br>", expected: "1"},
                      {input: "1<br />", expected: "1"},
                      {input: "1.2x10<sup id=\"yui_3_17_2_2_1434116789356_168\">3</sup> g<sup id=\"yui_3_17_2_2_1434116789356_165\"></sup>", expected: "1.2x10<sup>3</sup> g"}, // Empty trailing sup tag removed
-                     {input: "1.2x10<sub id=\"yui_3_17_2_2_1434116789356_168\">3</sub> g<sub id=\"yui_3_17_2_2_1434116789356_165\"></sub>", expected: "1.2x10<sub>3</sub> g"} // Empty trailing sub tag removed
+                     {input: "1.2x10<sub id=\"yui_3_17_2_2_1434116789356_168\">3</sub> g<sub id=\"yui_3_17_2_2_1434116789356_165\"></sub>", expected: "1.2x10<sub>3</sub> g"}, // Empty trailing sub tag removed
+                     {input: "<xmlns:texthelpns rwthpgen='1'>mm s</xmlns:texthelpns>", expected: "mm s"} // Empty special xmlns tag from browser plugin.
     ];
 
     // Elements to remove completely including contents.

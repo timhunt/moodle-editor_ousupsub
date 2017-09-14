@@ -193,10 +193,13 @@ EditorClean.prototype = {
             // Remove empty spans, but not ones from Rangy.
             {regex: /<span(?![^>]*?rangySelectionBoundary[^>]*?)[^>]*>(&nbsp;|\s)*<\/span>/gi, replace: ""},
             {regex: /<span(?![^>]*?rangySelectionBoundary[^>]*?)[^>]*>[\s\S]*?([\s\S]*?)<\/span>/gi, replace: "$1"},
-            
+
             // Remove empty sup and sub tags that appear after pasting text.
             {regex: /<sup[^>]*>(&nbsp;|\s)*<\/sup>/gi, replace: ""},
-            {regex: /<sub[^>]*>(&nbsp;|\s)*<\/sub>/gi, replace: ""}
+            {regex: /<sub[^>]*>(&nbsp;|\s)*<\/sub>/gi, replace: ""},
+
+            // Remove special xml namespace tag xmlns generate by browser plugin.
+            {regex: /<xmlns.*?>(.*?)<\/xmlns.*?>/gi, replace: "$1"}
         ];
 
         return this._filterContentWithRules(content, rules);
