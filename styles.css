@@ -40,17 +40,30 @@ div.editor_ousupsub_toolbar div.ousupsub_group {
 }
 
 div.editor_ousupsub_toolbar button {
-    margin: 0;
-    border: 0;
-    border-right: 1px solid #bbb;
+    border: 1px solid #F2F2F2;
     padding: 0;
-    background: none;
-    border-radius: 0;
-    cursor: pointer;
-    line-height: 20px;
     width: 35px;
     height: 25px;
- }
+    position: relative;
+    margin: 0 auto;
+    cursor: pointer;
+    line-height: 20px;
+    background: none;
+    border-radius: 0;
+}
+
+div.editor_ousupsub_toolbar button:before {
+    background: none;
+    border: 1px solid #bbb;
+    content: "";
+    display: block;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+    pointer-events: none;
+}
  
 div.editor_ousupsub_toolbar button.ousupsub_undo_button, div.editor_ousupsub_toolbar button.ousupsub_redo_button {
     display: none;
