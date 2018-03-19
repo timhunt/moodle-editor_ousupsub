@@ -1,4 +1,4 @@
-@editor @editor_ousupsub @_bug_phantomjs
+@ou @ouvle @editor @editor_ousupsub @_bug_phantomjs
 Feature: ousupsub subscript button
   To format text in ousupsub, I need to use the subscript button.
 

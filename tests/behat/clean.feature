@@ -1,4 +1,4 @@
-@editor @editor_ousupsub @_bug_phantomjs
+@ou @ouvle @editor @editor_ousupsub @_bug_phantomjs
 Feature: ousupsub superscript button
   Use the superscript and subscript functionality to test how well the text is cleaned .
 

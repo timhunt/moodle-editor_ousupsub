@@ -1,4 +1,4 @@
-@editor @editor_ousupsub @_bug_phantomjs
+@ou @ouvle @editor @editor_ousupsub @_bug_phantomjs
 Feature: ousupsub superscript button
   To undo a redo text changes in ousupsub, I need to use the undo and redo key combinations.
 
