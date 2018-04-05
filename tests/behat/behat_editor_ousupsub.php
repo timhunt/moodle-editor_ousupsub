@@ -285,13 +285,10 @@ class behat_editor_ousupsub extends behat_base {
         $js = '
     function EnterTextBehat (id, text) {
     // Only works in chrome.
-    // http://stackoverflow.com/questions/15303633/how-to-synthesize-key-presses-in-javascript.
     var target = document.getElementById(id + "editable");
-    var evt = document.createEvent("TextEvent");
-    var eventType = "textInput";
-    evt.initTextEvent (eventType, true, true, window, text, 0, "en-US");
+    // https://stackoverflow.com/questions/39947875/as-of-chrome-53-how-to-add-text-as-if-a-trusted-textinput-event-was-dispatched
     target.focus();
-    target.dispatchEvent(evt);
+    document.execCommand("insertText", false, "' . $text . '");
     // Update the textarea text from the contenteditable div we just changed.
     UpdateTextArea(id);
 }

@@ -1,5 +1,5 @@
-@ou @ouvle @editor @editor_ousupsub @_bug_phantomjs
-Feature: ousupsub subscript button
+@editor @editor_ousupsub @_bug_phantomjs
+Feature: Sup/Sub standalone editor
   To format text in ousupsub, I need to use both the superscript and subscript buttons.
   The tests must be built initially in a specific order because we are relying on CSS selectors to select
   specific pieces of text. It is very easy to get into a situation where pieces of text cannot be selected.
@@ -12,7 +12,7 @@ Feature: ousupsub subscript button
   demonstrating how to use the text selection behat method created for this plugin.
 
   @javascript
-  Scenario: Applying Subscript and Superscript on text
+  Scenario: Applying Subscript and Superscript on in the standalone editor
     Given I am on the stand-alone supsub editor test page
     And I set the "Both Superscript and Subscript allowed" stand-alone ousupsub editor to "Superscript and Subscript"
 

@@ -1,9 +1,9 @@
 @ou @ouvle @editor @editor_ousupsub @_bug_phantomjs
-Feature: ousupsub superscript button
+Feature: Entering spaces into the Sup/Sub editor
   To format text in ousupsub, I need to use the superscript button.
 
   @javascript
-  Scenario: Superscript some text
+  Scenario: Enter text containing a space
     Given I log in as "admin"
     And I am on the integrated "sup" editor test page
 

@@ -1,10 +1,10 @@
 @ou @ouvle @editor @editor_ousupsub @_bug_phantomjs
-Feature: ousupsub subscript button
+Feature: Subscript keyboard interface
   To format text in ousupsub, I need to use the subscript keys. It works a specific way
   when only the subscript button is available.
 
   @javascript
-  Scenario: Apply Subscript some text
+  Scenario: Apply Subscript some text using the keyboard interface
     Given I log in as "admin"
     And I am on the integrated "sub" editor test page
     Then ".[contains(@title, 'Shift + _ or Down arrow')]" "xpath_element" should exist in the "button.ousupsub_subscript_button_subscript" "css_element"

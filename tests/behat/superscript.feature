@@ -54,7 +54,7 @@ Feature: ousupsub superscript button
 
     # Apply superscript inside existing superscript using a longer phrase
     When I set the field "Input" to "He<sup>lic</sup>opter"
-    And I select the range "'sup',1,2,3" in the "Input" ousupsub editor
+    And I select the range "'sup',0,2,3" in the "Input" ousupsub editor
     And I click on "Superscript" "button"
     Then I should see "He<sup>licopt</sup>er" in the "Input" ousupsub editor
     

@@ -1,5 +1,5 @@
 @ou @ouvle @editor @editor_ousupsub @_bug_phantomjs
-Feature: ousupsub subscript button
+Feature: Subscript button
   To format text in ousupsub, I need to use the subscript button.
 
   @javascript
@@ -54,6 +54,6 @@ Feature: ousupsub subscript button
 
     # Apply subscript inside existing subscript using a longer phrase
     When I set the field "Input" to "He<sub>lic</sub>opter"
-    And I select the range "'sub',1,2,3" in the "Input" ousupsub editor
+    And I select the range "'sub',0,2,3" in the "Input" ousupsub editor
     And I click on "Subscript" "button"
     Then I should see "He<sub>licopt</sub>er" in the "Input" ousupsub editor
