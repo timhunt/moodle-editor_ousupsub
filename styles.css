@@ -32,6 +32,7 @@ div.editor_ousupsub_toolbar {
     background: #F2F2F2;
     border: 1px solid #bbb;
     height: 25px;
+    line-height: 0;
 }
 
 div.editor_ousupsub_toolbar div.ousupsub_group {
