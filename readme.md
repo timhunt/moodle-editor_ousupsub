@@ -1,43 +1,52 @@
-The new OU Superscript/subscript editor
+# The OU Superscript/subscript editor
 
-This is a very cut-down configuration of ATTO that just lets users
-edit one line of input with superscripts and subscripts, for use in Moodle.
+This is a simple text input widget that lets users edit one line of input
+with superscripts and subscripts, for use in Moodle.
 
-This editor was created by Colin Chambers of the Open University
-http://www.open.ac.uk/.
+## Installation
 
-This should be compatible with Moodle 2.8+. Older versions are available if you
-need to support older versions of Moodle.
+This plugin should be compatible with Moodle 3.4+. Older versions are
+available if you need to support older versions of Moodle.
 
-To install using git, type this commands in the root of your Moodle install
-    git clone git://github.com/colchambers/moodle-editor_ousupsub.git lib/editor/ousupsub
-    echo '/lib/editor/ousupsub' >> .git/info/exclude
+Install from the Moodle plugins database https://moodle.org/plugins/editor_ousupsub.
 
-Alternatively, download the zip from
-    https://github.com/colchambers/moodle-editor_ousupsub/zipball/master
-unzip it into the lib/editor folder, and then rename the extracted folder to ousupsub.
+Or you can install using git. Type this commands in the root of your Moodle install
+    git clone git://github.com/moodleou/moodle-editor_ousupsub.git lib/editor/ousupsub
+    echo '/lib/editor/ousupsub/' >> .git/info/exclude
 
 Then run the moodle update process
 Administration > site administration > notifications
 
-This is the main repository where the plugin exists. Everywhere else is just a copy of this repository. The editor
-is a child of the moodle atto plugin and as much as possible we’re keeping the general file and code structure the
-same to ease maintenance and make the plugin sustainable.
+## History
 
-The plugin is built for and maintained by the Open University (OU) to replace their existing TinyMCE based supsub
-editor. This editor is used primarily on two OU specific question types (pattern match and variable numeric) and
-supports a reduced set of requirements specific to the needs of many questions in fields such as maths and chemistry.
+This editor was created by Colin Chambers of the Open University
+http://www.open.ac.uk/.
 
-These requirements are summarised as:
+The code for this editor was heavily inspired by the Atto editor built into Moodle.
+
+It was created for use with several of our question types:
+
+* https://moodle.org/plugins/qtype_pmatch
+* https://moodle.org/plugins/qtype_varnumeric
+* https://moodle.org/plugins/qtype_varnumericset
+* https://moodle.org/plugins/qtype_varnumunit
+
+## Functionality
+
+The purpose of this editor is to make it as easy as possible for users to intput
+text with superscripts and/or subscripts, while keeping things as simple as possible
+and keeping the results HTML as clean as possible.
+
 * Allow only alphanumeric text. No html tags except <sup> and <sub>
 * Provide a superscript or subscript button or both along with related functionality
 * Prevent nesting of superscript and subscript tags
 * No text wrapping is allowed along with no paragraphs. Everything is on one line
 * Configurable height and width of editor
-* Provide a standalone version of the same editor for offline situations such as ereaders
+* Provide a standalone version of the same editor for offline situations such as e-readers
 * Editor can placed where required including inline with text
 
-Standalone version
+## Standalone version
+
 More details are in readme_standalone.txt that gets added to the /standalone folder
 A standalone/offline version of the editor is also provided in the /standalone folder. This provides all the
 functionality of the editor in a package that works in an ereader or mobile app or on a desktop to demonstrate
@@ -51,7 +60,8 @@ standalone folder and then it recreates the standalone files. This ensures the s
 the plugin. This task is performed during development of the editor. If you are using it out of the box you shouldn't
 need to run this script.
 
-Testing
+## Testing
+
 Automated testing is through behat and custom javascript unit tests. There is a behat test for the moodle plugin and an
 identical test for the standalone version
 
@@ -63,8 +73,9 @@ The main places to test are:
 * pattern match questions (OU specific question type)
 * variable numeric  questions (OU specific question type)
 
-HTML Output
-To understand exactly what this editor will and will not do it's best to understand the html it will or will not allow.
+## HTML Output
+
+To understand exactly what this editor will and will not do it's best to understand the HTML it will or will not allow.
 That is described in the behat tests at tests/behat/ousupsub.feature. You do not need to understand web development
 to understand these tests and you don't have to be able to run them either.
 
@@ -80,8 +91,9 @@ Then we check that subscript was applied correctly.
 
 That is how you read the behat tests and how you know what to expect the editor to do.
 
-Libraries: Imported from the atto readme
-The editor relies heavily on the rangy software library.
+## Third-party code
+
+Thanks to the creators of the rangy software library, which we use.
 
 1)  Rangy (version 1.2.3)
     * Download the latest stable release;
