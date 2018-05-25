@@ -34,7 +34,6 @@ defined('MOODLE_INTERNAL') || die();
 function xmldb_editor_ousupsub_upgrade($oldversion) {
     global $CFG;
 
-
     if ($oldversion < 2018052300) {
 
         // Remove the old config setting for which editor to use.

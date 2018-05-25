@@ -1,6 +1,8 @@
 @ou @ouvle @editor @editor_ousupsub @_bug_phantomjs
-Feature: ousupsub superscript button
-  Use the superscript and subscript functionality to test how well the text is cleaned .
+Feature: OU sub sub editor input cleaning test
+  In order to n
+  As a Moodle user
+  Use the superscript and subscript functionality to test how well the text is cleaned.
 
   @javascript
   Scenario: Superscript some text

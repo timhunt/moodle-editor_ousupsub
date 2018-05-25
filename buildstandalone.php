@@ -25,11 +25,6 @@
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-if (isset($_SERVER['REMOTE_ADDR'])) {
-    die(); // No access from web!
-}
-
-// Is not really necessary but adding it as is a CLI_SCRIPT.
 define('CLI_SCRIPT', true);
 define('CACHE_DISABLE_ALL', true);
 
