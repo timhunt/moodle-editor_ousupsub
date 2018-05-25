@@ -37,7 +37,6 @@ if (!in_array($type, array('both', 'sub', 'sup'))) {
 }
 
 $neweditor = get_texteditor('ousupsub');
-$originaleditor = get_texteditor('supsub');
 $attoeditor = get_texteditor('atto');
 
 $PAGE->set_title('Test superscript/subscript editor');
@@ -60,20 +59,6 @@ $neweditor->use_editor('supsub2', array('supsub' => $type));
 $submitoptions['id'] = 'submitsupsub2';
 $submitoptions['value'] = 'submit supsub2';
 echo  ' ', html_writer::tag('input', '', $submitoptions);
-
-echo html_writer::tag('h2', 'Original (Tinymce) supsub');
-echo html_writer::label('Original Input', 'originalsupsub');
-echo html_writer::tag('textarea', '', array('name' => 'originalsupsub', 'id' => 'originalsupsub', 'rows' => 2, 'cols' => 20));
-$originaleditor->use_editor('originalsupsub', array('supsub' => $type));
-$submitoptions['id'] = 'submitoriginalsupsub';
-echo html_writer::tag('input', '', $submitoptions);
-
-echo html_writer::tag('h2', 'Original (Tinymce) supsub rows 4, cols 40');
-echo html_writer::label('Original Input rows 4, cols 40', 'originalsupsub2');
-echo html_writer::tag('textarea', '', array('name' => 'originalsupsub2', 'id' => 'originalsupsub2', 'rows' => 4, 'cols' => 40));
-$originaleditor->use_editor('originalsupsub2', array('supsub' => $type));
-$submitoptions['id'] = 'submitoriginalsupsub2';
-echo html_writer::tag('input', '', $submitoptions);
 
 echo html_writer::tag('h2', 'ATTO Editor');
 echo html_writer::label('ATTO Input', 'attoeditor');

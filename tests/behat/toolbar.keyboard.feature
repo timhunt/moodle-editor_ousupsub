@@ -12,6 +12,6 @@ Feature: ousupsub superscript toolbar
 
     Then I select the text in the "Input" ousupsub editor
 
-    # Verify toolbar superscript button can be selected by tab index 
+    # Verify toolbar superscript button can be selected by tab index
     And I select and click the first button in the "Input" ousupsub editor
     Then I should see "<sup>Helicopter</sup>" in the "Input" ousupsub editor

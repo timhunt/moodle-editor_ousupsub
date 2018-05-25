@@ -27,6 +27,7 @@ $string['editor_control_keycode'] = 'Ctrl + {$a}';
 $string['editor_shift_keycode'] = 'Shift + {$a}';
 $string['plugin_title_shortcut'] = '{$a->title} [{$a->shortcut}]';
 $string['pluginname'] = 'Superscript/subscript editor';
+$string['privacy:metadata'] = 'The Superscript/subscript editor plugin does not store any personal data.';
 $string['settings'] = 'Superscript/subscript editor settings';
 $string['subscript'] = 'Subscript';
 $string['superscript'] = 'Superscript';

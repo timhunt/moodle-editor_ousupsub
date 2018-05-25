@@ -1,6 +1,8 @@
 @ou @ouvle @editor @editor_ousupsub @_bug_phantomjs
-Feature: ousupsub superscript button
-  Use the superscript and subscript functionality to test how well the text is cleaned .
+Feature: OU sub sub editor input cleaning test
+  In order to have my input easily processed
+  As a Moodle user
+  I need the supsub editor to clearn up the input as much as possible
 
   @javascript
   Scenario: Superscript some text

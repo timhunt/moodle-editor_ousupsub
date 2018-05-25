@@ -10,6 +10,7 @@ M = {
     str: %%langstrings%%,
     iconRootUrl: null, // Set in a minute.
     util: {
+        pending_js: [],
         image_url: function (imageName) {
             return M.iconRootUrl + imageName.replace("e/", "/") + ".svg";
         },

@@ -13,40 +13,33 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
-
 /**
- * OU sup-sub editor upgrade script.
+ * Privacy Subsystem implementation for editor_ousupsub.
  *
- * @package    editor_ousubsub
+ * @package    editor_ousupsub
  * @copyright  2018 The Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+namespace editor_ousupsub\privacy;
+
 defined('MOODLE_INTERNAL') || die();
 
+
 /**
- * Run all OU sup-sub editor upgrade steps between the current DB version and
- * the current version on disk.
+ * Privacy Subsystem for editor_ousupsub implementing null_provider.
  *
- * @param int $oldversion The old version of atto in the DB.
- * @return bool
+ * @copyright  2018 The Open University
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-function xmldb_editor_ousupsub_upgrade($oldversion) {
-    global $CFG;
-
-    if ($oldversion < 2018052300) {
-
-        // Remove the old config setting for which editor to use.
-        unset_config('use', 'editor_ousupsub');
-
-        // If the old sub-sub editor is installed, remove it.
-        if (core_plugin_manager::instance()->get_plugin_info('editor_supsub')) {
-            uninstall_plugin('editor', 'supsub');
-        }
-
-        // Stack savepoint reached.
-        upgrade_plugin_savepoint(true, 2018052300, 'editor', 'ousubsub');
+class provider implements \core_privacy\local\metadata\null_provider {
+    /**
+     * Get the language string identifier with the component's language
+     * file to explain why this plugin stores no data.
+     *
+     * @return  string
+     */
+    public static function get_reason() : string {
+        return 'privacy:metadata';
     }
-
-    return true;
 }

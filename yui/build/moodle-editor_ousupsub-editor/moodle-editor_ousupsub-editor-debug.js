@@ -1666,7 +1666,7 @@ EditorClean.prototype = {
             this.cleanEditorHTMLEmptySupAndSubTags();
             // Insert tag at cursor focus point.
             tag = command === 'superscript' ? 'sup' : 'sub';
-            // ﻿&#65279; is is the Unicode Character 'ZERO WIDTH NO-BREAK SPACE' (U+FEFF). Used
+            // &#65279; is is the Unicode Character 'ZERO WIDTH NO-BREAK SPACE' (U+FEFF). Used
             // by TinyMCE to add empty sup/sub tags when nothing is selected. This causes lint
             // errors but I couldn't find a better solution.
             // http://stackoverflow.com/questions/9691771/why-is-65279-appearing-in-my-html.

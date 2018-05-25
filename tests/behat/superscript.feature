@@ -57,19 +57,19 @@ Feature: ousupsub superscript button
     And I select the range "'sup',0,2,3" in the "Input" ousupsub editor
     And I click on "Superscript" "button"
     Then I should see "He<sup>licopt</sup>er" in the "Input" ousupsub editor
-    
+
     # Apply superscript to the end of a string. Triggers empty spaces at the end of the string
     When I set the field "Input" to "Helicopter"
     And I select the range "'',10,'',10" in the "Input" ousupsub editor
     And I click on "Superscript" "button"
     Then I should see "Helicopter" in the "Input" ousupsub editor
-    
+
     # Apply superscript to the end of a string. Triggers empty spaces at the start of the string
     When I set the field "Input" to "Helicopter"
     And I select the range "'',1,'',1" in the "Input" ousupsub editor
     And I click on "Superscript" "button"
     Then I should see "Helicopter" in the "Input" ousupsub editor
-    
+
     # Apply superscript to the end of a string. Triggers empty spaces in the middle of the string
     When I set the field "Input" to "Helicopter"
     And I select the range "'',4,'',4" in the "Input" ousupsub editor

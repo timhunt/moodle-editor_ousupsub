@@ -358,7 +358,6 @@ function PasteTextBehat (id, text) {
      * Select the first button in a stand-alone ousupsub field.
      *
      * @Given /^I select and click the first button in the "([^"]*)" ousupsub editor$/
-     * @throws ElementNotFoundException Thrown by behat_base::find
      * @param string $text
      * @param string $field
      */
